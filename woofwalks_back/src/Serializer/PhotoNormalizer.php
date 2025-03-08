@@ -2,7 +2,7 @@
 
 namespace App\Serializer;
 
-use App\Entity\Photo;
+use App\Entity\MainPhoto;
 use Vich\UploaderBundle\Storage\StorageInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -35,13 +35,13 @@ class PhotoNormalizer implements NormalizerInterface
       return false;
     }
 
-    return $data instanceof Photo;
+    return $data instanceof MainPhoto;
   }
 
   public function getSupportedTypes(?string $format): array
   {
     return [
-      Photo::class => true,
+      MainPhoto::class => true,
     ];
   }
 }

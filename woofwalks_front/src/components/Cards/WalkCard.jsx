@@ -18,13 +18,12 @@ const WalkCard = ({ walk }) => {
       }}
     >
       <div className="position-relative">
-        {/* <img
-          src={`${process.env.REACT_APP_API_URL}media/${walk.ad.photo.filePath}`}
+        <img
+          src={`http://localhost:8000/media/${walk.mainPhoto.filePath}`}
           className="card-img-top"
           alt="Walk"
           style={{ height: "200px", objectFit: "cover" }}
-        /> */}
-        {/* Badge */}
+        />
 
         <div
           className="position-absolute top-0 start-0 m-2"

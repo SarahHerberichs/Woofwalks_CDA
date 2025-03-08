@@ -39,6 +39,8 @@ COPY package*.json package-lock.json ./
 
 RUN npm install --loglevel verbose
 
+RUN npm cache clean --force
+
 # Copier le code source
 COPY . ./
 

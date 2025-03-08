@@ -4,9 +4,15 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\WalkRepository;
 use ApiPlatform\Metadata\ApiResource;
+use App\Entity\MainPhoto;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 
-#[ApiResource]
+
+#[ApiResource(
+    normalizationContext: ['groups' => ['walk:read']],
+    denormalizationContext: ['groups' => ['walk:write']],
+)]
 #[ORM\Entity(repositoryClass: WalkRepository::class)]
 class Walk
 {
@@ -27,8 +33,8 @@ class Walk
     #[ORM\Column(type: 'text')]
     private ?string $description = null;
 
-    #[ORM\Column(type: 'string', length: 100)]
-    private ?string $theme = null;
+    // #[ORM\Column(type: 'string', length: 100)]
+    // private ?string $theme = null;
 
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $date = null;
@@ -36,13 +42,22 @@ class Walk
     #[ORM\Column(type: 'integer')]
     private ?int $maxParticipants = null;
 
+    #[Groups(['walk:read', 'walk:write'])]
+    #[ORM\ManyToOne(targetEntity: MainPhoto::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: true)]
+    private MainPhoto $mainPhoto;
+
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
-
-
+    #[ORM\PreUpdate]
+    public function updateTimestamp(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -64,7 +79,16 @@ class Walk
 
         return $this;
     }
+    public function getMainPhoto(): MainPhoto
+    {
+        return $this->mainPhoto;
+    }
 
+    public function setMainPhoto(MainPhoto $mainPhoto): self
+    {
+        $this->mainPhoto = $mainPhoto;
+        return $this;
+    }
     public function getTitle(): ?string
     {
         return $this->title;
@@ -89,17 +113,17 @@ class Walk
         return $this;
     }
 
-    public function getTheme(): ?string
-    {
-        return $this->theme;
-    }
+    // public function getTheme(): ?string
+    // {
+    //     return $this->theme;
+    // }
 
-    public function setTheme(string $theme): self
-    {
-        $this->theme = $theme;
+    // public function setTheme(string $theme): self
+    // {
+    //     $this->theme = $theme;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getDate(): ?\DateTimeInterface
     {

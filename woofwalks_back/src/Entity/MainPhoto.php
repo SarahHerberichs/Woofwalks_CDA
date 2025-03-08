@@ -51,22 +51,22 @@ class MainPhoto
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['MainPhoto:read', 'ad:read','walk:read'])]
+    #[Groups(['MainPhoto:read', 'walk:read'])]
     private ?int $id = null;
     
 
     #[ApiProperty(types: ['https://schema.org/contentUrl'], writable: false)]
-    #[Groups(['MainPhoto:read', 'ad:read'])]
+    #[Groups(['MainPhoto:read', 'walk:read'])]
     public ?string $contentUrl = null;
 
-    #[Vich\UploadableField(mapping: 'MainPhoto', fileNameProperty: 'filePath')]
+    #[Vich\UploadableField(mapping: 'media_object', fileNameProperty: 'filePath')]
     #[Assert\NotNull(groups: ['MainPhoto:write'])]
     #[Groups(['MainPhoto:write'])]
     private ?File $file = null;
 
     #[ApiProperty(writable: false)]
     #[ORM\Column(nullable: true)]
-    #[Groups(['MainPhoto:read', 'ad:read', 'walk:read'])]
+    #[Groups(['MainPhoto:read', 'walk:read'])]
     private ?string $filePath = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
@@ -90,10 +90,10 @@ class MainPhoto
     {
         $this->file = $file;
 
-        // if ($file) {
-        //     // Met à jour la date de modification à chaque nouvel upload
-        //     $this->updatedAt = new \DateTimeImmutable();
-        // }
+        if ($file) {
+            // Met à jour la date de modification à chaque nouvel upload
+            $this->updatedAt = new \DateTimeImmutable();
+        }
     }
 
     public function getFile(): ?File

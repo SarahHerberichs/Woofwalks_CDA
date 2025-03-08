@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 const GenericForm = ({ entityType, entitySpecificFields }) => {
   console.log(entityType);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -39,10 +40,13 @@ const GenericForm = ({ entityType, entitySpecificFields }) => {
       const photoFormData = new FormData();
       photoFormData.append("file", photo);
 
-      const photoResponse = await fetch("https://127.0.0.1:8000/api/photos", {
-        method: "POST",
-        body: photoFormData,
-      });
+      const photoResponse = await fetch(
+        "http://localhost:8000/api/main_photos",
+        {
+          method: "POST",
+          body: photoFormData,
+        }
+      );
 
       if (!photoResponse.ok) {
         throw new Error("Erreur lors de l'upload de la photo.");
@@ -51,14 +55,18 @@ const GenericForm = ({ entityType, entitySpecificFields }) => {
       const photoData = await photoResponse.json();
       const photoId = photoData.id;
 
+      // Convertir datetime pour l'API
+      const formattedDateTime = new Date(formData.datetime).toISOString();
+
       // Étape 2 : Envoi des données avec l'ID de la photo
       const entityData = {
         ...formData,
+        datetime: formattedDateTime, // Date au format ISO
         photo: photoId,
       };
 
       const entityResponse = await fetch(
-        `https://127.0.0.1:8000/api/${entityType}custom`,
+        `http://localhost:8000/api/${entityType}custom`,
         {
           method: "POST",
           headers: {
