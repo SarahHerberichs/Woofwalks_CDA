@@ -1,0 +1,133 @@
+# version: "3.8"
+
+# services:
+#   # Service pour le backend (API Platform)
+#   backend:
+#     build:
+#       context: ./woofwalks_back
+#     container_name: woofwalks_back
+#     ports:
+#       - "8000:8000" # Exposer le port 8000
+#     volumes:
+#       - ./woofwalks_back:/var/www/html
+#     networks:
+#       - woofwalks-network
+#     environment:
+#       - APP_ENV=dev
+
+#   # Service pour le frontend (React)
+#   frontend:
+#     build:
+#       context: ./woofwalks_front
+#     container_name: woofwalks_front
+#     volumes:
+#       - ./src:/var/www/html/src # Synchronisation entre le code source local et le conteneur
+#     ports:
+#       - "3000:80" # Exposer le port 3000 sur le conteneur
+#     networks:
+#       - woofwalks-network
+#     environment:
+#       - REACT_APP_API_URL=http://woofwalks_back:8000 # URL de l'API backend dans le réseau Docker
+
+#   db:
+#     image: mysql:5.7
+#     container_name: woofwalks_db
+#     environment:
+#       MYSQL_ROOT_PASSWORD: Poison8926!
+#       MYSQL_DATABASE: woofwalks
+#     ports:
+#       - "3306:3306"
+#     networks:
+#       - woofwalks-network
+#     volumes:
+#       - mysql_data:/var/lib/mysql
+
+# networks:
+#   woofwalks-network:
+#     driver: bridge
+
+# volumes:
+#   mysql_data:
+#     driver: local
+
+# version: "3.8"
+
+services:
+  # Service pour le backend (API Platform)
+  backend:
+    build:
+      context: ./woofwalks_back
+    container_name: woofwalks_back
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./woofwalks_back:/var/www/html
+    networks:
+      - woofwalks-network
+    environment:
+      - APP_ENV=dev
+    command: php -S 0.0.0.0:8000 -t public
+
+    depends_on:
+      - db
+
+  # Service pour le frontend (React en mode dev)
+  frontend:
+    build:
+      context: ./woofwalks_front
+    container_name: woofwalks_front
+    volumes:
+      - ./woofwalks_front:/app # Synchronisation des fichiers
+      # - /app/node_modules # Évite les problèmes de dépendances
+    ports:
+      - "3000:3000" # React tourne sur son serveur de développement
+    networks:
+      - woofwalks-network
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Pour que les changements soient détectés sous Docker
+      - REACT_APP_API_URL=http://woofwalks_back:8000
+
+    stdin_open: true # ✅ Permet d'éviter que npm start se coupe si le terminal est fermé
+    tty: true
+    depends_on:
+      - backend
+
+  # Service pour la base de données (MySQL)
+  db:
+    image: mysql:5.7
+    container_name: woofwalks_db
+    environment:
+      MYSQL_ROOT_PASSWORD: Poison8926!
+      MYSQL_DATABASE: woofwalks
+    ports:
+      - "3306:3306"
+    networks:
+      - woofwalks-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysql", "-uroot", "-pPoison8926!", "-e", "SELECT 1;"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: woofwalks_phpmyadmin
+    restart: always
+    ports:
+      - "8081:80" # phpMyAdmin accessible via http://localhost:8081
+    environment:
+      PMA_HOST: db # Doit correspondre au nom de ton service MySQL
+      MYSQL_ROOT_PASSWORD: Poison8926!
+    networks:
+      - woofwalks-network
+    depends_on:
+      - db
+
+networks:
+  woofwalks-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

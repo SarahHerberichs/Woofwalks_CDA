@@ -1,0 +1,59 @@
+ https://github.com/nicolasvauchenet/cours_methodologie/tree/main/Semaine%201%20-%20UML/Cours
+
+
+//PARTIE INSCRIPTION A UNE WALK 
+@startuml
+actor User
+participant Application
+participant NotificationSystem
+
+User -> Application : askForDisplay(Walk)
+Application -> User : displayWalk(Walk)
+
+alt walkUnavailable
+    User -> Application : askNotificationIfAvailable(Walk)
+    loop checkIfAvailable
+        Application -> Application : checkAvailability(Walk)
+    end
+    alt WalkBecomesAvailable
+        Application -> NotificationSystem : sendUserInfo(User, Walk)
+        NotificationSystem -> User : sendNotificationAvailability(Walk)
+    else
+       
+    end
+else
+    User -> Application : askForParticipate(Walk)
+    Application -> Application : SearchUserList(Walk) : UserList
+    Application -> Application : UpdateWalk(Walk)  
+    Application -> Application : updateUserList(UserList, User) 
+
+    Application -> NotificationSystem : sendUpdatedWalkInformations(UserList, User, Walk) 
+
+    NotificationSystem -> UserList : sendNotification(User, Walk) // Informe que nouveau participant
+    NotificationSystem -> User : sendSuccessNotification() 
+
+    Application -> Application : searchChat(Walk) : Chat
+    Application -> User : DisplayChatMessages(Chat) 
+end
+
+@enduml
+
+
+
+
+User -> Application : SendNewChatMessages(Message,Chat)
+Application -> NotificationSystem : sendMessageInformations(Message,Chat) 
+NotificationSystem -> Users : sendNotification(Message,Chat,User)
+NotificationSystem -> User : successMessage()
+Users->NotificationSystem :  sendMessageInformations(Message,Walk)
+NotificationSystem->Users : sendMessageInformation(Message,Chat)
+NotificationSystem->Users : sendMessageInformation(Message,Chat)
+Planner -> Application : updateWalk(Walk) Si modification de la Walk
+Application ->Application : updateWalk(Walk)
+Application -> NotificationSystem : sendUpdatedWalkInformation(Walk) //Informe que la walk a été modifiée
+NotificationSystem-> User: sendUpdatedWalkMessage(walk)
+NotificationSystem-> Users: sendUpdatedWalkMessage(walk)
+note over NotificationSystem: 1h before Walk
+NotificationSystem-> User : sendReminderNotification(Walk)
+NotificationSystem-> Users : sendReminderNotification(Walk)
+@enduml
