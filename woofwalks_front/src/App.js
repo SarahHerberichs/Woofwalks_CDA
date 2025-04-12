@@ -10,6 +10,7 @@ import Walks from "./views/Walks";
 function App() {
   return (
     <div className="App">
+      <h1>regzer</h1>
       <Header />
       <div className="container">
         <BrowserRouter>

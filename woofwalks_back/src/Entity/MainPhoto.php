@@ -8,6 +8,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -53,7 +55,7 @@ class MainPhoto
     #[ORM\Column(type: 'integer')]
     #[Groups(['MainPhoto:read', 'walk:read'])]
     private ?int $id = null;
-    
+
 
     #[ApiProperty(types: ['https://schema.org/contentUrl'], writable: false)]
     #[Groups(['MainPhoto:read', 'walk:read'])]
@@ -71,6 +73,14 @@ class MainPhoto
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
+
+    #[ORM\OneToMany(mappedBy: 'mainPhoto', targetEntity: Walk::class)]
+    private Collection $walks;
+
+    public function __construct()
+    {
+        $this->walks = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -119,5 +129,33 @@ class MainPhoto
     public function setUpdatedAt(?\DateTimeInterface $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    /**
+     * @return Collection<int, Walk>
+     */
+    public function getWalks(): Collection
+    {
+        return $this->walks;
+    }
+
+    public function addWalk(Walk $walk): self
+    {
+        if (!$this->walks->contains($walk)) {
+            $this->walks[] = $walk;
+            $walk->setMainPhoto($this);
+        }
+        return $this;
+    }
+
+    public function removeWalk(Walk $walk): self
+    {
+        if ($this->walks->removeElement($walk)) {
+            // set the owning side to null (unless already changed)
+            if ($walk->getMainPhoto() === $this) {
+                $walk->setMainPhoto(null);
+            }
+        }
+        return $this;
     }
 }

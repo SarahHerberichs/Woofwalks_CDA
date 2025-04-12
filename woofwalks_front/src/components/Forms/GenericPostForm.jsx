@@ -61,8 +61,9 @@ const GenericForm = ({ entityType, entitySpecificFields }) => {
       // Étape 2 : Envoi des données avec l'ID de la photo
       const entityData = {
         ...formData,
-        datetime: formattedDateTime, // Date au format ISO
+        date: formattedDateTime, // Date au format ISO
         photo: photoId,
+        creator: "1",
       };
 
       const entityResponse = await fetch(
@@ -92,6 +93,7 @@ const GenericForm = ({ entityType, entitySpecificFields }) => {
       setFormData({
         title: "",
         description: "",
+        creator: "",
         ...entitySpecificFields.initialValues,
       });
       setPhoto(null);

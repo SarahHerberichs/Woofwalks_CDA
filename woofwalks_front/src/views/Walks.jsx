@@ -4,17 +4,16 @@ import walkSpecificFields from "../components/Forms/walkSpecificFields";
 import WalkList from "../components/Lists/WalkList";
 
 const Walks = () => {
-  const formComponents = [
-    (props) => (
-      <GenericPostForm {...props} entitySpecificFields={walkSpecificFields} />
-    ),
-  ];
+  const formContext = "walks";
+  const formComponents = [GenericPostForm]; // Passez directement le composant
+  const entitySpecificFields = walkSpecificFields; // Définissez les spécificités ici
 
   return (
     <>
       <BtnPostAdd
-        formContext="walks" // Passage du contexte
-        formComponents={formComponents} // Passage des composants génériques
+        formContext={formContext}
+        formComponents={formComponents}
+        entitySpecificFields={entitySpecificFields} // Passez les spécificités au bouton
       />
       <WalkList />
     </>

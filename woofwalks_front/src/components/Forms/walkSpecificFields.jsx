@@ -1,6 +1,6 @@
 const walkSpecificFields = {
   initialValues: {
-    datetime: "", // Fusionner date et heure en un seul champ
+    datetime: "",
     time: "",
     max_participants: "",
   },

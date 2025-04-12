@@ -1,7 +1,6 @@
 import { useState } from "react";
-import walkSpecificFields from "../Forms/walkSpecificFields";
 
-const BtnPostAdd = ({ formContext, formComponents }) => {
+const BtnPostAdd = ({ formContext, formComponents, entitySpecificFields }) => {
   const [showForm, setShowForm] = useState(false);
 
   const handleClick = () => {
@@ -15,7 +14,7 @@ const BtnPostAdd = ({ formContext, formComponents }) => {
           <Component
             key={index}
             entityType={formContext}
-            entitySpecificFields={walkSpecificFields}
+            entitySpecificFields={entitySpecificFields} // Utilisez les props reçues
           />
         ))
       ) : (
