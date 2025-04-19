@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Home from "./views/Home";
 
+import RegisterPage from "./views/RegisterPage";
 import Walks from "./views/Walks";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/walks" element={<Walks />} />
+            <Route path="/newaccount" element={<RegisterPage />} />
             <Route path="/" element={<Home />} />
             <Route path="*" element={<Home />} />
           </Routes>

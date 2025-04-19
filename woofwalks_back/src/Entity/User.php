@@ -22,6 +22,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -42,8 +43,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToMany(mappedBy: 'participants', targetEntity: Walk::class)]
     private Collection $participatedWalks;
-
-    // ... autres propriétés de l'utilisateur (nom, etc.)
 
     public function __construct()
     {

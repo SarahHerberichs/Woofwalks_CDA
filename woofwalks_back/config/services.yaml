@@ -35,9 +35,10 @@ services:
   App\Controller\:
     resource: "../src/Controller"
     exclude: "../src/Controller/{Debugger,Tests,Test}"
-    # type: attribute # Indique que les routes sont définies via des attributs
-    # tags: ["controller.service_arguments"]
     public: true # Rend le contrôleur public
+  App\Service\:
+    resource: "../src/Service/*"
+    public: false
   App\Encoder\MultipartDecoder:
     arguments:
       $requestStack: "@request_stack"
@@ -54,14 +55,3 @@ services:
       - { name: "serializer.normalizer", priority: 100 }
   App\Repository\WalkRepository:
     tags: ["doctrine.repository_service"]
-
-  # Déclare le contrôleur UploadController explicitement comme un service public
-  # App\Controller\UploadController:
-  #   autowire: true
-  #   autoconfigure: true
-  #   tags: ["controller.service_arguments"]
-  #   public: true # Assurez-vous que ce contrôleur est public
-# App\Serializer\MultipartInputDenormalizer:
-#   tags:
-#     - { name: "serializer.normalizer" }
-
