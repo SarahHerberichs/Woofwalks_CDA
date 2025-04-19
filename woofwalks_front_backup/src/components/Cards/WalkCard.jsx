@@ -1,6 +1,7 @@
 import React from "react";
 
 const WalkCard = ({ walk }) => {
+  console.log("salut");
   const formattedDate = new Date(walk.date).toLocaleDateString("fr-FR"); // Formatage de la date en français (ex: 10/03/2025)
   const formattedTime = new Date(walk.date).toLocaleTimeString("fr-FR", {
     hour: "2-digit",
@@ -18,12 +19,12 @@ const WalkCard = ({ walk }) => {
       }}
     >
       <div className="position-relative">
-        <img
+        {/* <img
           src={`http://localhost:8000/media/${walk.mainPhoto.filePath}`}
           className="card-img-top"
           alt="Walk"
           style={{ height: "200px", objectFit: "cover" }}
-        />
+        /> */}
 
         <div
           className="position-absolute top-0 start-0 m-2"
@@ -34,7 +35,7 @@ const WalkCard = ({ walk }) => {
 
         {/* Image sous le badge */}
         <div className="position-absolute bottom-0 start-0 mb-4 ms-2">
-          <img
+          {/* <img
             src="/images/sablier.png"
             alt="Additional Image"
             style={{
@@ -42,7 +43,7 @@ const WalkCard = ({ walk }) => {
               height: "50px",
               objectFit: "contain",
             }}
-          />
+          /> */}
           <p>5h</p>
         </div>
       </div>

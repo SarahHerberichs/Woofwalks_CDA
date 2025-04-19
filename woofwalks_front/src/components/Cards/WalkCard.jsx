@@ -50,9 +50,9 @@ const WalkCard = ({ walk }) => {
         <p className="card-text text-muted" style={{ marginBottom: "5px" }}>
           Le : {formattedDate} à {formattedTime}
         </p>
-        {/* <h5 className="card-location" style={{ marginBottom: "5px" }}>
+        <h5 className="card-location" style={{ marginBottom: "5px" }}>
           {walk.location}
-        </h5> */}
+        </h5>
         <p className="card-title" style={{ marginBottom: "5px" }}>
           {walk.title}
         </p>
