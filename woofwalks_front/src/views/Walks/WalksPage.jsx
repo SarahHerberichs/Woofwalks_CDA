@@ -1,9 +1,9 @@
-import BtnPostAdd from "../components/Buttons/BtnPostAdd";
-import GenericPostForm from "../components/Forms/GenericPostForm";
-import walkSpecificFields from "../components/Forms/walkSpecificFields";
-import WalkList from "../components/Lists/WalkList";
+import BtnPostAdd from "../../components/Buttons/BtnPostAdd";
+import GenericPostForm from "../../components/Forms/GenericPostForm";
+import walkSpecificFields from "../../components/Forms/walkSpecificFields";
+import WalkList from "../../components/Lists/WalkList";
 
-const Walks = () => {
+const WalksPage = () => {
   const formContext = "walks";
   const formComponents = [GenericPostForm]; // Passez directement le composant
   const entitySpecificFields = walkSpecificFields; // Définissez les spécificités ici
@@ -20,4 +20,4 @@ const Walks = () => {
   );
 };
 
-export default Walks;
+export default WalksPage;

@@ -13,36 +13,36 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationController extends AbstractController
 {
-    #[Route('/api/register', name: 'api_register', methods: ['POST'])]
-    public function register(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher,
-        ValidatorInterface $validator
-    ): JsonResponse {
-        $data = json_decode($request->getContent(), true);
+    // #[Route('/api/register', name: 'api_register', methods: ['POST'])]
+    // public function register(
+    //     Request $request,
+    //     EntityManagerInterface $entityManager,
+    //     UserPasswordHasherInterface $passwordHasher,
+    //     ValidatorInterface $validator
+    // ): JsonResponse {
+    //     $data = json_decode($request->getContent(), true);
 
-        $user = new User();
-        $user->setEmail($data['email'] ?? '');
-        $user->setPassword($data['password'] ?? '');
+    //     $user = new User();
+    //     $user->setEmail($data['email'] ?? '');
+    //     $user->setPassword($data['password'] ?? '');
 
-        $errors = $validator->validate($user, null, ['user:write']);
+    //     $errors = $validator->validate($user, null, ['user:write']);
 
-        if (count($errors) > 0) {
-            $errorMessages = [];
-            foreach ($errors as $error) {
-                $errorMessages[$error->getPropertyPath()] = $error->getMessage();
-            }
-            return new JsonResponse(['errors' => $errorMessages], 400);
-        }
+    //     if (count($errors) > 0) {
+    //         $errorMessages = [];
+    //         foreach ($errors as $error) {
+    //             $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+    //         }
+    //         return new JsonResponse(['errors' => $errorMessages], 400);
+    //     }
 
-        // Hash the password
-        $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
-        $user->setPassword($hashedPassword);
+    //     // Hash the password
+    //     $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
+    //     $user->setPassword($hashedPassword);
 
-        $entityManager->persist($user);
-        $entityManager->flush();
+    //     $entityManager->persist($user);
+    //     $entityManager->flush();
 
-        return new JsonResponse(['message' => 'User registered successfully'], 201);
-    }
+    //     return new JsonResponse(['message' => 'User registered successfully'], 201);
+    // }
 }

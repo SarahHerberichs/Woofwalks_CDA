@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 
 const UserRegistrationForm = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -10,6 +11,8 @@ const UserRegistrationForm = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
+    console.log("Form submitted via JS");
+
     e.preventDefault();
     setErrors({});
     setRegistrationSuccess(false);
@@ -20,6 +23,9 @@ const UserRegistrationForm = () => {
       validationErrors.email = "L'e-mail est requis.";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       validationErrors.email = "L'e-mail n'est pas valide.";
+    }
+    if (!username) {
+      validationErrors.username = "Le Nom est requis.";
     }
     if (!password) {
       validationErrors.password = "Le mot de passe est requis.";
@@ -37,25 +43,32 @@ const UserRegistrationForm = () => {
       setLoading(false);
       return;
     }
-
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch("https://localhost:8000/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, plainPassword: password, username }),
       });
 
-      const data = await response.json();
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.error("Erreur de parsing JSON", e);
+      }
 
       if (response.ok) {
+        // OK !
+        setUsername("");
         setRegistrationSuccess(true);
         setEmail("");
         setPassword("");
         setConfirmPassword("");
         setErrors({});
       } else {
+        console.log(data);
         setErrors(
           data.errors || {
             general: "Une erreur est survenue lors de l'inscription.",
@@ -63,6 +76,7 @@ const UserRegistrationForm = () => {
         );
       }
     } catch (error) {
+      console.error("Erreur réseau", error);
       setErrors({ general: "Erreur de connexion au serveur." });
     } finally {
       setLoading(false);
@@ -90,6 +104,16 @@ const UserRegistrationForm = () => {
         {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
       </div>
 
+      <div>
+        <label htmlFor="username">Nom</label>
+        <input
+          type="text"
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+      </div>
       <div>
         <label htmlFor="password">Mot de passe:</label>
         <input

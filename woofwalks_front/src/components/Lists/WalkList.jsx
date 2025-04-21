@@ -9,15 +9,22 @@ const WalkList = () => {
   useEffect(() => {
     const fetchWalks = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/walks", {
-          headers: {
-            Accept: "application/json",
-            // "Content-Type": "application/json",
-          },
-        });
+        const token = localStorage.getItem("authToken");
+        if (token) {
+          console.log(token);
+          const response = await axios.get("https://localhost:8000/api/walks", {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`, // Ajouter le token dans l'en-tête
+              // "Content-Type": "application/json",
+            },
+          });
 
-        console.log("Premier log de la réponse:", response.data);
-        setWalks(response.data);
+          console.log("Premier log de la réponse:", response.data);
+          setWalks(response.data);
+        } else {
+          setError("token non valide");
+        }
       } catch (error) {
         setError("Erreur lors de la récupération des données");
         console.error(error);

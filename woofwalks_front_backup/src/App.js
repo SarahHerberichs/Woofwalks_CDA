@@ -5,7 +5,7 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Home from "./views/Home";
 
-import Walks from "./views/Walks";
+import WalksPage from "../../woofwalks_front/src/views/Walks/WalksPage";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
       <div className="container">
         <BrowserRouter>
           <Routes>
-            <Route path="/walks" element={<Walks />} />
+            <Route path="/walks" element={<WalksPage />} />
             <Route path="/" element={<Home />} />
             <Route path="*" element={<Home />} />
           </Routes>

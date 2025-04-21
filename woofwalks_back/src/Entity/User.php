@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Post; // Ajoute cette ligne
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,6 +13,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ApiResource(
+    operations: [
+        new Post(processor: \App\DataPersister\UserDataPersister::class)     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']],
 )]
@@ -38,11 +41,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[Groups(['user:write'])]
+    private ?string $plainPassword = null;
+
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Walk::class, orphanRemoval: true)]
     private Collection $createdWalks;
 
     #[ORM\ManyToMany(mappedBy: 'participants', targetEntity: Walk::class)]
     private Collection $participatedWalks;
+
+    #[Groups(['user:read', 'user:write'])]
+    #[ORM\Column(length: 100)]
+    private ?string $username = null;
 
     public function __construct()
     {
@@ -107,7 +117,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->password = $password;
         return $this;
     }
-
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+    
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
     /**
      * @see UserInterface
      */
@@ -167,6 +186,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->participatedWalks->removeElement($participatedWalk)) {
             $participatedWalk->removeParticipant($this);
         }
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
+
         return $this;
     }
 }
