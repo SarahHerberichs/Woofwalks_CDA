@@ -20,13 +20,13 @@ class WalkController extends AbstractController
             empty($data['title']) ||
             empty($data['description']) ||
             empty($data['date']) ||
-            empty($data['photo']) ||
-            empty($data['creator'])
+            empty($data['photo']) || 
+            empty($data['location'])
         ) {
             return new JsonResponse(['error' => 'Missing required fields'], 400);
         }
 
-        $walk = $walkCreationService->createWalkAndChat($data, $data['creator']);
+        $walk = $walkCreationService->createWalkAndChat($data);
 
         if (!$walk) {
             return new JsonResponse(['error' => 'Failed to create walk (invalid data or dependencies)'], 400);

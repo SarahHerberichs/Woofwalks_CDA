@@ -66,6 +66,7 @@ const LoginForm = () => {
             required
           />
         </div>
+
         {error && <p className="error">{error}</p>}
         <button type="submit">Se connecter</button>
       </form>

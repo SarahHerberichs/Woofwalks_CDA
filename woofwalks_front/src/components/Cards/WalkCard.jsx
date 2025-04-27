@@ -1,11 +1,12 @@
 import React from "react";
 
 const WalkCard = ({ walk }) => {
-  const formattedDate = new Date(walk.date).toLocaleDateString("fr-FR"); // Formatage de la date en français (ex: 10/03/2025)
+  //Formatage des dates et heures
+  const formattedDate = new Date(walk.date).toLocaleDateString("fr-FR");
   const formattedTime = new Date(walk.date).toLocaleTimeString("fr-FR", {
     hour: "2-digit",
     minute: "2-digit",
-  }); // Formatage de l'heure en français (ex: 15:30)
+  });
 
   return (
     <div

@@ -1,6 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-const BtnPostAdd = ({ formContext, formComponents, entitySpecificFields }) => {
+const BtnPostAdd = ({
+  formContext,
+  formGenericFieldsComponent: FormGenericFieldsComponent,
+  entitySpecificFields,
+}) => {
   const [showForm, setShowForm] = useState(false);
 
   const handleClick = () => {
@@ -10,13 +14,10 @@ const BtnPostAdd = ({ formContext, formComponents, entitySpecificFields }) => {
   return (
     <>
       {showForm ? (
-        formComponents.map((Component, index) => (
-          <Component
-            key={index}
-            entityType={formContext}
-            entitySpecificFields={entitySpecificFields} // Utilisez les props reçues
-          />
-        ))
+        <FormGenericFieldsComponent
+          entityType={formContext}
+          entitySpecificFields={entitySpecificFields}
+        />
       ) : (
         <button
           onClick={handleClick}

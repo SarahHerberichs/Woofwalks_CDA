@@ -1,16 +1,30 @@
 import React, { useState } from "react";
-
+import LocationForm from "./LocationForm";
 const GenericForm = ({ entityType, entitySpecificFields }) => {
-  console.log(entityType);
-
+  //Si localisation privée: nom de l'endroit et coordonnees gps à inserer en bdd
+  //Si Park : Entrer nom du park, autocompletion se fera à partir de ca
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    location: "",
     ...entitySpecificFields.initialValues, // Injecte les champs spécifiques à l'entité
   });
+
   const [photo, setPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false); // Pour gérer l'état de soumission
 
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    throw new Error("Token JWT manquant. Veuillez vous reconnecter.");
+  }
+
+  const onSelectCoordinates = ({ lat, lng }) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      latitude: lat,
+      longitude: lng,
+    }));
+  };
   // Gère le changement de valeurs des champs
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,10 +54,14 @@ const GenericForm = ({ entityType, entitySpecificFields }) => {
       const photoFormData = new FormData();
       photoFormData.append("file", photo);
 
+      // Envoi de la photo avec l'authentification via le token JWT
       const photoResponse = await fetch(
-        "http://localhost:8000/api/main_photos",
+        "https://localhost:8000/api/main_photos",
         {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // Ajout du token dans les en-têtes
+          },
           body: photoFormData,
         }
       );
@@ -55,6 +73,25 @@ const GenericForm = ({ entityType, entitySpecificFields }) => {
       const photoData = await photoResponse.json();
       const photoId = photoData.id;
 
+      const coordResponse = await fetch(
+        "https://localhost:8000/api/locations",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Ajout du token dans les en-têtes
+          },
+          body: JSON.stringify({
+            longitude: formData.longitude,
+            latitude: formData.latitude,
+          }),
+        }
+      );
+      if (!coordResponse.ok) {
+        throw new Error("Erreur lors du paramétrage du lieu");
+      }
+      const locationData = await coordResponse.json();
+      const location = parseInt(locationData["@id"].split("/").pop()); // Extrait l'ID à partir de l'URL
       // Convertir datetime pour l'API
       const formattedDateTime = new Date(formData.datetime).toISOString();
 
@@ -63,15 +100,17 @@ const GenericForm = ({ entityType, entitySpecificFields }) => {
         ...formData,
         date: formattedDateTime, // Date au format ISO
         photo: photoId,
-        creator: "1",
+        location: location,
       };
+      console.log(entityData);
 
       const entityResponse = await fetch(
-        `http://localhost:8000/api/${entityType}custom`,
+        `https://localhost:8000/api/${entityType}custom`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Ajout du token dans le header Authorization
           },
           body: JSON.stringify(entityData),
         }
@@ -94,9 +133,11 @@ const GenericForm = ({ entityType, entitySpecificFields }) => {
         title: "",
         description: "",
         creator: "",
+        location: "",
         ...entitySpecificFields.initialValues,
       });
-      setPhoto(null);
+
+      // setPhoto(null);
     } catch (error) {
       console.error("Erreur :", error);
       alert("Une erreur est survenue : " + error.message);
@@ -146,7 +187,7 @@ const GenericForm = ({ entityType, entitySpecificFields }) => {
           </label>
         </div>
       ))}
-
+      <LocationForm onSelectCoordinates={onSelectCoordinates} />
       <div>
         <label>
           Photo:
@@ -159,6 +200,7 @@ const GenericForm = ({ entityType, entitySpecificFields }) => {
           />
         </label>
       </div>
+
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "En cours..." : `Créer ${entityType}`}
       </button>

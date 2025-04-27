@@ -29,7 +29,7 @@ services:
     autowire: true # Autowiring permet à Symfony d'injecter automatiquement les dépendances
     autoconfigure: true #
     public: false
-  App\DataPersister\UserDataPersister: ~ # Assure-toi que cette ligne est présente ou que l'autowire fonctionne
+  App\DataPersister\UserDataPersister: ~
   App\Repository\:
     resource: "../src/Repository"
     tags: ["doctrine.repository_service"]
