@@ -6,14 +6,12 @@ PHP
 
     use App\Entity\User;
 
+    //Services de Notif Sms et Mail l'utilisent
     interface NotificationServiceInterface
     {
         public function send(User $user, string $message): void;
     }
 
-    SmsNotificationService.php :
-
-PHP
 
     namespace App\Service\Notification;
 
@@ -24,14 +22,10 @@ PHP
         public function send(User $user, string $message): void
         {
             // Logique pour envoyer un SMS
-            // utilisation d'un service d'API SMS par exemple.
             dump("SMS à {$user->getPhone()}: {$message}");
         }
     }
 
-    EmailNotificationService.php :
-
-PHP
 
     namespace App\Service\Notification;
 
@@ -60,9 +54,27 @@ PHP
         }
     }
 
-    NotificationManager.php :
+namespace App\Entity;
 
-PHP
+class NotificationEvent
+{
+    private int $id;
+    private string $code;
+
+    public function getCode(): string { return $this->code; }
+}
+
+class UserNotificationEvent
+{
+    private int $id;
+    private User $user;
+    private NotificationEvent $event;
+    private string $channel;
+
+    public function getUser(): User { return $this->user; }
+    public function getEvent(): NotificationEvent { return $this->event; }
+    public function getChannel(): string { return $this->channel; }
+}
 
     namespace App\Service\Notification;
 
@@ -82,8 +94,9 @@ PHP
         $this->emailNotificationService = $emailNotificationService;
     }
 
-    public function notify(User $user, string $event, array $preferences): void
+    public function notify(User $user, string $eventCode, string $message): void
     {
+        $preferences = $this->getUserNotificationPreferences($user, $eventCode);
         foreach ($preferences as $preference) {
             if ($preference->getChannel() === 'sms' && $user->getPhone()) {
                 $this->smsNotificationService->send($user, $message);
@@ -92,11 +105,26 @@ PHP
             }
         }
     }
-
-    public function userHasRequestedNotification(User $user, string $event): array
+    public function getUserNotificationPreferences(User $user, string $eventCode): array
     {
-        return $this->entityManager->getRepository(NotificationPreference::class)->findBy(['user' => $user, 'event' => $event]);
+        return $this->entityManager
+            ->getRepository(UserNotificationEvent::class)
+            ->createQueryBuilder('une')
+            ->join('une.event', 'e')
+            ->where('une.user = :user')
+            ->andWhere('e.code = :code')
+            ->setParameters([
+                'user' => $user,
+                'code' => $eventCode
+            ])
+            ->getQuery()
+            ->getResult();
     }
+
+    // public function userHasRequestedNotification(User $user, string $event): array
+    // {
+    //     return $this->entityManager->getRepository(NotificationPreference::class)->findBy(['user' => $user, 'event' => $event]);
+    // }
 }
 
 namespace App\Service\Notification;
@@ -106,22 +134,27 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class WalkNotificationService
 {
-    private $entityManager;
     private $notificationManager;
 
-    public function __construct(EntityManagerInterface $entityManager, NotificationManager $notificationManager)
+    public function __construct( NotificationManager $notificationManager)
     {
-        $this->entityManager = $entityManager;
         $this->notificationManager = $notificationManager;
     }
 
-    public function notifyWalkParticipants(Walk $walk, string $message): void
-    {
-        foreach ($walk->getParticipants() as $participant) {
-            $preferences = $this->notificationManager->userHasRequestedNotification($participant, 'walk_update');
-            if (count($preferences) > 0) {
-                $this->notificationManager->notify($participant, 'walk_update', $preferences);
-            }
+    //Cherche les participants de la walk et pour chacun verifie s'il a une demande de notif(renvoi un tableau contenant sa ou ses preferences (sms ou mail)
+    // si oui : methode notify du manager
+    //Qui attend le participant, le type d'evenement et ses preferences 
+ public function notifyWalkParticipants(Walk $walk, string $message): void
+{
+    $eventCode = 'walk_update';
+
+    foreach ($walk->getParticipants() as $participant) {
+        $preferences = $this->notificationManager->getUserNotificationPreferences($participant, $eventCode);
+
+        if (count($preferences) > 0) {
+            $this->notificationManager->notify($participant, $eventCode, $message);
         }
     }
+}
+
 }
