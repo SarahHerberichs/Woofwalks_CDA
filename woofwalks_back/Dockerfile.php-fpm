@@ -1,33 +1,24 @@
 FROM php:8.1-fpm AS php-fpm
 
-# Installer les dépendances système et extensions PHP
 RUN apt-get update && apt-get install -y \
     libzip-dev unzip git curl default-mysql-client \
     && docker-php-ext-install zip pdo pdo_mysql
 
-# Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Installer Symfony CLI
 RUN curl -sS https://get.symfony.com/cli/installer | bash
 RUN mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
-# Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Copier les fichiers de dépendances Composer
 COPY composer.json composer.lock ./
 
-# Installer les dépendances Composer
 RUN composer install --no-scripts --no-autoloader
 
-# Copier le code source de l'application
 COPY . .
 
-# Générer l'autoloader Composer
 RUN composer dump-autoload --optimize
 
-# Exposer le port 9000
 EXPOSE 9000
 
 CMD ["php-fpm"]
