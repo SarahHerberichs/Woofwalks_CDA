@@ -1,0 +1,5 @@
+docker-compose.yml
+woofwalks_back/.env
+woofwalks_back/.env.dev
+woofwalks_front/.env
+
