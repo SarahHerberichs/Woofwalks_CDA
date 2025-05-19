@@ -1,4 +1,8 @@
 ###> symfony/framework-bundle ###
+woofwalks_back/.env
+woofwalks_back/.env.dev
+woofwalks_front/Dockerfile
+
 /.env.local
 /.env.local.php
 /.env.*.local

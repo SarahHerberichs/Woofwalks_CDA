@@ -1,160 +1,155 @@
-<?php
 
-PHP
+1. ✅ Walk modifiée
 
-    namespace App\Service\Notification;
-
-    use App\Entity\User;
-
-    //Services de Notif Sms et Mail l'utilisent
-    interface NotificationServiceInterface
-    {
-        public function send(User $user, string $message): void;
-    }
-
-
-    namespace App\Service\Notification;
-
-    use App\Entity\User;
-
-    class SmsNotificationService implements NotificationServiceInterface
-    {
-        public function send(User $user, string $message): void
-        {
-            // Logique pour envoyer un SMS
-            dump("SMS à {$user->getPhone()}: {$message}");
-        }
-    }
-
-
-    namespace App\Service\Notification;
-
-    use App\Entity\User;
-    use Symfony\Component\Mailer\MailerInterface;
-    use Symfony\Component\Mime\Email;
-
-    class EmailNotificationService implements NotificationServiceInterface
-    {
-        private $mailer;
-
-        public function __construct(MailerInterface $mailer)
-        {
-            $this->mailer = $mailer;
-        }
-
-        public function send(User $user, string $message): void
-        {
-            $email = (new Email())
-                ->from('sender@example.com')
-                ->to($user->getEmail())
-                ->subject('Notification')
-                ->text($message);
-
-            $this->mailer->send($email);
-        }
-    }
-
-namespace App\Entity;
-
-class NotificationEvent
+#[AsEntityListener(event: Events::postUpdate, entity: Walk::class)]
+class WalkUpdateListener
 {
-    private int $id;
-    private string $code;
+    public function __construct(
+        private NotificationService $notificationService
+    ) {}
 
-    public function getCode(): string { return $this->code; }
+    public function postUpdate(Walk $walk, LifecycleEventArgs $args): void
+    {
+        foreach ($walk->getParticipants() as $user) {
+            $this->notificationService->createAndDispatchNotification(
+                $user,
+                'walk_update',
+                ['walk' => $walk]
+            );
+        }
+    }
 }
 
-class UserNotificationEvent
-{
-    private int $id;
-    private User $user;
-    private NotificationEvent $event;
-    private string $channel;
+2. ✅ Nouveau Feedback posté
 
-    public function getUser(): User { return $this->user; }
-    public function getEvent(): NotificationEvent { return $this->event; }
-    public function getChannel(): string { return $this->channel; }
+#[AsEntityListener(event: Events::postPersist, entity: Feedback::class)]
+class FeedbackListener
+{
+    public function __construct(
+        private NotificationService $notificationService
+    ) {}
+
+    public function postPersist(Feedback $feedback, LifecycleEventArgs $args): void
+    {
+        $walk = $feedback->getWalk();
+
+        foreach ($walk->getParticipants() as $user) {
+            $this->notificationService->createAndDispatchNotification(
+                $user,
+                'new_feedback',
+                ['walk' => $walk]
+            );
+        }
+    }
 }
 
-    namespace App\Service\Notification;
+3. ✅ Nouveau Message dans un Chat lié à une Walk
 
-    use App\Entity\User;
-    use Doctrine\ORM\EntityManagerInterface;
-
-    class NotificationManager
+#[AsEntityListener(event: Events::postPersist, entity: MessageChat::class)]
+class MessageChatListener
 {
-    private $entityManager;
-    private $smsNotificationService;
-    private $emailNotificationService;
+    public function __construct(
+        private NotificationService $notificationService
+    ) {}
 
-    public function __construct(EntityManagerInterface $entityManager, SmsNotificationService $smsNotificationService, EmailNotificationService $emailNotificationService)
+    public function postPersist(MessageChat $message, LifecycleEventArgs $args): void
     {
-        $this->entityManager = $entityManager;
-        $this->smsNotificationService = $smsNotificationService;
-        $this->emailNotificationService = $emailNotificationService;
-    }
+        $chat = $message->getChat();
+        $walk = $chat->getWalk();
 
-    public function notify(User $user, string $eventCode, string $message): void
-    {
-        $preferences = $this->getUserNotificationPreferences($user, $eventCode);
-        foreach ($preferences as $preference) {
-            if ($preference->getChannel() === 'sms' && $user->getPhone()) {
-                $this->smsNotificationService->send($user, $message);
-            } elseif ($preference->getChannel() === 'email') {
-                $this->emailNotificationService->send($user, $message);
+        foreach ($walk->getParticipants() as $user) {
+            // Ne pas notifier l'expéditeur
+            if ($user !== $message->getSender()) {
+                $this->notificationService->createAndDispatchNotification(
+                    $user,
+                    'new_message',
+                    [
+                        'walk' => $walk,
+                        'sender' => $message->getSender(),
+                    ]
+                );
             }
         }
     }
-    public function getUserNotificationPreferences(User $user, string $eventCode): array
-    {
-        return $this->entityManager
-            ->getRepository(UserNotificationEvent::class)
-            ->createQueryBuilder('une')
-            ->join('une.event', 'e')
-            ->where('une.user = :user')
-            ->andWhere('e.code = :code')
-            ->setParameters([
-                'user' => $user,
-                'code' => $eventCode
-            ])
-            ->getQuery()
-            ->getResult();
-    }
-
-    // public function userHasRequestedNotification(User $user, string $event): array
-    // {
-    //     return $this->entityManager->getRepository(NotificationPreference::class)->findBy(['user' => $user, 'event' => $event]);
-    // }
 }
 
-namespace App\Service\Notification;
+🔔 NotificationService
 
-use App\Entity\Walk;
-use Doctrine\ORM\EntityManagerInterface;
-
-class WalkNotificationService
+class NotificationService
 {
-    private $notificationManager;
+    public function __construct(
+        private EntityManagerInterface $em,
+        private MessageBuilder $messageBuilder,
+        private EmailService $emailService,
+        private SmsService $smsService
+    ) {}
 
-    public function __construct( NotificationManager $notificationManager)
+    public function createAndDispatchNotification(User $user, string $typeCode, array $context): void
     {
-        $this->notificationManager = $notificationManager;
+        $type = $this->em->getRepository(NotificationType::class)->findOneBy(['code' => $typeCode]);
+
+        if (!$type) {
+            throw new \LogicException("NotificationType $typeCode not found");
+        }
+
+        foreach ($user->getChannelUsers() as $channelUser) {
+            $notif = new Notification();
+            $notif->setChannelUser($channelUser);
+            $notif->setType($type);
+            $notif->setCreatedAt(new \DateTime());
+            $notif->setContext($context); // Assume a JSON or serialized field
+
+            $this->em->persist($notif);
+            $this->sendNotification($notif);
+        }
+
+        $this->em->flush();
     }
 
-    //Cherche les participants de la walk et pour chacun verifie s'il a une demande de notif(renvoi un tableau contenant sa ou ses preferences (sms ou mail)
-    // si oui : methode notify du manager
-    //Qui attend le participant, le type d'evenement et ses preferences 
- public function notifyWalkParticipants(Walk $walk, string $message): void
-{
-    $eventCode = 'walk_update';
+    private function sendNotification(Notification $notification): void
+    {
+        $channel = $notification->getChannelUser()->getChannel()->getName();
+        $user = $notification->getChannelUser()->getUser();
 
-    foreach ($walk->getParticipants() as $participant) {
-        $preferences = $this->notificationManager->getUserNotificationPreferences($participant, $eventCode);
+        $message = $this->messageBuilder->build($notification);
 
-        if (count($preferences) > 0) {
-            $this->notificationManager->notify($participant, $eventCode, $message);
+        if ($channel === 'email') {
+            $this->emailService->send($user->getEmail(), $notification->getType()->getSubjectEmail(), $message);
+        } elseif ($channel === 'sms') {
+            $this->smsService->send($user->getPhoneNumber(), $message);
         }
     }
 }
 
+🧠 MessageBuilder (personnalise les messages)
+
+class MessageBuilder
+{
+    public function build(Notification $notification): string
+    {
+        $type = $notification->getType()->getCode();
+        $context = $notification->getContext(); // tableau associatif
+
+        return match ($type) {
+            'walk_update'  => "La walk « " . $context['walk']->getTitle() . " » a été modifiée.",
+            'new_feedback' => "Un nouveau feedback a été posté sur la walk « " . $context['walk']->getTitle() . " ».",
+            'new_message'  => "Nouveau message de " . $context['sender']->getUsername() . " dans la walk « " . $context['walk']->getTitle() . " ».",
+            default        => "Vous avez une nouvelle notification.",
+        };
+    }
+}
+interface NotifierInterface
+{
+    public function send(string $to, string $subjectOrMessage, ?string $message = null): void;
+}
+
+class SmsService implements NotifierInterface
+{
+    public function send(string $to, string $subjectOrMessage, ?string $message = null): void
+    {
+        // Envoi SMS via API externe
+        // $to => numéro de téléphone
+        // $subjectOrMessage => contenu du SMS
+        // $message est ignoré
+    }
 }
