@@ -1,5 +1,5 @@
 import BtnPostAdd from "../../components/Buttons/BtnPostAdd";
-import GenericPostForm from "../../components/Forms/GenericPostForm";
+import GenericPostForm from "../../components/Forms/Ads/GenericPostForm";
 import walkSpecificFields from "../../components/Forms/Walks/walkSpecificFields";
 import WalkList from "../../components/Lists/WalkList";
 

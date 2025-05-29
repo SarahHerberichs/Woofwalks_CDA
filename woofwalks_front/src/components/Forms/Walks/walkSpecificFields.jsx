@@ -1,7 +1,6 @@
 const walkSpecificFields = {
   initialValues: {
     datetime: "",
-    // time: "",
     max_participants: "",
   },
   fields: [
@@ -11,6 +10,15 @@ const walkSpecificFields = {
       name: "max_participants",
       type: "number",
       label: "Nombre maximum de participants",
+    },
+    {
+      name: "use_custom_location",
+      type: "radio",
+      label: "Type de lieu",
+      options: [
+        { value: "custom", label: "Lieu personnalisé" },
+        { value: "park", label: "Parc existant" },
+      ],
     },
   ],
 };

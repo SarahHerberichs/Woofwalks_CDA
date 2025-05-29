@@ -63,8 +63,9 @@ class WalkCreationService
         $walk->setMainPhoto($photo);
         $walk->setDate($datetime);
         $walk->setMaxParticipants($data['max_participants'] ?? 0); 
-        $walk->setCustomLocation($location);
+        $walk->setLocation($location);
         $walk->setCreator($creator);
+        $walk->setIsCustomLocation(true);
 
         $chat = new Chat();
         $chat->setWalk($walk);

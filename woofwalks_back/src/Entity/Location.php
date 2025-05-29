@@ -30,8 +30,8 @@ class Location
     #[ORM\OneToOne(mappedBy: 'location', targetEntity: Park::class, cascade: ['persist', 'remove'])]
     private ?Park $park = null;
 
-    #[ORM\OneToOne(mappedBy: 'customLocation', targetEntity: Walk::class, cascade: ['persist', 'remove'])]
-    private ?Walk $walkCustomLocation = null;
+    #[ORM\OneToOne(mappedBy: 'location', targetEntity: Walk::class, cascade: ['persist', 'remove'])]
+    private ?Walk $walkLocation = null;
 
     public function getId(): ?int
     {
@@ -75,14 +75,14 @@ class Location
         return $this;
     }
 
-    public function getWalkCustomLocation(): ?Walk
+    public function getWalkLocation(): ?Walk
     {
-        return $this->walkCustomLocation;
+        return $this->walkLocation;
     }
 
-    public function setWalkCustomLocation(?Walk $walkCustomLocation): self
+    public function setWalkLocation(?Walk $walkLocation): self
     {
-        $this->walkCustomLocation = $walkCustomLocation;
+        $this->walkLocation = $walkLocation;
         return $this;
     }
 }

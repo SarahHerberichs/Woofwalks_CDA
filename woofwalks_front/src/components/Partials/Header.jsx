@@ -1,8 +1,10 @@
 // Header.js
-import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
+import BtnLogout from "../Buttons/BtnLogout";
 
 function Header() {
+  const isAuthenticated = !!localStorage.getItem("authToken");
+  console.log(isAuthenticated);
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm">
       <Container>
@@ -17,6 +19,11 @@ function Header() {
             <Nav.Link href="/apropos">À propos</Nav.Link>
             <Nav.Link href="/newaccount">CreateAccount</Nav.Link>
             <Nav.Link href="/login">Login</Nav.Link>
+            {isAuthenticated && (
+              <Nav.Item>
+                <BtnLogout />
+              </Nav.Item>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>

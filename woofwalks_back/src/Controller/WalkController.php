@@ -14,7 +14,6 @@ class WalkController extends AbstractController
     public function createWalk(Request $request, WalkCreationService $walkCreationService): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-
         // Validation basique dans le contrôleur (peut être améliorée avec des Formulaires Symfony)
         if (
             empty($data['title']) ||

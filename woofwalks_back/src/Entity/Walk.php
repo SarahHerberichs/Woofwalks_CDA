@@ -49,15 +49,10 @@ class Walk
     #[Groups(['walk:read'])]
     private ?User $creator = null;
 
-    #[ORM\ManyToOne(targetEntity: Park::class, inversedBy: 'walks')]
-    #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['walk:read', 'walk:write'])]
-    private ?Park $park = null;
-
     #[ORM\OneToOne(targetEntity: Location::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['walk:read', 'walk:write'])]
-    private ?Location $customLocation = null;
+    private ?Location $location = null;
 
     #[ORM\ManyToOne(targetEntity: MainPhoto::class, inversedBy: 'walks')]
     #[ORM\JoinColumn(nullable: true)]
@@ -72,6 +67,9 @@ class Walk
     #[ORM\OneToOne(targetEntity: Chat::class, mappedBy: 'walk', cascade: ['persist', 'remove'])]
     #[Groups(['walk:read'])]
     private ?Chat $chat = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isCustomLocation = true;
 
     public function __construct()
     {
@@ -162,25 +160,14 @@ class Walk
         return $this;
     }
 
-    public function getPark(): ?Park
+    public function getLocation(): ?Location
     {
-        return $this->park;
+        return $this->location;
     }
 
-    public function setPark(?Park $park): self
+    public function setLocation(?Location $location): self
     {
-        $this->park = $park;
-        return $this;
-    }
-
-    public function getCustomLocation(): ?Location
-    {
-        return $this->customLocation;
-    }
-
-    public function setCustomLocation(?Location $customLocation): self
-    {
-        $this->customLocation = $customLocation;
+        $this->location = $location;
         return $this;
     }
 
@@ -231,6 +218,17 @@ class Walk
                 $chat->setWalk($this);
             }
         }
+        return $this;
+    }
+
+        public function getIsCustomLocation(): bool
+    {
+        return $this->isCustomLocation;
+    }
+
+    public function setIsCustomLocation(bool $isCustomLocation): self
+    {
+        $this->isCustomLocation = $isCustomLocation;
         return $this;
     }
 }
