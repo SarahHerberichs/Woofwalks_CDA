@@ -17,6 +17,7 @@ class Location
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['location:read', 'park:read'])] 
     private ?int $id = null;
 
     #[ORM\Column(type: 'float')]
@@ -27,11 +28,18 @@ class Location
     #[Groups(['location:read', 'location:write', 'walk:read'])]
     private ?float $longitude = null;
 
-    #[ORM\OneToOne(mappedBy: 'location', targetEntity: Park::class, cascade: ['persist', 'remove'])]
-    private ?Park $park = null;
+    #[ORM\Column(type:'string', length: 255, nullable: true)] // Rendre nullable si ce n'est pas toujours requis
+    #[Groups(['location:read', 'location:write','walk:read', 'park:read'])]
+    private ?string $name = null;
 
-    #[ORM\OneToOne(mappedBy: 'location', targetEntity: Walk::class, cascade: ['persist', 'remove'])]
-    private ?Walk $walkLocation = null;
+    #[ORM\Column(type:'string', length: 255, nullable: true)] // AJOUTÉ
+    #[Groups(['location:read', 'location:write','walk:read'])]
+    private ?string $city = null;
+
+    #[ORM\Column(type:'string', length: 255, nullable: true)] // AJOUTÉ
+    #[Groups(['location:read', 'location:write','walk:read'])]
+    private ?string $street = null;
+
 
     public function getId(): ?int
     {
@@ -60,29 +68,37 @@ class Location
         return $this;
     }
 
-    public function getPark(): ?Park
+    public function getName(): ?string
     {
-        return $this->park;
+        return $this->name;
     }
 
-    public function setPark(Park $park): self
+    public function setName(string $name): self
     {
-        // set the owning side of the relation if necessary
-        if ($this->park !== null && $this->park->getLocation() !== $this) {
-            $this->park->setLocation($this);
-        }
-        $this->park = $park;
+        $this->name = $name;
         return $this;
     }
 
-    public function getWalkLocation(): ?Walk
+    // AJOUTEZ CES GETTERS ET SETTERS
+    public function getCity(): ?string
     {
-        return $this->walkLocation;
+        return $this->city;
     }
 
-    public function setWalkLocation(?Walk $walkLocation): self
+    public function setCity(?string $city): self
     {
-        $this->walkLocation = $walkLocation;
+        $this->city = $city;
+        return $this;
+    }
+
+    public function getStreet(): ?string
+    {
+        return $this->street;
+    }
+
+    public function setStreet(?string $street): self
+    {
+        $this->street = $street;
         return $this;
     }
 }

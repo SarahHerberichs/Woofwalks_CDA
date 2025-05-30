@@ -14,13 +14,16 @@ class WalkController extends AbstractController
     public function createWalk(Request $request, WalkCreationService $walkCreationService): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
+  
         // Validation basique dans le contrôleur (peut être améliorée avec des Formulaires Symfony)
         if (
             empty($data['title']) ||
             empty($data['description']) ||
-            empty($data['date']) ||
+            empty($data['datetime']) ||
             empty($data['photo']) || 
-            empty($data['location'])
+            empty($data['location']) ||
+           !isset($data['is_custom_location']) || // Vérifie si la clé existe
+        !is_bool($data['is_custom_location'])
         ) {
             return new JsonResponse(['error' => 'Missing required fields'], 400);
         }

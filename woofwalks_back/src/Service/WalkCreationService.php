@@ -31,15 +31,17 @@ class WalkCreationService
         if (
             empty($data['title']) ||
             empty($data['description']) ||
-            empty($data['date']) ||
+            empty($data['datetime']) ||
             empty($data['photo']) ||
-            empty($data['location'])
+            empty($data['location']) ||
+           !isset($data['is_custom_location']) || // Vérifie si la clé existe
+            !is_bool($data['is_custom_location'])
         ) {
             return null; 
         }
 
         try {
-            $datetime = new \DateTime($data['datetime']);
+            $datetime = new \DateTime($data['date']);
         } catch (\Exception $e) {
             return null; 
         }
@@ -50,7 +52,7 @@ class WalkCreationService
         }
    
         $location = $this->locationRepository->find($data['location']);
-
+        $isCustomLocation = isset($data['is_custom_location']) && $data['is_custom_location'] === true;
         $creator = $this->security->getUser();
   
         if (!$creator instanceof User) {
@@ -65,7 +67,7 @@ class WalkCreationService
         $walk->setMaxParticipants($data['max_participants'] ?? 0); 
         $walk->setLocation($location);
         $walk->setCreator($creator);
-        $walk->setIsCustomLocation(true);
+        $walk->setIsCustomLocation($isCustomLocation);
 
         $chat = new Chat();
         $chat->setWalk($walk);

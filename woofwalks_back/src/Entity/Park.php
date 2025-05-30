@@ -23,19 +23,17 @@ class Park
 
     #[ORM\Column(length: 255)]
     #[Groups(['park:read', 'park:write'])]
-    private ?string $name = null;
+    private ?string $description = null;
 
     #[ORM\OneToOne(targetEntity: Location::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['park:read', 'park:write'])]
     private ?Location $location = null;
 
-    #[ORM\OneToMany(mappedBy: 'park', targetEntity: Walk::class)]
-    private Collection $walks;
 
     public function __construct()
     {
-        $this->walks = new ArrayCollection();
+  
     }
 
     public function getId(): ?int
@@ -43,14 +41,14 @@ class Park
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getDescription(): ?string
     {
-        return $this->name;
+        return $this->description;
     }
 
-    public function setName(string $name): self
+    public function setDescription(string $description): self
     {
-        $this->name = $name;
+        $this->description = $description;
         return $this;
     }
 
@@ -65,31 +63,5 @@ class Park
         return $this;
     }
 
-    /**
-     * @return Collection<int, Walk>
-     */
-    public function getWalks(): Collection
-    {
-        return $this->walks;
-    }
-
-    public function addWalk(Walk $walk): self
-    {
-        if (!$this->walks->contains($walk)) {
-            $this->walks[] = $walk;
-            $walk->setPark($this);
-        }
-        return $this;
-    }
-
-    public function removeWalk(Walk $walk): self
-    {
-        if ($this->walks->removeElement($walk)) {
-            // set the owning side to null (unless already changed)
-            if ($walk->getPark() === $this) {
-                $walk->setPark(null);
-            }
-        }
-        return $this;
-    }
+ 
 }

@@ -23,9 +23,11 @@ class Walk
 
     
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['walk:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['walk:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255)]
@@ -49,7 +51,7 @@ class Walk
     #[Groups(['walk:read'])]
     private ?User $creator = null;
 
-    #[ORM\OneToOne(targetEntity: Location::class, cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Location::class)]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['walk:read', 'walk:write'])]
     private ?Location $location = null;
@@ -69,6 +71,7 @@ class Walk
     private ?Chat $chat = null;
 
     #[ORM\Column(type: 'boolean')]
+        #[Groups(['walk:read', 'walk:write'])]
     private bool $isCustomLocation = true;
 
     public function __construct()

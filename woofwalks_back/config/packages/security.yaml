@@ -36,7 +36,7 @@ security:
     - { path: ^/api/confirm-email/, roles: PUBLIC_ACCESS }
     - { path: ^/api/users, roles: PUBLIC_ACCESS }
     - { path: ^/api/walks/?$, roles: PUBLIC_ACCESS }
-
+    - { path: ^/api/parks/?$, roles: PUBLIC_ACCESS }
     - { path: ^/api/(docs|contexts), roles: PUBLIC_ACCESS }
     - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
     - { path: ^/, roles: PUBLIC_ACCESS }

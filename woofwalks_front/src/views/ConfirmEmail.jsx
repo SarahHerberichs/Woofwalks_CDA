@@ -1,6 +1,4 @@
-// src/components/ConfirmEmail.js
-
-import { useEffect, useState } from "react"; // Assurez-vous d'avoir React importé
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const ConfirmEmail = () => {
@@ -12,7 +10,7 @@ const ConfirmEmail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-  const token = queryParams.get("token"); // <-- C'EST ICI QU'ON RÉCUPÈRE LE TOKEN DE L'URL
+  const token = queryParams.get("token");
 
   useEffect(() => {
     const confirmAccount = async () => {
@@ -21,7 +19,7 @@ const ConfirmEmail = () => {
           "Jeton de confirmation manquant. Le lien est peut-être invalide."
         );
         setStatus("error");
-        return; // Arrête l'exécution si pas de jeton
+        return;
       }
 
       try {
@@ -30,7 +28,6 @@ const ConfirmEmail = () => {
         );
         const data = await response.json();
 
-        // ... (le reste de votre logique de traitement de réponse)
         if (response.ok) {
           if (data.status === "success") {
             setMessage(

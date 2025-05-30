@@ -1,5 +1,5 @@
 import BtnPostAdd from "../../components/Buttons/BtnPostAdd";
-import GenericPostForm from "../../components/Forms/Ads/GenericPostForm";
+import GenericPostAdForm from "../../components/Forms/Ads/GenericPostAdForm";
 import walkSpecificFields from "../../components/Forms/Walks/walkSpecificFields";
 import WalkList from "../../components/Lists/WalkList";
 
@@ -11,7 +11,7 @@ const WalksPage = () => {
     <>
       <BtnPostAdd
         formContext={formContext}
-        formGenericFieldsComponent={GenericPostForm}
+        formGenericFieldsComponent={GenericPostAdForm}
         entitySpecificFields={walkSpecificFields}
       />
 
