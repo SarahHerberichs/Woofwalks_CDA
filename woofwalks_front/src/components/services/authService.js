@@ -1,4 +1,4 @@
-import api from "./api"; // Assurez-vous que le chemin est correct vers votre instance Axios
+import api from "./api";
 
 export const loginUser = async (email, password) => {
   try {

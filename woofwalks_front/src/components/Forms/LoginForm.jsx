@@ -1,78 +1,93 @@
-import axios from "axios";
+// src/components/LoginForm.jsx
 import { useState } from "react";
+import { useForm } from "react-hook-form"; // <-- Importer useForm
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthProvider";
+import { loginUser } from "../services/authService";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-  };
+  // Initialiser useForm
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm(); // <-- Destructurer register et handleSubmit
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!email || !password) {
-      setError("Tous les champs sont requis.");
-      return;
-    }
+  const onSubmit = async (data) => {
+    // Renommer handleSubmit en onSubmit pour éviter la confusion
+    setError("");
+    setIsLoading(true);
 
     try {
-      // Envoie de la requête pour obtenir un token JWT
-      const response = await axios.post(
-        "https://localhost:8000/api/login_check",
-        {
-          email,
-          password,
-        }
-      );
+      // Les données sont déjà validées et collectées par React Hook Form
+      const token = await loginUser(data.email, data.password); // <-- Utiliser data.email et data.password
 
-      // Stocke le token dans localStorage
-      login(response.data.token);
-      setError(""); // Réinitialiser l'erreur
+      login(token);
       navigate("/");
     } catch (err) {
-      setError("Email ou mot de passe incorrect");
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="login-container">
       <h2>Connexion</h2>
-      <form onSubmit={handleSubmit}>
+      {/* Utiliser le handleSubmit de React Hook Form */}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {" "}
+        {/* <-- Lier handleSubmit à votre fonction onSubmit */}
         <div className="form-group">
           <label htmlFor="email">Email :</label>
           <input
+            {...register("email", {
+              // <-- Enregistrer l'input
+              required: "L'email est requis",
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: "Format d'email invalide",
+              },
+            })}
             type="email"
             id="email"
-            value={email}
-            onChange={handleEmailChange}
             placeholder="Entrez votre email"
-            required
+            disabled={isLoading}
           />
+          {errors.email && <p className="error">{errors.email.message}</p>}{" "}
+          {/* <-- Afficher les erreurs de validation */}
         </div>
         <div className="form-group">
           <label htmlFor="password">Mot de passe :</label>
           <input
+            {...register("password", {
+              // <-- Enregistrer l'input
+              required: "Le mot de passe est requis",
+              minLength: {
+                value: 6,
+                message: "Le mot de passe doit contenir au moins 6 caractères",
+              },
+            })}
             type="password"
             id="password"
-            value={password}
-            onChange={handlePasswordChange}
             placeholder="Entrez votre mot de passe"
-            required
+            disabled={isLoading}
           />
+          {errors.password && (
+            <p className="error">{errors.password.message}</p>
+          )}{" "}
+          {/* <-- Afficher les erreurs de validation */}
         </div>
-
-        {error && <p className="error">{error}</p>}
-        <button type="submit">Se connecter</button>
+        {error && <p className="error">{error}</p>}{" "}
+        {/* <-- Erreurs de l'API ou générales */}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Connexion en cours..." : "Se connecter"}
+        </button>
       </form>
     </div>
   );

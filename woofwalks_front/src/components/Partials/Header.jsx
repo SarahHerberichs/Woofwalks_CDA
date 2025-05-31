@@ -1,10 +1,10 @@
 // Header.js
 import { Container, Nav, Navbar } from "react-bootstrap";
+import { useAuth } from "../../utils/AuthProvider";
 import BtnLogout from "../Buttons/BtnLogout";
-
 function Header() {
-  const isAuthenticated = !!localStorage.getItem("authToken");
-  console.log(isAuthenticated);
+  const { authToken } = useAuth();
+  const isAuthenticated = !!authToken;
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm">
       <Container>
@@ -17,8 +17,12 @@ function Header() {
             <Nav.Link href="/parcs">Parcs</Nav.Link>
             <Nav.Link href="/hikes">Hikes</Nav.Link>
             <Nav.Link href="/apropos">À propos</Nav.Link>
-            <Nav.Link href="/newaccount">CreateAccount</Nav.Link>
-            <Nav.Link href="/login">Login</Nav.Link>
+            {!isAuthenticated && (
+              <>
+                <Nav.Link href="/newaccount">Créer un compte</Nav.Link>
+                <Nav.Link href="/Login">Login</Nav.Link>
+              </>
+            )}
             {isAuthenticated && (
               <Nav.Item>
                 <BtnLogout />
