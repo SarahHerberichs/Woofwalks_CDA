@@ -57,14 +57,14 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       // 1. Upload de la photo
       const photoFormData = new FormData();
       photoFormData.append("file", photo);
-      const photoData = await uploadPhoto(photoFormData, token);
+      const photoData = await uploadPhoto(photoFormData);
       const photoId = photoData.id;
 
       // 2.Gestion location selon le type
       let locationId;
       //Si custom, création d'une location et stockage de son id
       if (data.use_custom_location === "custom") {
-        const locationData = await createLocation(data.locationData, token);
+        const locationData = await createLocation(data.locationData);
         locationId = parseInt(locationData["@id"].split("/").pop());
 
         //Si park,récuperation de l'id de sa location
@@ -93,7 +93,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
 
       // 4. Envoi des données via controlleur symfony
 
-      const postAd = await postGenericAd(entityData, token, entityType);
+      const postAd = await postGenericAd(entityData, entityType);
       console.log(postAd); // Contient la réponse de l'API
 
       // Reset formulaire + photo

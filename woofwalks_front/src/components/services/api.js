@@ -1,29 +1,28 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://localhost:8000",
-  // Désactiver la vérification des certificats SSL directement via Axios
+  baseURL: "https://localhost:8000/api",
   withCredentials: true,
 });
-
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("authToken");
-
-  // URL navigateur courante (frontend)
-  const currentPath = window.location.pathname;
-
-  // Routes frontend à exclure
-  const excludedFrontendRoutes = ["/walk", "/main"];
-
-  const isExcludedFrontendRoute = excludedFrontendRoutes.some(
-    (route) => currentPath === route
-  );
-
-  if (token && !isExcludedFrontendRoute) {
+  if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("expiry");
+      window.location.href = "/login"; // ou navigate()
+    }
+    console.error("Erreur dans l'intercepteur:", error); // Ajoutez ceci
+    return Promise.reject(error);
+  }
+);
 
 export default api;

@@ -1,10 +1,14 @@
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../utils/AuthProvider";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -32,9 +36,9 @@ const LoginForm = () => {
       );
 
       // Stocke le token dans localStorage
-      localStorage.setItem("authToken", response.data.token);
+      login(response.data.token);
       setError(""); // Réinitialiser l'erreur
-      window.location.href = "/"; // Redirection après connexion réussie
+      navigate("/");
     } catch (err) {
       setError("Email ou mot de passe incorrect");
     }
