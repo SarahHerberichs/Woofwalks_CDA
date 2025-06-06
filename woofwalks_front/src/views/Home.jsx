@@ -1,6 +1,6 @@
 
 function Home() {
-  return <>Coucou</>;
+  return <>Pas Coucou</>;
 }
 
 export default Home;
