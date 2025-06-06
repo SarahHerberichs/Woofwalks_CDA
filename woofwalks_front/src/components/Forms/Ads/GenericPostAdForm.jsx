@@ -7,7 +7,7 @@ import LocationForm from "../LocationForm";
 import WalkLocationSection from "../Walks/WalkLocationSection";
 
 const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
-  console.log(entityType);
+ 
   const [photo, setPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

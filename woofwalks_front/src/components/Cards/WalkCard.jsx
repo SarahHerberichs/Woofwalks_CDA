@@ -29,7 +29,7 @@ const WalkCard = ({ walk }) => {
     >
       <div className="position-relative">
         <img
-          src={`https://localhost:8000/media/${walk.mainPhoto.filePath}`}
+          src={`http://localhost:8000/media/${walk.mainPhoto.filePath}`}
           className="card-img-top"
           alt="Walk"
           style={{ height: "200px", objectFit: "cover" }}

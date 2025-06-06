@@ -24,7 +24,7 @@ const ConfirmEmail = () => {
 
       try {
         const response = await fetch(
-          `https://localhost:8000/api/confirm-email/${token}`
+          `http://localhost:8000/api/confirm-email/${token}`
         );
         const data = await response.json();
 

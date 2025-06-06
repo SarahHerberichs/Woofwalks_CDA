@@ -24,7 +24,6 @@ function App() {
             <Route path="/confirm-email" element={<ConfirmEmail />} />
             <Route path="/" element={<Home />} />
             <Route path="*" element={<Home />} />
-
             <Route element={<PrivateRoute />}>
               <Route path="/walks/:id" element={<WalkDetailsPage />} />
             </Route>
