@@ -28,15 +28,15 @@ class Location
     #[Groups(['location:read', 'location:write', 'walk:read'])]
     private ?float $longitude = null;
 
-    #[ORM\Column(type:'string', length: 255, nullable: true)] // Rendre nullable si ce n'est pas toujours requis
+    #[ORM\Column(type:'string', length: 255, nullable: true)]
     #[Groups(['location:read', 'location:write','walk:read', 'park:read'])]
     private ?string $name = null;
 
-    #[ORM\Column(type:'string', length: 255, nullable: true)] // AJOUTÉ
+    #[ORM\Column(type:'string', length: 255, nullable: true)] 
     #[Groups(['location:read', 'location:write','walk:read'])]
     private ?string $city = null;
 
-    #[ORM\Column(type:'string', length: 255, nullable: true)] // AJOUTÉ
+    #[ORM\Column(type:'string', length: 255, nullable: true)] 
     #[Groups(['location:read', 'location:write','walk:read'])]
     private ?string $street = null;
 

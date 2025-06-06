@@ -1,5 +1,4 @@
 <?php
-// src/Controller/Api/EmailConfirmationController.php
 
 namespace App\Controller;
 

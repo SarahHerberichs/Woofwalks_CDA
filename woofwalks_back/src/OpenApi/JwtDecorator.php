@@ -19,10 +19,10 @@ class JwtDecorator implements OpenApiFactoryInterface
     {
         $openApi = ($this->decorated)($context);
 
-        // On récupère les composants
+        //Récupération composants
         $components = $openApi->getComponents();
 
-        // On ajoute le security scheme sans écraser les existants
+        // Ajout du security scheme sans écraser les existants
         $securitySchemes = $components->getSecuritySchemes() ?? [];
         $securitySchemes['bearerAuth'] = new SecurityScheme(
             'http',        // type
@@ -32,7 +32,7 @@ class JwtDecorator implements OpenApiFactoryInterface
             'JWT'          // Custom: utilisé comme bearerFormat si supporté
         );
 
-        // On met à jour les composants
+        // Mise à jour composants
         $components = $components->withSecuritySchemes($securitySchemes);
 
         return $openApi

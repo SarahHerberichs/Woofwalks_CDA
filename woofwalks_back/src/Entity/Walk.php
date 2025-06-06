@@ -214,7 +214,7 @@ class Walk
 
     public function setChat(Chat $chat): self
     {
-        // set the owning side of the relation if necessary
+      
         if ($this->chat !== $chat) {
             $this->chat = $chat;
             if ($chat !== null && $chat->getWalk() !== $this) {

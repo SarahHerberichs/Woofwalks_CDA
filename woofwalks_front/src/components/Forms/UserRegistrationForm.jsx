@@ -13,11 +13,11 @@ const UserRegistrationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors({}); // Réinitialise les erreurs à chaque soumission
+    setErrors({}); 
     setRegistrationSuccess(false);
     setLoading(true);
 
-    const validationErrors = {}; // Erreurs de validation côté client
+    const validationErrors = {}; 
     if (!email) {
       validationErrors.email = "L'e-mail est requis.";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
@@ -41,7 +41,7 @@ const UserRegistrationForm = () => {
       validationErrors.cgv = "Vous devez accepter les conditions générales.";
     }
 
-    // Si des erreurs de validation côté client existent, arrête la soumission
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setLoading(false);
@@ -64,12 +64,11 @@ const UserRegistrationForm = () => {
 
       let data = {};
       try {
-        // Tentative de parsing de la réponse JSON.
-        // Si la réponse n'est pas un JSON valide (ex: vide, HTML d'erreur), cela échouera.
+
         data = await response.json();
       } catch (e) {
         console.error("Erreur de parsing JSON de la réponse :", e);
-        // Si le parsing échoue mais la réponse n'est pas OK erreur générique
+
         if (!response.ok) {
           setErrors({
             general: "Une erreur inattendue est survenue (réponse non JSON).",
@@ -80,15 +79,15 @@ const UserRegistrationForm = () => {
       }
 
       if (response.ok) {
-        //l'inscription a réussi
+
         setUsername("");
         setRegistrationSuccess(true);
         setEmail("");
         setPassword("");
         setConfirmPassword("");
-        setErrors({}); // Toutes les erreurs sont effacées
+        setErrors({});
       } else {
-        // Si la réponse n'est pas OK (statut 4xx, 5xx), c'est une erreur
+
         console.log("Données d'erreur du serveur :", data);
 
         const serverErrors = {};
@@ -158,7 +157,6 @@ const UserRegistrationForm = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        {/* Affiche l'erreur spécifique à l'email si elle existe */}
         {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
       </div>
 
@@ -171,7 +169,6 @@ const UserRegistrationForm = () => {
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-        {/* Affiche l'erreur spécifique au nom d'utilisateur si elle existe */}
         {errors.username && <p style={{ color: "red" }}>{errors.username}</p>}
       </div>
 
@@ -184,7 +181,6 @@ const UserRegistrationForm = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {/* Affiche l'erreur spécifique au mot de passe si elle existe */}
         {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
       </div>
 
@@ -197,7 +193,6 @@ const UserRegistrationForm = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-        {/* Affiche l'erreur spécifique à la confirmation de mot de passe si elle existe */}
         {errors.confirmPassword && (
           <p style={{ color: "red" }}>{errors.confirmPassword}</p>
         )}

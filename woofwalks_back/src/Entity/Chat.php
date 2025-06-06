@@ -71,7 +71,6 @@ class Chat
     public function removeMessage(ChatMessage $chatMessage): self
     {
         if ($this->chatMessages->removeElement($chatMessage)) {
-            // set the owning side to null (unless already changed)
             if ($chatMessage->getChat() === $this) {
                 $chatMessage->setChat(null);
             }

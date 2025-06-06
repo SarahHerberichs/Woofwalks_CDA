@@ -20,18 +20,17 @@ $socket = @stream_socket_client(
         'ssl' => [
             'verify_peer' => true,
             'verify_peer_name' => true,
-            'cafile' => 'C:\\laragon\\etc\\ssl\\cacert.pem', // Fournir explicitement le fichier CA
+            'cafile' => 'C:\\laragon\\etc\\ssl\\cacert.pem',
             'allow_self_signed' => false,
-            'capture_peer_cert' => true, // Pour inspecter le certificat si besoin
-            'capture_peer_cert_chain' => true, // Pour inspecter la chaîne de certificats
+            'capture_peer_cert' => true,
+            'capture_peer_cert_chain' => true, 
         ],
     ])
 );
 
 if (!$socket) {
     echo "Échec de la connexion : ($errno) $errstr\n";
-    // Pour le débogage, afficher si la chaîne de certificats a été capturée
-    if (isset($socket) && $socket) { // Vérifier si $socket est une ressource avant d'obtenir les métadonnées
+    if (isset($socket) && $socket) { 
         $params = stream_get_meta_data($socket);
         if (isset($params['peer_certificate']) && $params['peer_certificate']) {
             echo "Certificat du pair capturé.\n";
@@ -50,7 +49,6 @@ if (!$socket) {
     $response = fgets($socket, 1024);
     echo "Le serveur dit : $response\n";
 
-    // Vous pouvez envoyer une commande EHLO pour continuer la conversation SMTP basique
     fwrite($socket, "EHLO yourdomain.com\r\n");
     $response = fgets($socket, 1024);
     echo "Réponse EHLO : $response\n";

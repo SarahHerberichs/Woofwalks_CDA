@@ -11,7 +11,6 @@ export const createLocation = async (data) => {
     });
     return response.data;
   } catch (error) {
-    // Gestion des erreurs d'Axios :
     console.error("Erreur lors de la création du lieu avec Axios:", error);
     throw new Error(
       "Erreur lors du paramétrage du lieu. Vérifiez la console pour plus de détails."

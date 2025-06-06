@@ -1,4 +1,3 @@
-// Header.js
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { useAuth } from "../../utils/AuthProvider";
 import BtnLogout from "../Buttons/BtnLogout";

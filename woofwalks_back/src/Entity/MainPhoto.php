@@ -101,7 +101,6 @@ class MainPhoto
         $this->file = $file;
 
         if ($file) {
-            // Met à jour la date de modification à chaque nouvel upload
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
@@ -151,7 +150,6 @@ class MainPhoto
     public function removeWalk(Walk $walk): self
     {
         if ($this->walks->removeElement($walk)) {
-            // set the owning side to null (unless already changed)
             if ($walk->getMainPhoto() === $this) {
                 $walk->setMainPhoto(null);
             }

@@ -18,9 +18,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem("authToken");
       localStorage.removeItem("expiry");
-      window.location.href = "/login"; // ou navigate()
+      window.location.href = "/login"; 
     }
-    console.error("Erreur dans l'intercepteur:", error); // Ajoutez ceci
+    console.error("Erreur dans l'intercepteur:", error); 
     return Promise.reject(error);
   }
 );

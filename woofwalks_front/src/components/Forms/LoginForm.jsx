@@ -1,4 +1,3 @@
-// src/components/LoginForm.jsx
 import { useState } from "react";
 import { useForm } from "react-hook-form"; // <-- Importer useForm
 import { useNavigate } from "react-router-dom";
@@ -11,21 +10,20 @@ const LoginForm = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Initialiser useForm
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm(); // <-- Destructurer register et handleSubmit
+  } = useForm(); 
 
   const onSubmit = async (data) => {
-    // Renommer handleSubmit en onSubmit pour éviter la confusion
+
     setError("");
     setIsLoading(true);
 
     try {
-      // Les données sont déjà validées et collectées par React Hook Form
-      const token = await loginUser(data.email, data.password); // <-- Utiliser data.email et data.password
+      const token = await loginUser(data.email, data.password); 
 
       login(token);
       navigate("/");
@@ -39,10 +37,10 @@ const LoginForm = () => {
   return (
     <div className="login-container">
       <h2>Connexion</h2>
-      {/* Utiliser le handleSubmit de React Hook Form */}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         {" "}
-        {/* <-- Lier handleSubmit à votre fonction onSubmit */}
+
         <div className="form-group">
           <label htmlFor="email">Email :</label>
           <input
@@ -60,13 +58,13 @@ const LoginForm = () => {
             disabled={isLoading}
           />
           {errors.email && <p className="error">{errors.email.message}</p>}{" "}
-          {/* <-- Afficher les erreurs de validation */}
+
         </div>
         <div className="form-group">
           <label htmlFor="password">Mot de passe :</label>
           <input
             {...register("password", {
-              // <-- Enregistrer l'input
+
               required: "Le mot de passe est requis",
               minLength: {
                 value: 6,
@@ -81,10 +79,10 @@ const LoginForm = () => {
           {errors.password && (
             <p className="error">{errors.password.message}</p>
           )}{" "}
-          {/* <-- Afficher les erreurs de validation */}
+
         </div>
         {error && <p className="error">{error}</p>}{" "}
-        {/* <-- Erreurs de l'API ou générales */}
+
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Connexion en cours..." : "Se connecter"}
         </button>

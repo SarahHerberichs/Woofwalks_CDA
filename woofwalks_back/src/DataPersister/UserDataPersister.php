@@ -53,9 +53,9 @@ class UserDataPersister implements ProcessorInterface
             
             $data->setIsVerified(false); 
     
-            $frontendUrl = 'http://localhost:3000'; // Assurez-vous que c'est l'URL de votre frontend
+            $frontendUrl = 'http://localhost:3000'; 
             $confirmationUrl = $frontendUrl . '/confirm-email?token=' . $data->getConfirmationToken();
-            // Envoyer le mail
+            // Envoi le mail
             $email = (new Email())
                 ->from('admin@terrashare.fr')
                 ->to($data->getEmail())

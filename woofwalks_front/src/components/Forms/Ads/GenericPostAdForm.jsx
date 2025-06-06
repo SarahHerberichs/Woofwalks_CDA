@@ -115,7 +115,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
 
   if (!token) {
     return (
-      // messages erreur
+      // Messages erreur
       <div className="container mt-5">
         <div className="alert alert-warning text-center" role="alert">
           <h4 className="alert-heading">Connexion requise</h4>
