@@ -1,13 +1,12 @@
 import { Controller } from "react-hook-form";
-import LocationForm from "../LocationForm";
-import ParkForm from "../Park/ParkForm";
+import SelectLocationForm from "../Locations/SelectLocationForm";
+import SelectParkForm from "../Parks/SelectParkForm";
 
 const WalkLocationSection = ({
   locationType,
   control,
   register,
   errors,
-  handleFileChange,
 }) => {
   return (
     <>
@@ -23,7 +22,7 @@ const WalkLocationSection = ({
             name: "",
           }}
           render={({ field }) => (
-            <LocationForm
+            <SelectLocationForm
               value={field.value}
               onLocationDataChange={field.onChange}
             />
@@ -32,21 +31,8 @@ const WalkLocationSection = ({
       )}
 
       {locationType === "park" && (
-        <ParkForm register={register} errors={errors} />
+        <SelectParkForm register={register} errors={errors} />
       )}
-
-      <div>
-        <label>
-          Photo:
-          <input
-            type="file"
-            name="photo"
-            accept="image/*"
-            onChange={handleFileChange}
-            required
-          />
-        </label>
-      </div>
     </>
   );
 };

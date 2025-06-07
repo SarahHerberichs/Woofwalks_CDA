@@ -1,21 +1,27 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import SelectLocationForm from "../../FormPartials/Locations/SelectLocationForm";
+import WalkLocationSection from "../../FormPartials/Walks/WalkLocationSection";
 import { createLocation } from "../../services/createLocation";
 import { postGenericAd } from "../../services/postGenericAd";
 import { uploadPhoto } from "../../services/uploadPhoto";
-import LocationForm from "../LocationForm";
-import WalkLocationSection from "../Walks/WalkLocationSection";
+import PhotoForm from "../PhotoForm";
 
 const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
  
   const [photo, setPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  //Récupération token pour affichage immédiat de non autorisation de poster si non loggé
+  const token = localStorage.getItem("authToken");
 
   const {
+    //Pour enregistrer un champ et appliquer des règles de validations
     register,
+    //Fonction déclenchée onSubmit, s'assure des validations avant execution
     handleSubmit,
     control,
     reset,
+    // Pour surveiller un champ en temps réel
     watch,
     formState: { errors },
   } = useForm({
@@ -36,7 +42,8 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       ...entitySpecificFields.initialValues,
     },
   });
-  //champ de choix du type de location
+
+  //Surveille et MAJ la variable à chaque modif du champ "use_custom_location"
   const locationType = watch("use_custom_location");
 
   // Gestion spécifique du fichier photo
@@ -44,7 +51,9 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
     setPhoto(e.target.files[0]);
   };
 
+  //Début du traitement de la soumission du formulaire
   const onSubmit = async (data) => {
+
     if (!photo) {
       alert("Veuillez sélectionner une photo !");
       return;
@@ -64,12 +73,14 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       let locationId;
       //Si custom, création d'une location et stockage de son id
       if (data.use_custom_location === "custom") {
+        //insert de la location en bdd
         const locationData = await createLocation(data.locationData);
+        //Récup de son ID
         locationId = parseInt(locationData["@id"].split("/").pop());
 
         //Si park,récuperation de l'id de sa location
       } else if (data.use_custom_location === "park") {
-        // Utiliser l'ID du parc sélectionné
+        // Utilise l'ID du parc sélectionné
         locationId = parseInt(data.park_location_id);
       } else {
         // Gérer autres cas si besoin
@@ -88,13 +99,15 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
         photo: photoId,
         location: locationId,
         is_custom_location:
-          data.use_custom_location === "custom" ? true : false,
+        data.use_custom_location === "custom" ? true : false,
       };
 
       // 4. Envoi des données via controlleur symfony
-
       const postAd = await postGenericAd(entityData, entityType);
-      console.log(postAd); // Contient la réponse de l'API
+
+      if (!postAd) {
+        console.log("échec de l'ajout final de l'annonce")
+      }
 
       // Reset formulaire + photo
       reset({
@@ -105,6 +118,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
         ...entitySpecificFields.initialValues,
       });
       setPhoto(null);
+
     } catch (error) {
       alert("Une erreur est survenue : " + error.message);
       console.error(error);
@@ -199,28 +213,32 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
               control={control}
               register={register}
               errors={errors}
-              handleFileChange={handleFileChange}
             />
           ) : (
-            <Controller
-              name="locationData"
-              control={control}
-              defaultValue={{
-                city: "",
-                street: "",
-                latitude: null,
-                longitude: null,
-                name: "",
-              }}
-              render={({ field }) => (
-                <LocationForm
-                  value={field.value}
-                  onLocationDataChange={field.onChange}
-                />
-              )}
-            />
-          )}
+            //Utilisation d'un controller car SelectLocationForm gère ses propres états 
+          <Controller
+            // Controller gère un champ unique "locationData" qui est un objet contenant plusieurs sous-champs
+            name="locationData"
+            control={control} // fournis par useForm, permet de gérer les champs contrôlés
+            defaultValue={{      // Valeurs initiales du champ "locationData"
+              city: "",
+              street: "",
+              latitude: null,
+              longitude: null,
+              name: "",
+            }}
+            // Dans render, on récupère un objet "field" fourni par react-hook-form,
+            // qui contient la valeur actuelle (field.value) et la fonction pour la mettre à jour (field.onChange)
+            render={({ field }) => (
+              <SelectLocationForm
+                value={field.value}                 // Valeur actuelle passée au composant
+                onLocationDataChange={field.onChange}  // Fonction pour notifier les changements
+              />
+            )}
+          />
 
+          )}
+            <PhotoForm photo={photo} onFileChange={handleFileChange}/>
           <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "En cours..." : `Créer ${entityType}`}
           </button>

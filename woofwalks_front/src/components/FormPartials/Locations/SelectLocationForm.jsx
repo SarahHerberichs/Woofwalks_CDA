@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const LocationForm = ({ value, onLocationDataChange }) => {
+const SelectLocationForm = ({ value, onLocationDataChange }) => {
   const [cityInput, setCityInput] = useState("");
   const [nameInput, setNameInput] = useState("");
   const [cities, setCities] = useState([]);
@@ -8,7 +8,7 @@ const LocationForm = ({ value, onLocationDataChange }) => {
   const [streetInput, setStreetInput] = useState("");
   const [streets, setStreets] = useState([]);
 
-  //Apellé quand city ou name  ou street changent
+  //Apellé quand city ou name  ou street changent après un set des nouvelles valeurs
   const updateLocationData = (partialData) => {
     const newData = { ...value, ...partialData };
     onLocationDataChange(newData);
@@ -134,4 +134,4 @@ const LocationForm = ({ value, onLocationDataChange }) => {
   );
 };
 
-export default LocationForm;
+export default SelectLocationForm;

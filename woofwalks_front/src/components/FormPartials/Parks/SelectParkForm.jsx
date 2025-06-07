@@ -1,6 +1,6 @@
 import useParks from "../../Lists/ParkList";
 
-const ParkForm = ({ register, errors }) => {
+const SelectParkForm = ({ register, errors }) => {
   const { parks, error } = useParks();
 
   return (
@@ -27,4 +27,4 @@ const ParkForm = ({ register, errors }) => {
   );
 };
 
-export default ParkForm;
+export default SelectParkForm;

@@ -1,53 +1,65 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import WalkCard from "../Cards/WalkCard";
+import { filterAndSortByFutureDate } from "../../utils/orderAds";
+import WalkCard from "../Cards/Walks/WalkCard";
 
 const WalkList = () => {
   const [walks, setWalks] = useState([]);
   const [error, setError] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(8);
 
   useEffect(() => {
     const fetchWalks = async () => {
       try {
         const response = await axios.get("http://localhost:8000/api/walks", {
-          headers: {
-            Accept: "application/json",
-          },
+          headers: { Accept: "application/json" },
         });
-
-        console.log("Premier log de la réponse:", response.data);
-
         setWalks(response.data);
       } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des données de marche:",
-          error
-        );
         setError("Impossible de charger les marches pour le moment.");
       }
     };
-
     fetchWalks();
   }, []);
 
+  // Applique le filtre + tri
+  const filteredSortedWalks = filterAndSortByFutureDate(walks);
+
+  // Prend uniquement ceux à afficher
+  const visibleWalks = filteredSortedWalks.slice(0, visibleCount);
+
+  // Gestion du clic "Charger plus"
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + 8);
+  };
+
   return (
     <div className="container-fluid mt-4">
-      {error && <p className="text-danger">{error}</p>}{" "}
-      {/* Affiche l'erreur si elle existe */}
+      {error && <p className="text-danger">{error}</p>}
+
       <div className="row g-4">
-        {walks.length === 0 && !error ? (
+        {visibleWalks.length === 0 && !error ? (
           <p>Aucune marche disponible.</p>
         ) : (
-          walks.map((walk, index) => (
+          visibleWalks.map((walk) => (
             <div
-              className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-3 col-xxl-3"
-              key={walk.id || index}
+              className="col-12 col-sm-6 col-md-4 col-lg-3"
+              key={walk.id}
             >
               <WalkCard walk={walk} />
             </div>
           ))
         )}
       </div>
+
+      {/* Affiche le bouton seulement s'il y a encore des marches à charger */}
+      {visibleCount < filteredSortedWalks.length && (
+        <div className="text-center mt-3">
+          <button className="btn btn-primary" onClick={handleLoadMore}>
+            Charger plus
+          </button>
+        </div>
+      )}
     </div>
   );
 };
