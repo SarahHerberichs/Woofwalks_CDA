@@ -11,8 +11,6 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
   const [photo, setPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const token = localStorage.getItem("authToken");
-
   const {
     register,
     handleSubmit,
@@ -38,6 +36,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       ...entitySpecificFields.initialValues,
     },
   });
+  //champ de choix du type de location
   const locationType = watch("use_custom_location");
 
   // Gestion spécifique du fichier photo
@@ -57,6 +56,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       // 1. Upload de la photo
       const photoFormData = new FormData();
       photoFormData.append("file", photo);
+      //Méthode d'upload avec vérification du token via api.js
       const photoData = await uploadPhoto(photoFormData);
       const photoId = photoData.id;
 
