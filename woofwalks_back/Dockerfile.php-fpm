@@ -24,13 +24,13 @@ RUN mkdir -p public/media && \
     chmod -R 775 public/media
 
 
-# COPY composer.json composer.lock ./
+COPY composer.json composer.lock ./
 
-# RUN composer install --no-scripts --no-autoloader
+RUN composer install --no-scripts --no-autoloader
 
 # COPY . .
 
-# RUN composer dump-autoload --optimize
+RUN composer dump-autoload --optimize
 
 EXPOSE 9000
 

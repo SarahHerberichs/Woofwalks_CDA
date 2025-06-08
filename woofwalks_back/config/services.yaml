@@ -29,6 +29,17 @@ services:
     autowire: true # Autowiring permet à Symfony d'injecter automatiquement les dépendances
     autoconfigure: true #
     public: false
+  App\:
+    resource: '../src/'
+    exclude:
+        - '../src/DependencyInjection/'
+        - '../src/Entity/'
+        - '../src/Kernel.php'
+
+    # Ajoutez explicitement vos Event Subscribers ici:
+    # Cela force Symfony à les prendre en compte, même si l'autodiscovery a un problème
+  App\EventSubscriber\JWTCreatedSubscriber: ~
+  App\EventSubscriber\TestSubscriber: ~    
   App\DataPersister\UserDataPersister: ~
   App\Repository\:
     resource: "../src/Repository"

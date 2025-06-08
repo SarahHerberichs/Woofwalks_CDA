@@ -2,7 +2,15 @@
 
 namespace App\Entity;
 
+// Assurez-vous d'importer toutes ces classes d'opérations !
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch; // <-- IMPORTANT : Importez Patch !
+use ApiPlatform\Metadata\Delete;
+
 use App\Repository\WalkRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,8 +18,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
-    normalizationContext: ['groups' => ['walk:read']],
-    denormalizationContext: ['groups' => ['walk:write']],
+    // DÉCLAREZ EXPLICITEMENT LES OPÉRATIONS ICI
+    operations: [
+        new GetCollection(normalizationContext: ['groups' => ['walk:read']]),
+        new Post(denormalizationContext: ['groups' => ['walk:write']]),
+        new Get(normalizationContext: ['groups' => ['walk:read']]),
+        new Put(denormalizationContext: ['groups' => ['walk:write']]),
+        new Patch(denormalizationContext: ['groups' => ['walk:write']]), // <-- AJOUTEZ CETTE LIGNE
+        new Delete(),
+    ],
 )]
 #[ORM\Entity(repositoryClass: WalkRepository::class)]
 class Walk
@@ -64,7 +79,7 @@ class Walk
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'participatedWalks')]
     #[ORM\JoinTable(name: 'walk_participants')]
-    #[Groups(['walk:read'])]
+    #[Groups(['walk:read', 'walk:write'])]
     private Collection $participants;
 
     #[ORM\OneToOne(targetEntity: Chat::class, mappedBy: 'walk', cascade: ['persist', 'remove'])]
