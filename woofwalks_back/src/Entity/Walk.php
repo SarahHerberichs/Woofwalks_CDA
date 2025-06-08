@@ -19,6 +19,7 @@ class Walk
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['walk:read'])] 
     private ?int $id = null;
 
     

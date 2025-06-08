@@ -3,8 +3,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  console.log("AuthProvider mounted");
-
   useEffect(() => {
     console.log("AuthProvider useEffect executed");
   }, []);

@@ -1,4 +1,7 @@
+
+import { useNavigate } from "react-router-dom";
 const WalkCard = ({ walk }) => {
+  const navigate = useNavigate();
   //Formatage des dates et heures
   const formattedDate = new Date(walk.date).toLocaleDateString("fr-FR");
   const formattedTime = new Date(walk.date).toLocaleTimeString("fr-FR", {
@@ -16,10 +19,15 @@ const WalkCard = ({ walk }) => {
   const hours = Math.floor(diffMinutes / 60);
   const minutes = diffMinutes % 60;
   const counter = `${hours}h${minutes}`;
+  const consultDetails = () => {
+    
+      navigate(`/walks/${walk.id}`)
+    };
 
   return (
     <div
       className="card"
+       onClick={consultDetails}
       style={{
         width: "100%",
         maxWidth: "500px",
