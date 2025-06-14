@@ -7,8 +7,10 @@ const WalkDetailsPage = () => {
   const { id } = useParams();
   const [walk, setWalk] = useState(null);
   const [error, setError] = useState(null);
-  const [isParticipating, setIsParticipating] = useState(false); // <-- Nouvel état pour suivre la participation
-
+  const [isParticipating, setIsParticipating] = useState(false);
+  const [isFull, setIsFull] = useState(false);
+  //Chercher les détails de la walk dont l'id est dans l'url
+  
   const token = localStorage.getItem("authToken");
   let userId = null;
 
@@ -20,7 +22,7 @@ const WalkDetailsPage = () => {
 
     } catch (e) {
       console.error("Erreur lors du décodage du token :", e);
-      // Gérer le cas où le token est invalide ou corrompu
+
     }
   }
 
@@ -37,16 +39,42 @@ const WalkDetailsPage = () => {
           // API Platform utilise des IRIs (ex: /api/users/1) pour les relations.
           // Il faut donc créer l'IRI de l'utilisateur et le comparer avec ceux des participants.
           const userIRI = `/api/users/${userId}`;
-          setIsParticipating(fetchedWalk.participants.includes(userIRI));
+          const participantIds = fetchedWalk.participants.map(p => p['@id']);
+          setIsParticipating(participantIds.includes(userIRI));
         }
+
+        //Vérifie et Set si la Walk est Full
+        const nbParticipants = fetchedWalk.participants.length;
+        const maxParticipants = fetchedWalk.maxParticipants;
+        setIsFull (typeof maxParticipants === "number" && nbParticipants >= maxParticipants)
       } catch (error) {
         console.error("Erreur lors de la récupération de la balade :", error);
         setError("Erreur lors de la récupération de la balade.");
       }
     };
-
     fetchWalk();
-  }, [id, userId]); // <-- Ajoutez userId aux dépendances
+  }, [id, userId]);
+
+        const handleAlertRequest = async () => {
+        try {
+          const alertRequestPayload = {
+            user : `api/users/${userId}`,
+            walk: `api/walks/${id}`,
+            requestedAt: new Date().toISOString(),
+            notified:false
+          }
+          const response = await api.post('walk_alert_requests', alertRequestPayload, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          alert ('Demande de notif enregistree');
+        } catch (error) {
+          console.error("Erreur lors de la demande d'alerte :", error.response ? error.response.data : error);
+          alert("Erreur lors de la demande d'alerte.");
+        }
+      }
+
 
   // --- Fonction pour gérer la participation/désinscription ---
   const handleParticipate = async () => {
@@ -54,22 +82,18 @@ const WalkDetailsPage = () => {
       alert("Vous devez être connecté pour participer à une balade.");
       return;
     }
-
     try {
       let updatedParticipants;
       const userIRI = `/api/users/${userId}`;
-
       if (isParticipating) {
         // L'utilisateur participe déjà, il veut se désinscrire
-        updatedParticipants = walk.participants.filter(
-          (participantIRI) => participantIRI !== userIRI
-        );
-        console.log("Désinscription: Nouveaux participants:", updatedParticipants);
+       updatedParticipants = walk.participants.filter(
+      (participant) => (typeof participant === "string" ? participant : participant['@id']) !== userIRI
+    );
       } else {
-        // L'utilisateur ne participe pas, il veut s'inscrire
-        // Assurez-vous que 'participants' est bien un tableau existant avant d'ajouter
-        updatedParticipants = walk.participants ? [...walk.participants, userIRI] : [userIRI];
-        console.log("Inscription: Nouveaux participants:", updatedParticipants);
+          // L'utilisateur ne participe pas, il veut s'inscrire
+          updatedParticipants = walk.participants ? [...walk.participants, userIRI] : [userIRI];
+          console.log("Inscription: Nouveaux participants:", updatedParticipants);
       }
 
       // Envoyer la requête PATCH à l'API Platform pour mettre à jour les participants
@@ -83,6 +107,7 @@ const WalkDetailsPage = () => {
           },
         }
       );
+
 
       // Mettre à jour l'état local de la balade et de la participation après succès
       setWalk(response.data);
@@ -107,13 +132,24 @@ const WalkDetailsPage = () => {
       <p>Participants : {walk.participants ? walk.participants.length : 0}</p>
 
       {/* Affiche le bouton seulement si l'utilisateur est connecté */}
-      {token ? ( 
-        <button onClick={handleParticipate}>
-          {isParticipating ? "Ne plus participer" : "Participer"}
-        </button>
+      {token ? (
+        isParticipating ? (
+          <button onClick={handleParticipate}>
+            Ne plus participer
+          </button>
+        ) : isFull ? (
+          <button onClick={handleAlertRequest}>
+            Demander une alerte
+          </button>
+        ) : (
+          <button onClick={handleParticipate}>
+            Participer
+          </button>
+        )
       ) : (
         <p>Connectez-vous pour participer à cette balade.</p>
       )}
+
     </div>
   );
 };

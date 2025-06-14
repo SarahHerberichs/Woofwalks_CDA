@@ -1,15 +1,16 @@
-
+<!-- 
 1. ✅ Walk modifiée
 
 #[AsEntityListener(event: Events::postUpdate, entity: Walk::class)]
 class WalkUpdateListener
 {
     public function __construct(
-        private NotificationService $notificationService
+        private NotificationService $notificationService,
+        private EntityManagerInterface $em
     ) {}
 
-    public function postUpdate(Walk $walk, LifecycleEventArgs $args): void
-    {
+    public function postUpdate(Walk $walk, LifecycleEventArgs $args): void {
+        // ✅ 1. Notifier les participants d'une modification de la walk
         foreach ($walk->getParticipants() as $user) {
             $this->notificationService->createAndDispatchNotification(
                 $user,
@@ -18,6 +19,26 @@ class WalkUpdateListener
             );
         }
     }
+    public function maxParticipantsChanges(Walk $walk, LifecycleEventArgs $args): void {
+        // On vérifie si une place est disponible
+        if (count($walk->getParticipants()) < $walk->getMaxParticipants()) {
+            $alertRequests = $this->em->getRepository(WalkAlertRequest::class)
+                ->findBy(['walk' => $walk, 'notified' => false]);
+
+            foreach ($alertRequests as $request) {
+                $this->notificationService->createAndDispatchNotification(
+                    $request->getUser(),
+                    'walk_slot_available',
+                    ['walk' => $walk]
+                );
+
+                $request->setNotified(true);
+                $this->em->persist($request);
+            }
+            $this->em->flush();
+        }
+    }
+  
 }
 
 2. ✅ Nouveau Feedback posté
@@ -131,6 +152,7 @@ class MessageBuilder
         $context = $notification->getContext(); // tableau associatif
 
         return match ($type) {
+            'walk_slot_available' => "Une place s’est libérée pour la walk « " . $context['walk']->getTitle() . " ». Tu peux maintenant t’inscrire si tu es rapide !",
             'walk_update'  => "La walk « " . $context['walk']->getTitle() . " » a été modifiée.",
             'new_feedback' => "Un nouveau feedback a été posté sur la walk « " . $context['walk']->getTitle() . " ».",
             'new_message'  => "Nouveau message de " . $context['sender']->getUsername() . " dans la walk « " . $context['walk']->getTitle() . " ».",
@@ -152,4 +174,4 @@ class SmsService implements NotifierInterface
         // $subjectOrMessage => contenu du SMS
         // $message est ignoré
     }
-}
+} -->

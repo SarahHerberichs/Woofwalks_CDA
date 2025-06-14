@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 const WalkCard = ({ walk }) => {
   const navigate = useNavigate();
@@ -11,23 +10,23 @@ const WalkCard = ({ walk }) => {
 
   const walkDate = new Date(walk.date);
   const now = new Date();
-
   const diffMs = walkDate.getTime() - now.getTime();
-
+  const nbParticipants = walk.participants.length
+  const maxParticipants = walk.maxParticipants;
+  const isFull = nbParticipants === maxParticipants;
   // Convertir la différence en minutes et heures
   const diffMinutes = Math.floor(diffMs / 60000);
   const hours = Math.floor(diffMinutes / 60);
   const minutes = diffMinutes % 60;
   const counter = `${hours}h${minutes}`;
   const consultDetails = () => {
-    
-      navigate(`/walks/${walk.id}`)
-    };
+    navigate(`/walks/${walk.id}`);
+  };
 
   return (
     <div
       className="card"
-       onClick={consultDetails}
+      onClick={consultDetails}
       style={{
         width: "100%",
         maxWidth: "500px",
@@ -47,10 +46,32 @@ const WalkCard = ({ walk }) => {
           className="position-absolute top-0 start-0 m-2"
           style={{ zIndex: 1 }}
         >
-          <span className="badge bg-success rounded-circle p-3"> </span>
+          {isFull ? (
+            <span className="badge bg-danger rounded-circle p-3"> </span>
+          ) : (
+            <span className="badge bg-success rounded-circle p-3"> </span>
+         )}
+          
         </div>
 
-        {/* Image sous le badge */}
+        {/* Image compteur-de-vitesse en haut à droite */}
+        <div
+          className="position-absolute top-0 end-0 m-2 text-center"
+          style={{ zIndex: 1, width: '60px' }}
+        >
+          <img
+            src={`${process.env.PUBLIC_URL}/images/compteur-de-vitesse.png`}
+            alt="Compteur de vitesse"
+            className="p-2 bg-light bg-opacity-75 rounded"
+            width="50"
+            height="50"
+          />
+          <p className="mt-1 px-2 py-1 bg-light bg-opacity-75 rounded small text-dark">
+            Max: {maxParticipants}
+          </p>
+        </div>
+
+        {/* Image sablier en bas à gauche */}
         <div className="position-absolute bottom-0 start-0 mb-4 ms-2 text-white text-center">
           <img
             src={`${process.env.PUBLIC_URL}/images/sablier.png`}

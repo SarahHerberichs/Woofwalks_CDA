@@ -2,13 +2,12 @@
 
 namespace App\Entity;
 
-// Assurez-vous d'importer toutes ces classes d'opérations !
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use ApiPlatform\Metadata\Patch; // <-- IMPORTANT : Importez Patch !
+use ApiPlatform\Metadata\Patch; 
 use ApiPlatform\Metadata\Delete;
 
 use App\Repository\WalkRepository;
@@ -18,13 +17,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
-    // DÉCLAREZ EXPLICITEMENT LES OPÉRATIONS ICI
     operations: [
         new GetCollection(normalizationContext: ['groups' => ['walk:read']]),
         new Post(denormalizationContext: ['groups' => ['walk:write']]),
         new Get(normalizationContext: ['groups' => ['walk:read']]),
         new Put(denormalizationContext: ['groups' => ['walk:write']]),
-        new Patch(denormalizationContext: ['groups' => ['walk:write']]), // <-- AJOUTEZ CETTE LIGNE
+        new Patch(denormalizationContext: ['groups' => ['walk:write']]), 
         new Delete(),
     ],
 )]
@@ -87,15 +85,19 @@ class Walk
     private ?Chat $chat = null;
 
     #[ORM\Column(type: 'boolean')]
-        #[Groups(['walk:read', 'walk:write'])]
+    #[Groups(['walk:read', 'walk:write'])]
     private bool $isCustomLocation = true;
+
+    #[ORM\OneToMany(mappedBy: 'walk', targetEntity: WalkAlertRequest::class, cascade: ['persist', 'remove'])]
+    private Collection $alertRequests;
+
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
         $this->participants = new ArrayCollection();
-    }
+        $this->alertRequests = new ArrayCollection();    }
 
     #[ORM\PreUpdate]
     public function updateTimestamp(): void
@@ -248,6 +250,32 @@ class Walk
     public function setIsCustomLocation(bool $isCustomLocation): self
     {
         $this->isCustomLocation = $isCustomLocation;
+        return $this;
+    }
+
+     public function getAlertRequests(): Collection
+    {
+        return $this->alertRequests;
+    }
+
+    public function addAlertRequest(WalkAlertRequest $request): self
+    {
+        if (!$this->alertRequests->contains($request)) {
+            $this->alertRequests[] = $request;
+            $request->setWalk($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAlertRequest(WalkAlertRequest $request): self
+    {
+        if ($this->alertRequests->removeElement($request)) {
+            if ($request->getWalk() === $this) {
+                $request->setWalk(null);
+            }
+        }
+
         return $this;
     }
 }

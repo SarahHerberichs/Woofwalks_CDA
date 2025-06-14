@@ -95,10 +95,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\IsTrue(message: 'Vous devez accepter les CGV')]
     private ?bool $cgvAccepted = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: WalkAlertRequest::class, cascade: ['persist', 'remove'])]
+    private Collection $walkAlertRequests;
+
+     #[ORM\ManyToMany(targetEntity: Channel::class, mappedBy: 'users')]
+    private Collection $channels;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notification::class, orphanRemoval: true)]
+    private Collection $notifications;
+
     public function __construct()
     {
         $this->createdWalks = new ArrayCollection();
         $this->participatedWalks = new ArrayCollection();
+        $this->walkAlertRequests = new ArrayCollection();
+         $this->channels = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -272,6 +284,87 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCgvAccepted(?bool $cgvAccepted): self
     {
         $this->cgvAccepted = $cgvAccepted;
+        return $this;
+    }
+
+     public function getWalkAlertRequests(): Collection
+    {
+        return $this->walkAlertRequests;
+    }
+
+    public function addWalkAlertRequest(WalkAlertRequest $request): self
+    {
+        if (!$this->walkAlertRequests->contains($request)) {
+            $this->walkAlertRequests[] = $request;
+            $request->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWalkAlertRequest(WalkAlertRequest $request): self
+    {
+        if ($this->walkAlertRequests->removeElement($request)) {
+            if ($request->getUser() === $this) {
+                $request->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+     /**
+     * @return Collection<int, Channel>
+     */
+    public function getChannels(): Collection
+    {
+        return $this->channels;
+    }
+
+    public function addChannel(Channel $channel): static
+    {
+        if (!$this->channels->contains($channel)) {
+            $this->channels->add($channel);
+            $channel->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChannel(Channel $channel): static
+    {
+        if ($this->channels->removeElement($channel)) {
+            $channel->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notification>
+     */
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            if ($notification->getUser() === $this) {
+                $notification->setUser(null);
+            }
+        }
+
         return $this;
     }
 }

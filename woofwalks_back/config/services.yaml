@@ -41,6 +41,11 @@ services:
   App\EventSubscriber\JWTCreatedSubscriber: ~
   App\EventSubscriber\TestSubscriber: ~    
   App\DataPersister\UserDataPersister: ~
+  App\EventListener\:
+    resource: '../src/EventListener'
+    tags: ['doctrine.orm.entity_listener'] # optionnel avec #[AsEntityListener]
+    autowire: true
+    autoconfigure: true
   App\Repository\:
     resource: "../src/Repository"
     tags: ["doctrine.repository_service"]
