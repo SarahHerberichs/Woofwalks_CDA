@@ -26,9 +26,9 @@ RUN mkdir -p public/media && \
 
 COPY composer.json composer.lock ./
 
-RUN composer install --no-scripts --no-autoloader
+RUN composer install --no-scripts --no-autoloader --prefer-dist
 
-# COPY . .
+COPY . .
 
 RUN composer dump-autoload --optimize
 

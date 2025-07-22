@@ -17,11 +17,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
-    // operations: [
-    //     new GetCollection(),  // <== permet GET /api/users (liste)
-    //     new Post(processor: \App\DataPersister\UserDataPersister::class)     ],
+
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']],
+    validationContext: ['groups' => ['user:write']],
 )]
 
 #[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé pour un autre compte.')]
@@ -104,6 +103,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notification::class, orphanRemoval: true)]
     private Collection $notifications;
 
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $confirmationRequestedAt = null;
+
     public function __construct()
     {
         $this->createdWalks = new ArrayCollection();
@@ -184,8 +186,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+
     }
 
     /**
@@ -367,4 +368,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getConfirmationRequestedAt(): ?\DateTimeImmutable
+    {
+        return $this->confirmationRequestedAt;
+    }
+
+    public function setConfirmationRequestedAt(?\DateTimeImmutable $confirmationRequestedAt): self
+    {
+        $this->confirmationRequestedAt = $confirmationRequestedAt;
+
+        return $this;
+    }
+
 }

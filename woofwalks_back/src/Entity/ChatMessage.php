@@ -92,3 +92,4 @@ class ChatMessage
         return $this;
     }
 }
+

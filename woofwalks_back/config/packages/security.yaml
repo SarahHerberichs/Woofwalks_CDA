@@ -12,24 +12,28 @@ security:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
-
     login:
       pattern: ^/api/login_check
       stateless: true
+      provider: app_user_provider
       json_login:
         check_path: /api/login_check
         username_path: email
         password_path: password
         success_handler: lexik_jwt_authentication.handler.authentication_success
         failure_handler: lexik_jwt_authentication.handler.authentication_failure
-    api_doc: # Nouveau firewall pour la documentation API
-      pattern: ^/api/(docs|contexts)
-      security: false
-    main:
-      pattern: ^/api
+      user_checker: App\Security\UserChecker
+    api:
+      pattern: ^/api # Capture toutes les routes /api (y compris /api/users)
       stateless: true
       provider: app_user_provider
       jwt: ~
+      user_checker: App\Security\UserChecker 
+  
+    api_doc: # Nouveau firewall pour la documentation API
+      pattern: ^/api/(docs|contexts)
+      security: false
+
 
   access_control:
   

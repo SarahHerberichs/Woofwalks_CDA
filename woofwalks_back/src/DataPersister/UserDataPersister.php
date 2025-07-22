@@ -13,7 +13,6 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-//Lors de requete post à api/users
 class UserDataPersister implements ProcessorInterface
 {
     private EntityManagerInterface $entityManager;
@@ -52,7 +51,8 @@ class UserDataPersister implements ProcessorInterface
             $data->setConfirmationToken($token); 
             
             $data->setIsVerified(false); 
-    
+            $data->setConfirmationRequestedAt(new \DateTimeImmutable());
+
             $frontendUrl = 'http://localhost:3000'; 
             $confirmationUrl = $frontendUrl . '/confirm-email?token=' . $data->getConfirmationToken();
             // Envoi le mail

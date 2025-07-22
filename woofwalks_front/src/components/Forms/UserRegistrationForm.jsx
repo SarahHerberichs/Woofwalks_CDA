@@ -49,6 +49,7 @@ const UserRegistrationForm = () => {
     }
 
     try {
+      //Tentative de création d'un utilisateur
       const response = await fetch("http://localhost:8000/api/users", {
         method: "POST",
         headers: {
@@ -63,8 +64,8 @@ const UserRegistrationForm = () => {
       });
 
       let data = {};
+      //Tentative de parser la reponse -- si probleme de parsing et response n'est pas ok, stoppe tout
       try {
-
         data = await response.json();
       } catch (e) {
         console.error("Erreur de parsing JSON de la réponse :", e);
@@ -77,9 +78,8 @@ const UserRegistrationForm = () => {
           return;
         }
       }
-
+      //Si parsing ok, set des parametres de l'utilisateur
       if (response.ok) {
-
         setUsername("");
         setRegistrationSuccess(true);
         setEmail("");
@@ -87,12 +87,13 @@ const UserRegistrationForm = () => {
         setConfirmPassword("");
         setErrors({});
       } else {
-
+    // Réponse non OK : analyse des erreurs retournées par le serveur
         console.log("Données d'erreur du serveur :", data);
 
+        //Récupération des erreurs
         const serverErrors = {};
 
-        // 1. Priorité aux violations structurées (le plus courant pour les erreurs de validation Symfony/API Platform)
+        // 1. Erreurs de validation Symfony/API Platform
         if (data.violations && Array.isArray(data.violations)) {
           data.violations.forEach((violation) => {
             // Mappe l'erreur au champ spécifique du formulaire (ex: 'email', 'username', 'password')
@@ -101,8 +102,8 @@ const UserRegistrationForm = () => {
             serverErrors[field] = violation.message;
           });
         }
-        // 2. Fallback pour les messages dans 'detail' (souvent pour UniqueEntity si non dans violations)
-        else if (data.detail) {
+          // 2. Si 'violations' absent, on vérifie 'detail'        
+          else if (data.detail) {
           // Tente de parser le format "champ: message" si la propriété exacte n'est pas dans violations
           const match = data.detail.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
           if (match && match.length === 3) {
@@ -110,7 +111,7 @@ const UserRegistrationForm = () => {
             const message = match[2];
             serverErrors[field] = message;
           } else {
-            // Si 'detail' est juste un message général non mappé à un champ
+            // 3. Sinon, vérification de la présence d'un message global
             serverErrors.general = data.detail;
           }
         }
@@ -126,14 +127,16 @@ const UserRegistrationForm = () => {
 
         setErrors(serverErrors);
       }
+      //La tentative de création d'utilisateur a échoué
     } catch (error) {
-      // Gère les erreurs réseau (ex: serveur injoignable, CORS)
+      //Affichage des erreurs en console
       console.error("Erreur réseau :", error);
       setErrors({
         general: "Erreur de connexion au serveur. Veuillez réessayer.",
       });
     } finally {
-      setLoading(false); // Arrête le chargement quelle que soit l'issue
+      //Stop la tentative de chargement quoi qu'il arrive
+      setLoading(false); 
     }
   };
 

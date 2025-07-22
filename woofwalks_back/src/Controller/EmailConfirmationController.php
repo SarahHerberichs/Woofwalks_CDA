@@ -34,6 +34,12 @@ class EmailConfirmationController extends AbstractController
                 'message' => 'Votre adresse email est déjà vérifiée.'
             ], 200); 
         }
+        if ($user->getConfirmationRequestedAt() < (new \DateTimeImmutable())->modify('-24 hours')) {
+        return new JsonResponse([
+            'status' => 'error',
+            'message' => 'Ce lien de confirmation a expiré.'
+        ], 400);
+    }
 
         
         $user->setConfirmationToken(null);
