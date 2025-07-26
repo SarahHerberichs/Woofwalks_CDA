@@ -21,7 +21,9 @@ security:
         username_path: email
         password_path: password
         success_handler: lexik_jwt_authentication.handler.authentication_success
-        failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        # surcharge le message d'erreur si l'utilisateur n'a pas validé son compte
+        failure_handler: App\Security\AuthenticationFailureHandler
+
       user_checker: App\Security\UserChecker
     api:
       pattern: ^/api # Capture toutes les routes /api (y compris /api/users)

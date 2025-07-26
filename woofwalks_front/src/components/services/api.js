@@ -21,9 +21,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("expiry");
-      window.location.href = "/login"; 
+      
+    if (error.config.url !== "/login_check") {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("expiry");
+        window.location.href = "/login"; // Redirection si ce n'est pas la requête de login
+      }
     }
     console.error("Erreur dans l'intercepteur:", error); 
     //Propagation de l'erreur

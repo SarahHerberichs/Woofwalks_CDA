@@ -57,8 +57,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Email(message: "L'email '{{ value }}' n'est pas une adresse email valide.")]
     private ?string $email = null;
 
-    #[ORM\Column]
+   #[ORM\Column]
+    #[Groups(['user:read'])] 
     private array $roles = [];
+
 
     /**
      * @var string The hashed password
@@ -78,6 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $participatedWalks;
 
     #[Groups(['user:read', 'user:write'])]
+    #[Assert\NotBlank(message: "Le nom d'utilisateur est requis.")]
     #[ORM\Column(length: 100)]
     private ?string $username = null;
 

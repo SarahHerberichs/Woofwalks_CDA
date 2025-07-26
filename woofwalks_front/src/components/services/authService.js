@@ -15,9 +15,9 @@ export const loginUser = async (email, password) => {
 
     // Retourne un message d'erreur plus spécifique si possible
     if (error.response && error.response.status === 401) {
-      throw new Error(
-        "Identifiants incorrects. Veuillez vérifier votre email et mot de passe."
-      );
+      console.log(error.response);
+     const errorMessage = error.response.data.message || "Identifiants incorrects. Veuillez vérifier votre email et mot de passe.";
+      throw new Error(errorMessage);
     } else if (error.response) {
       // Pour d'autres erreurs HTTP (ex: 400 Bad Request, 500 Internal Server Error)
       const errorMessage =

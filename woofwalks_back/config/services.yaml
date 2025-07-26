@@ -36,11 +36,15 @@ services:
         - '../src/Entity/'
         - '../src/Kernel.php'
 
-    # Ajoutez explicitement vos Event Subscribers ici:
-    # Cela force Symfony à les prendre en compte, même si l'autodiscovery a un problème
+  App\Security\AuthenticationFailureHandler:
+    public: true
   App\EventSubscriber\JWTCreatedSubscriber: ~
-  App\EventSubscriber\TestSubscriber: ~    
-  App\DataPersister\UserDataPersister: ~
+  App\EventSubscriber\UserRegistrationSubscriber:
+    # tags: ['kernel.event_subscriber'] 
+  # App\EventSubscriber\TestSubscriber: ~    
+  App\DataPersister\UserDataPersister: 
+    arguments:
+      $frontendUrl: '%env(FRONTEND_URL)%' # <-- AJOUTE CETTE LIGNE
   App\EventListener\:
     resource: '../src/EventListener'
     tags: ['doctrine.orm.entity_listener'] # optionnel avec #[AsEntityListener]

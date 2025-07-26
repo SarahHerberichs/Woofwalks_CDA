@@ -18,7 +18,7 @@ class EmailConfirmationController extends AbstractController
     ): JsonResponse {
 
         $user = $userRepository->findOneBy(['confirmationToken' => $token]);
-        // Utilisateur trouvé avec token de l'inscription
+        // Utilisateur pas trouvé 
         if (!$user) {
             // Si $user est null, le token est invalide (n'existe pas ou a déjà été utilisé).
             return new JsonResponse([
@@ -27,13 +27,14 @@ class EmailConfirmationController extends AbstractController
             ], 400); // Bad Request car le token n'est pas valide ou est expiré
         }
 
-        // 2. Vérifie si cet utilisateur, trouvé par un token, est DEJA marqué comme vérifié.(Si probleme incohérence donnees)
+        //Vérifie si $user, trouvé est DEJA marqué comme vérifié.(Si probleme incohérence donnees)
         if ($user->isVerified()) {
             return new JsonResponse([
                 'status' => 'info',
                 'message' => 'Votre adresse email est déjà vérifiée.'
             ], 200); 
         }
+        //SI la date de la création de compte, était il y a moins de 24 h 
         if ($user->getConfirmationRequestedAt() < (new \DateTimeImmutable())->modify('-24 hours')) {
         return new JsonResponse([
             'status' => 'error',

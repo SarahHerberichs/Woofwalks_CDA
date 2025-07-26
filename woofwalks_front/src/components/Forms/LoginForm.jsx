@@ -19,6 +19,7 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
 
+    debugger;
     setError("");
     setIsLoading(true);
 
