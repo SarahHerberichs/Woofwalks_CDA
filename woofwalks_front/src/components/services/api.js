@@ -2,7 +2,7 @@ import axios from "axios";
 
 //Créer instance axios et sa config par défaut
 const api = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: "https://localhost:8443/api",
   withCredentials: true, // inclure les cookies
 });
 //Avant chaque requête : Récupération token et l'ajoute dans l'en tête de la requête

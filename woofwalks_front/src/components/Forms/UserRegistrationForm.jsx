@@ -50,7 +50,7 @@ const UserRegistrationForm = () => {
 
     try {
       //Tentative de création d'un utilisateur
-      const response = await fetch("http://localhost:8000/api/users", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,9 +87,8 @@ const UserRegistrationForm = () => {
         setConfirmPassword("");
         setErrors({});
       } else {
-    // Réponse non OK : analyse des erreurs retournées par le serveur
+    // Réponse Non OK : analyse des erreurs retournées par le serveur
         console.log("Données d'erreur du serveur :", data);
-
         //Récupération des erreurs
         const serverErrors = {};
 

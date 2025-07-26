@@ -4,7 +4,6 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   useEffect(() => {
-    console.log("AuthProvider useEffect executed");
   }, []);
 
   //Récuperation Token

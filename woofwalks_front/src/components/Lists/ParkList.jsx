@@ -9,7 +9,7 @@ export default function useParks() {
   useEffect(() => {
     const fetchParks = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/parks", {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/parks`, {
           headers: {
             Accept: "application/json",
           },

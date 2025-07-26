@@ -34,7 +34,7 @@ class EmailConfirmationController extends AbstractController
                 'message' => 'Votre adresse email est déjà vérifiée.'
             ], 200); 
         }
-        //SI la date de la création de compte, était il y a moins de 24 h 
+        //SI la date de la création de compte, était il y a + de 24 h 
         if ($user->getConfirmationRequestedAt() < (new \DateTimeImmutable())->modify('-24 hours')) {
         return new JsonResponse([
             'status' => 'error',

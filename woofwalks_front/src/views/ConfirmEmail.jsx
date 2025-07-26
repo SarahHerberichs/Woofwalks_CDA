@@ -24,7 +24,7 @@ const ConfirmEmail = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:8000/api/confirm-email/${token}`
+          `${process.env.REACT_APP_API_URL}/api/confirm-email/${token}`
         );
         const data = await response.json();
 

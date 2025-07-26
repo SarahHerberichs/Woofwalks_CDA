@@ -21,27 +21,50 @@ services:
     container_name: woofwalks_nginx
     ports:
       - "8000:80"
+      - "8443:443" # Mappe le port 443 (HTTPS) du conteneur au port 8443 de ton hôte
     volumes:
       - ./woofwalks_back:/var/www/html:ro
       - ./woofwalks_back/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./certs:/etc/nginx/certs:ro # Dossier des certificats
     networks:
       - woofwalks-network
     depends_on:
       - php-fpm
 
+  # frontend:
+  #   build:
+  #     context: ./woofwalks_front
+  #   container_name: woofwalks_front
+  #   volumes:
+  #     - ./woofwalks_front:/app
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - woofwalks-network
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #     - REACT_APP_API_URL=http://woofwalks_nginx:8000
+  #   stdin_open: true
+  #   tty: true
+  #   depends_on:
+  #     - nginx
   frontend:
     build:
       context: ./woofwalks_front
     container_name: woofwalks_front
     volumes:
       - ./woofwalks_front:/app
+      - ./woofwalks_front/certs:/app/certs # << NOUVEAU: Monte le dossier des certificats du frontend
     ports:
       - "3000:3000"
     networks:
       - woofwalks-network
     environment:
       - CHOKIDAR_USEPOLLING=true
-      - REACT_APP_API_URL=http://woofwalks_nginx:8000
+      - REACT_APP_API_URL=https://localhost:8443 # << Modifie cette ligne vers HTTPS
+      - HTTPS=true # << NOUVEAU: Indique à Create React App de servir en HTTPS
+      - SSL_CRT_FILE=/app/certs/frontend_cert.crt # << NOUVEAU: Chemin du certificat frontend dans le conteneur
+      - SSL_KEY_FILE=/app/certs/frontend_key.key # << NOUVEAU: Chemin de la clé frontend dans le conteneur
     stdin_open: true
     tty: true
     depends_on:
