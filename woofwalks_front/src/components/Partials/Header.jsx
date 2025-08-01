@@ -1,9 +1,15 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
-import { useAuth } from "../../utils/AuthProvider";
+import { useAuth } from "../../utils/AuthContext";
 import BtnLogout from "../Buttons/BtnLogout";
+
 function Header() {
-  const { authToken } = useAuth();
-  const isAuthenticated = !!authToken;
+ const { isAuthenticated, isLoading } = useAuth();
+ 
+    if (isLoading) {
+        // Optionnel: Afficher un loader pendant que l'authentification est vérifiée
+        return <Navbar bg="light" expand="lg" className="shadow-sm"><Container><Navbar.Brand>Chargement...</Navbar.Brand></Container></Navbar>;
+    }
+
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm">
       <Container>

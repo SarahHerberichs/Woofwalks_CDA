@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useAuth } from "../../../utils/AuthContext";
 import SelectLocationForm from "../../FormPartials/Locations/SelectLocationForm";
 import WalkLocationSection from "../../FormPartials/Walks/WalkLocationSection";
 import { createLocation } from "../../services/createLocation";
@@ -12,8 +13,8 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
   const [photo, setPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   //Récupération token pour affichage immédiat de non autorisation de poster si non loggé
-  const token = localStorage.getItem("authToken");
-
+ const { isAuthenticated, isLoading } = useAuth();
+console.log(isAuthenticated);
   const {
     //Pour enregistrer un champ et appliquer des règles de validations
     register,
@@ -127,20 +128,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
     }
   };
 
-  if (!token) {
-    return (
-      // Messages erreur
-      <div className="container mt-5">
-        <div className="alert alert-warning text-center" role="alert">
-          <h4 className="alert-heading">Connexion requise</h4>
-          <p>Vous devez être connecté pour créer un(e) {entityType}.</p>
-          <a href="/login" className="btn btn-primary mt-3">
-            Se connecter
-          </a>
-        </div>
-      </div>
-    );
-  } else {
+ 
     return (
       <div>
         {/* déclenchement du onSubmit : appel à handle sybmit qui récupere tous les champs register et fais les vérifications */}
@@ -246,6 +234,6 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       </div>
     );
   }
-};
+
 
 export default GenericPostAdForm;

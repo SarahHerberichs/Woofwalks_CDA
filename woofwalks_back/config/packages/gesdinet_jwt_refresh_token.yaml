@@ -1,0 +1,22 @@
+# config/packages/gesdinet_jwt_refresh_token.yaml
+gesdinet_jwt_refresh_token:
+    # La route de rafraîchissement est gérée par le firewall, et non directement ici
+    # path: /api/token/refresh # <-- SUPPRIMER CETTE LIGNE
+
+    user_identity_field: email # Le champ utilisé pour identifier l'utilisateur (votre cas)
+    single_use: true # Le Refresh Token ne peut être utilisé qu'une seule fois
+    # keep_old_tokens: false # <-- SUPPRIMER CETTE LIGNE (remplacé par single_use: true)
+
+    ttl: 2592000 # <-- CORRECTION : Durée de vie du Refresh Token en secondes (30 jours)
+    # token_lifetime: 2592000 # <-- SUPPRIMER CETTE LIGNE
+
+    refresh_token_class: App\Entity\RefreshToken # L'entité pour stocker les refresh tokens
+    firewall: refresh_jwt # Le firewall qui gérera cette route
+
+    cookie:
+        enabled: true
+        domain: null
+        secure: true
+        http_only: true
+        same_site: lax
+        path: /

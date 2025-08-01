@@ -1,58 +1,71 @@
+
 security:
-  password_hashers:
-    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: "auto"
+    password_hashers:
+        App\Entity\User: 'auto'
 
-  providers:
-    app_user_provider:
-      entity:
-        class: App\Entity\User
-        property: email
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
 
-  firewalls:
-    dev:
-      pattern: ^/(_(profiler|wdt)|css|images|js)/
-      security: false
-    login:
-      pattern: ^/api/login_check
-      stateless: true
-      provider: app_user_provider
-      json_login:
-        check_path: /api/login_check
-        username_path: email
-        password_path: password
-        success_handler: lexik_jwt_authentication.handler.authentication_success
-        # surcharge le message d'erreur si l'utilisateur n'a pas validé son compte
-        failure_handler: App\Security\AuthenticationFailureHandler
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
 
-      user_checker: App\Security\UserChecker
-    api:
-      pattern: ^/api # Capture toutes les routes /api (y compris /api/users)
-      stateless: true
-      provider: app_user_provider
-      jwt: ~
-      user_checker: App\Security\UserChecker 
-  
-    api_doc: # Nouveau firewall pour la documentation API
-      pattern: ^/api/(docs|contexts)
-      security: false
+        login:
+            pattern: ^/api/login_check$
+            stateless: true
+            provider: app_user_provider
+            json_login:
+                check_path: /api/login_check
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
+        api:
+            pattern: ^/api
+            stateless: true
+            custom_authenticators:
+              - App\Security\CookieTokenAuthenticator
+            provider: app_user_provider
+            # jwt: ~
+            user_checker: App\Security\UserChecker
+            logout:
+                path: /api/logout
+            # entry_point: jwt
 
-  access_control:
-  
-    - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
-    - { path: ^/api/confirm-email/, roles: PUBLIC_ACCESS }
-    - { path: ^/api/users, roles: PUBLIC_ACCESS }
-    - { path: ^/api/walks/?$, roles: PUBLIC_ACCESS }
-    - { path: ^/api/parks/?$, roles: PUBLIC_ACCESS }
-    - { path: ^/api/(docs|contexts), roles: PUBLIC_ACCESS }
-    - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
-    - { path: ^/, roles: PUBLIC_ACCESS }
+        refresh_jwt:
+            pattern: ^/api/token/refresh$
+            stateless: true
+            refresh_jwt: ~
+            provider: app_user_provider
+            user_checker: App\Security\UserChecker
+
+        api_doc:
+            pattern: ^/api/(docs|contexts)
+            security: false
+
+    access_control:
+        - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
+        - { path: ^/api/confirm-email/, roles: PUBLIC_ACCESS }
+        - { path: ^/api/users$, methods: [POST], roles: PUBLIC_ACCESS }
+        - { path: ^/api/me, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api/logout, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/walks/?$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/parks/?$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/(docs|contexts), roles: PUBLIC_ACCESS }
+        - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:
-  security:
-    password_hashers:
-      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-        algorithm: auto
-        cost: 4
-        time_cost: 3
-        memory_cost: 10
+    security:
+        password_hashers:
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4
+                time_cost: 3
+                memory_cost: 10

@@ -5,11 +5,7 @@
 # # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 # parameters:
 
-# services:
-#     # default configuration for services in *this* file
-#     _defaults:
-#         autowire: true      # Automatically injects dependencies in your services.
-#         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
 
 #     # makes classes in src/ available to be used as services
 #     # this creates a service per class whose id is the fully-qualified class name
@@ -29,27 +25,46 @@ services:
     autowire: true # Autowiring permet à Symfony d'injecter automatiquement les dépendances
     autoconfigure: true #
     public: false
+    
   App\:
     resource: '../src/*'
     exclude:
         - '../src/DependencyInjection/'
         - '../src/Entity/'
         - '../src/Kernel.php'
-
-  App\Security\AuthenticationFailureHandler:
-    public: true
+  App\Security\Extractor\CookieTokenExtractor:
+    arguments:
+      $cookieName: 'BEARER' # Nom du cookie où tu stockes le token JWT
+    tags:
+      - { name: lexik_jwt_authentication.token_extractor, priority: 50 }
+  App\Security\CookieTokenAuthenticator:
+    arguments:
+      $tokenExtractor: '@lexik_jwt_authentication.extractor.chain_extractor'
+      # CORRECTION : Changez le service injecté de 'jwt_encoder' à 'encoder'
+      $jwtEncoder: '@lexik_jwt_authentication.encoder' # <-- C'EST LA LIGNE À CHANGER
+      $userProvider: '@security.user.provider.concrete.app_user_provider'
+  # App\Security\LogoutSuccessHandler:
+  #     tags:
+  #         - { name: kernel.event_listener, event: Symfony\Component\Security\Http\Event\LogoutEvent, method: onLogoutSuccess }
   App\EventSubscriber\JWTCreatedSubscriber: ~
   App\EventSubscriber\UserRegistrationSubscriber:
-    # tags: ['kernel.event_subscriber'] 
-  # App\EventSubscriber\TestSubscriber: ~    
+    tags: ['kernel.event_subscriber']
+  App\EventListener\JwtCookieListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: 10 }
+    public : true
+  App\EventListener\JWTTokenFromCookieListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 300 }
+  # App\EventListener\:
+  #   resource: '../src/EventListener'
+  #   exclude: '../src/EventListener/JwtCookieListener.php' # Exclure celui que vous avez défini spécifiquement
+  #   autowire: true
+  #   autoconfigure: true
   App\DataPersister\UserDataPersister: 
     arguments:
-      $frontendUrl: '%env(FRONTEND_URL)%' # <-- AJOUTE CETTE LIGNE
-  App\EventListener\:
-    resource: '../src/EventListener'
-    tags: ['doctrine.orm.entity_listener'] # optionnel avec #[AsEntityListener]
-    autowire: true
-    autoconfigure: true
+      $frontendUrl: '%env(FRONTEND_URL)%' 
+
   App\Repository\:
     resource: "../src/Repository"
     tags: ["doctrine.repository_service"]

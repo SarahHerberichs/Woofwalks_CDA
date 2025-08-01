@@ -1,4 +1,3 @@
-import { jwtDecode } from "jwt-decode"; // <-- Ajoutez cette ligne pour importer le décodeur
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../components/services/api";
@@ -11,115 +10,115 @@ const WalkDetailsPage = () => {
   const [isFull, setIsFull] = useState(false);
   //Chercher les détails de la walk dont l'id est dans l'url
   
-  const token = localStorage.getItem("authToken");
-  let userId = null;
+  const [user, setUser] = useState(null);
 
-  // Décoder le token pour obtenir l'ID de l'utilisateur actuel
-  if (token) {
+useEffect(() => {
+  const fetchUser = async () => {
     try {
-      const decodedToken = jwtDecode(token);
-      userId = decodedToken.id; // <-- CORRECTED LINE!
-
-    } catch (e) {
-      console.error("Erreur lors du décodage du token :", e);
-
+      const response = await api.get('/me');
+      
+      setUser(response.data);
+    } catch (err) {
+      console.error("Utilisateur non authentifié ou erreur API /me", err);
+      setUser(null);
     }
-  }
+  };
+  fetchUser();
+}, []);
+
 
   // --- useEffect pour charger la balade et vérifier la participation ---
-  useEffect(() => {
-    const fetchWalk = async () => {
-      try {
-        const response = await api.get(`/walks/${id}`);
-        const fetchedWalk = response.data;
-        setWalk(fetchedWalk);
-
-        // Vérifier si l'utilisateur est déjà participant
-        if (userId && fetchedWalk.participants) {
-          // API Platform utilise des IRIs (ex: /api/users/1) pour les relations.
-          // Il faut donc créer l'IRI de l'utilisateur et le comparer avec ceux des participants.
-          const userIRI = `/api/users/${userId}`;
-          const participantIds = fetchedWalk.participants.map(p => p['@id']);
-          setIsParticipating(participantIds.includes(userIRI));
-        }
-
-        //Vérifie et Set si la Walk est Full
-        const nbParticipants = fetchedWalk.participants.length;
-        const maxParticipants = fetchedWalk.maxParticipants;
-        setIsFull (typeof maxParticipants === "number" && nbParticipants >= maxParticipants)
-      } catch (error) {
-        console.error("Erreur lors de la récupération de la balade :", error);
-        setError("Erreur lors de la récupération de la balade.");
-      }
-    };
-    fetchWalk();
-  }, [id, userId]);
-
-        const handleAlertRequest = async () => {
+    useEffect(() => {
+      const fetchWalk = async () => {
         try {
-          const alertRequestPayload = {
-            user : `api/users/${userId}`,
-            walk: `api/walks/${id}`,
-            requestedAt: new Date().toISOString(),
-            notified:false
+          const response = await api.get(`/walks/${id}`);
+          const fetchedWalk = response.data;
+          setWalk(fetchedWalk);
+
+          if (user && fetchedWalk.participants) {
+            const userIRI = `/api/users/${user.id}`;
+            const participantIds = fetchedWalk.participants.map(p => p['@id']);
+            setIsParticipating(participantIds.includes(userIRI));
+          } else {
+            setIsParticipating(false);
           }
-          const response = await api.post('walk_alert_requests', alertRequestPayload, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          alert ('Demande de notif enregistree');
+
+          const nbParticipants = fetchedWalk.participants ? fetchedWalk.participants.length : 0;
+          const maxParticipants = fetchedWalk.maxParticipants;
+          setIsFull(typeof maxParticipants === "number" && nbParticipants >= maxParticipants);
         } catch (error) {
-          console.error("Erreur lors de la demande d'alerte :", error.response ? error.response.data : error);
-          alert("Erreur lors de la demande d'alerte.");
+          console.error("Erreur lors de la récupération de la balade :", error);
+          setError("Erreur lors de la récupération de la balade.");
         }
-      }
+      };
+
+      if (id) fetchWalk();
+    }, [id, user]);
 
 
-  // --- Fonction pour gérer la participation/désinscription ---
-  const handleParticipate = async () => {
-    if (!token || !userId) {
-      alert("Vous devez être connecté pour participer à une balade.");
+
+  const handleAlertRequest = async () => {
+    if (!user) {
+      alert("Vous devez être connecté pour demander une alerte.");
       return;
     }
     try {
-      let updatedParticipants;
-      const userIRI = `/api/users/${userId}`;
-      if (isParticipating) {
-        // L'utilisateur participe déjà, il veut se désinscrire
-       updatedParticipants = walk.participants.filter(
-      (participant) => (typeof participant === "string" ? participant : participant['@id']) !== userIRI
-    );
-      } else {
-          // L'utilisateur ne participe pas, il veut s'inscrire
-          updatedParticipants = walk.participants ? [...walk.participants, userIRI] : [userIRI];
-          console.log("Inscription: Nouveaux participants:", updatedParticipants);
-      }
-
-      // Envoyer la requête PATCH à l'API Platform pour mettre à jour les participants
-      const response = await api.patch(`/walks/${id}`, 
-        { participants: updatedParticipants },
-        {
-          headers: {
-            // Indique à API Platform que c'est une mise à jour partielle
-            "Content-Type": "application/merge-patch+json", 
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-
-      // Mettre à jour l'état local de la balade et de la participation après succès
-      setWalk(response.data);
-      setIsParticipating(!isParticipating);
-      alert(isParticipating ? "Vous ne participez plus à la balade !" : "Vous participez maintenant à la balade !");
-
+      const alertRequestPayload = {
+        user: `/api/users/${user.id}`,
+        walk: `/api/walks/${id}`,
+        requestedAt: new Date().toISOString(),
+        notified: false
+      };
+      await api.post('walk_alert_requests', alertRequestPayload);
+      alert('Demande de notif enregistrée');
     } catch (error) {
-      console.error("Erreur lors de la mise à jour de la participation :", error.response ? error.response.data : error);
-      setError("Erreur lors de la mise à jour de la participation.");
-      alert("Erreur lors de la mise à jour de la participation.");
+      console.error("Erreur lors de la demande d'alerte :", error.response ? error.response.data : error);
+      alert("Erreur lors de la demande d'alerte.");
     }
   };
+
+
+
+   // --- Fonction pour gérer la participation/désinscription ---
+    const handleParticipate = async () => {
+      if (!user) {
+        alert("Vous devez être connecté pour participer à une balade.");
+        return;
+      }
+      try {
+        let updatedParticipants;
+        const userIRI = `/api/users/${user.id}`;
+
+        if (isParticipating) {
+          updatedParticipants = walk.participants.filter(
+            (participant) => (typeof participant === "string" ? participant : participant['@id']) !== userIRI
+          );
+        } else {
+          updatedParticipants = walk.participants ? [...walk.participants, userIRI] : [userIRI];
+          console.log("Inscription: Nouveaux participants:", updatedParticipants);
+        }
+
+        const response = await api.patch(`/walks/${id}`,
+          { participants: updatedParticipants },
+          {
+            headers: {
+              "Content-Type": "application/merge-patch+json",
+              // Plus besoin d’Authorization, le cookie est envoyé automatiquement
+            }
+          }
+        );
+
+        setWalk(response.data);
+        setIsParticipating(!isParticipating);
+        alert(isParticipating ? "Vous ne participez plus à la balade !" : "Vous participez maintenant à la balade !");
+
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour de la participation :", error.response ? error.response.data : error);
+        setError("Erreur lors de la mise à jour de la participation.");
+        alert("Erreur lors de la mise à jour de la participation.");
+      }
+    };
+
 
   if (error) return <p className="error">{error}</p>;
   if (!walk) return <p>Chargement de la balade...</p>;
@@ -132,23 +131,25 @@ const WalkDetailsPage = () => {
       <p>Participants : {walk.participants ? walk.participants.length : 0}</p>
 
       {/* Affiche le bouton seulement si l'utilisateur est connecté */}
-      {token ? (
-        isParticipating ? (
-          <button onClick={handleParticipate}>
-            Ne plus participer
-          </button>
-        ) : isFull ? (
-          <button onClick={handleAlertRequest}>
-            Demander une alerte
-          </button>
-        ) : (
-          <button onClick={handleParticipate}>
-            Participer
-          </button>
-        )
+  {/* Affiche le bouton seulement si l'utilisateur est connecté */}
+    {user ? (
+      isParticipating ? (
+        <button onClick={handleParticipate}>
+          Ne plus participer
+        </button>
+      ) : isFull ? (
+        <button onClick={handleAlertRequest}>
+          Demander une alerte
+        </button>
       ) : (
-        <p>Connectez-vous pour participer à cette balade.</p>
-      )}
+        <button onClick={handleParticipate}>
+          Participer
+        </button>
+      )
+    ) : (
+      <p>Connectez-vous pour participer à cette balade.</p>
+    )}
+
 
     </div>
   );

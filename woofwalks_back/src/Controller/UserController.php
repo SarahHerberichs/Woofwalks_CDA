@@ -2,9 +2,27 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 
 class UserController extends AbstractController
 {
+    #[Route('/api/me', name: 'api_me', methods: ['GET'])]
+    public function me(Security $security): JsonResponse
+    {
+        $user = $security->getUser();
+        if (!$user) {
+            // Pas connecté : 401 Unauthorized
+            return new JsonResponse(['message' => 'Unauthorized'], 401);
+        }
+
+        // On retourne quelques infos utilisateur (exemple : id, email, roles)
+        return new JsonResponse([
+            'id' => $user->getId(),
+            'email' => $user->getUserIdentifier(), // ou getEmail()
+            'roles' => $user->getRoles(),
+        ]);
+    }
 }

@@ -22,6 +22,15 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['user:write']],
     validationContext: ['groups' => ['user:write']],
 )]
+#[Get(
+    uriTemplate: '/me', 
+    // La route /api/me ne doit être accessible que par un utilisateur authentifié
+    security: "is_granted('IS_AUTHENTICATED_FULLY')",
+    securityMessage: "Authentication required to access user profile.",
+    // Ceci est crucial pour définir quelles données de l'utilisateur seront exposées via cette route
+    // Assure-toi d'ajouter 'user:me' à toutes les propriétés que tu veux exposer
+    normalizationContext: ['groups' => ['user:read', 'user:me']],
+)]
 
 #[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé pour un autre compte.')]
 
@@ -48,17 +57,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:me'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['user:read', 'user:write', 'walk:read'])]
+    #[Groups(['user:read', 'user:write', 'walk:read', 'user:me'])]
     #[Assert\NotBlank(message: "L'email ne peut pas être vide.")]
     #[Assert\Email(message: "L'email '{{ value }}' n'est pas une adresse email valide.")]
     private ?string $email = null;
 
    #[ORM\Column]
-    #[Groups(['user:read'])] 
+    #[Groups(['user:read', 'user:me'])] 
     private array $roles = [];
 
 
@@ -79,7 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(mappedBy: 'participants', targetEntity: Walk::class)]
     private Collection $participatedWalks;
 
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
     #[Assert\NotBlank(message: "Le nom d'utilisateur est requis.")]
     #[ORM\Column(length: 100)]
     private ?string $username = null;

@@ -1,8 +1,24 @@
+# config/routes.yaml
+
 controllers:
   resource:
     path: ../src/Controller/
     namespace: App\Controller
   type: attribute
-auth:
+
+auth: 
   path: /api/login_check
   methods: ["POST"]
+
+api_token_refresh: # C'est le nom que la route aura dans debug:router
+  path: /api/token/refresh
+  methods: ["POST"]
+
+api_logout: # C'est le nom que la route aura dans debug:router
+  path: /api/logout
+  methods: ["POST"]
+
+api_platform:
+  resource: '.'
+  type: api_platform
+  prefix: /api

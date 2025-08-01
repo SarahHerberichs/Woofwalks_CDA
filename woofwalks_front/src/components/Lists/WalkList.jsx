@@ -13,6 +13,7 @@ const WalkList = () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/walks`, {
           headers: { Accept: "application/json" },
+          withCredentials: true,
         });
         setWalks(response.data);
       } catch (error) {
