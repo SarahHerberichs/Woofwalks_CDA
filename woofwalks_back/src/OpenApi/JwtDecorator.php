@@ -1,7 +1,7 @@
 <?php
 
 namespace App\OpenApi;
-
+//Classe uniquement pour la doc
 use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\OpenApi;
 use ApiPlatform\OpenApi\Model\SecurityScheme;

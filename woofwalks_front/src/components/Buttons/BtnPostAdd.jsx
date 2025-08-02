@@ -5,11 +5,16 @@ const BtnPostAdd = ({
   formContext,
   formGenericFieldsComponent: FormGenericFieldsComponent,
   entitySpecificFields,
+  isAuthenticated,
 }) => {
   const { isAuthenticated } = useAuth();
   const [showForm, setShowForm] = useState(false);
 
   const handleClick = () => {
+    if (!isAuthenticated) {
+      alert("Vous devez être connecté pour poster une annonce.");
+      return;
+    }
     if (!isAuthenticated) {
       alert("Vous devez être connecté pour poster une annonce.");
       return;

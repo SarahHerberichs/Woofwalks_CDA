@@ -1,19 +1,32 @@
 <?php
 
-// namespace App\Security;
+use App\Repository\RefreshTokenRepository;
+use Symfony\Component\Security\Core\Security;
 
-// use Symfony\Component\Security\Http\Event\LogoutEvent;
-// use Symfony\Component\HttpFoundation\JsonResponse;
+class LogoutSuccessHandler
+{
+    private $refreshTokenRepository;
+    private $security;
 
-// class LogoutSuccessHandler
-// {
-//     public function onLogoutSuccess(LogoutEvent $event)
-//     {
-//         // Ex : vider les cookies JWT
-//         $response = new JsonResponse(['message' => 'Déconnexion réussie']);
-//         $response->headers->clearCookie('JWT_ACCESS_TOKEN');
-//         $response->headers->clearCookie('REFRESH_TOKEN');
+    public function __construct(RefreshTokenRepository $refreshTokenRepository, Security $security)
+    {
+        $this->refreshTokenRepository = $refreshTokenRepository;
+        $this->security = $security;
+    }
 
-//         $event->setResponse($response);
-//     }
-// }
+    public function onLogoutSuccess(LogoutEvent $event)
+    {
+        $user = $this->security->getUser();
+
+        if ($user) {
+            // Supprimer tous les refresh tokens liés à l'utilisateur
+            $this->refreshTokenRepository->deleteAllForUser($user);
+        }
+
+        $response = new JsonResponse(['message' => 'Déconnexion réussie']);
+        $response->headers->clearCookie('JWT_ACCESS_TOKEN', '/', null, true, true, 'lax');
+        $response->headers->clearCookie('REFRESH_TOKEN', '/', null, true, true, 'lax');
+
+        $event->setResponse($response);
+    }
+}

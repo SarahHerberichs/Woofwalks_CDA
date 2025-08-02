@@ -1,4 +1,4 @@
-# config/routes.yaml
+# Déclaration des routes 
 
 controllers:
   resource:
@@ -10,11 +10,15 @@ auth:
   path: /api/login_check
   methods: ["POST"]
 
-api_token_refresh: # C'est le nom que la route aura dans debug:router
-  path: /api/token/refresh
-  methods: ["POST"]
+# api_token_refresh: 
+#   path: /api/token/refresh
+#   methods: ["POST"]
+# gesdinet_jwt_refresh_token:
+#   path: /api/token/refresh
+#   controller: gesdinet.jwtrefreshtoken::refresh
+#   methods: ["POST"]
 
-api_logout: # C'est le nom que la route aura dans debug:router
+api_logout: 
   path: /api/logout
   methods: ["POST"]
 
@@ -22,3 +26,5 @@ api_platform:
   resource: '.'
   type: api_platform
   prefix: /api
+
+  

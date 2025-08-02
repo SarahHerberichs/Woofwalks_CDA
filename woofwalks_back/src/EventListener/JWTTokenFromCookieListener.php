@@ -1,4 +1,6 @@
 <?php
+//Avant traitement des requetes entrentes, vérifie si header authorization est présent dans la requete, récupère le token, l'ajoute à authorisation  
+
 namespace App\EventListener;
 
 use Symfony\Component\HttpKernel\Event\RequestEvent;
