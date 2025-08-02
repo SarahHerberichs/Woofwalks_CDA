@@ -5,3 +5,5 @@ woofwalks_back/.env.test
 woofwalks_front/.env
 
 .env
+
+certs/
