@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useAuth } from "../../utils/AuthContext"; //useAuth utilise le contexte authcontext qui contient la fonction login
 
 const BtnPostAdd = ({
   formContext,
   formGenericFieldsComponent: FormGenericFieldsComponent,
   entitySpecificFields,
 }) => {
+  const { isAuthenticated } = useAuth();
   const [showForm, setShowForm] = useState(false);
 
   const handleClick = () => {
+    if (!isAuthenticated) {
+      alert("Vous devez être connecté pour poster une annonce.");
+      return;
+    }
     setShowForm(true);
   };
 
@@ -21,7 +27,9 @@ const BtnPostAdd = ({
       ) : (
         <button
           onClick={handleClick}
+          disabled={!isAuthenticated} // optionnel : bouton désactivé si non connecté
           className="btn btn-success btn-lg shadow-lg rounded-pill px-3 py-1"
+          title={!isAuthenticated ? "Connectez-vous pour poster" : undefined}
         >
           Post Add
         </button>

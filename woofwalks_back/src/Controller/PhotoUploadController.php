@@ -13,7 +13,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class PhotoUploadController extends AbstractController
 {
-    #[Route('/api/upload_photo', name: 'upload_photo', methods: ['POST'])]
+    #[Route('/api/main_photo', name: 'upload_photo', methods: ['POST'])]
     public function uploadPhoto(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): JsonResponse
     {
         $photoFile = $request->files->get('file');
@@ -22,6 +22,16 @@ class PhotoUploadController extends AbstractController
             $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
             $safeFilename = $slugger->slug($originalFilename);
             $newFilename = $safeFilename . '-' . uniqid() . '.' . $photoFile->guessExtension();
+
+            $uploadDir = $this->getParameter('kernel.project_dir') . '/public/media';
+
+            if (!is_dir($uploadDir)) {
+                return new JsonResponse(['error' => 'Le dossier de destination n\'existe pas'], 500);
+            }
+
+            if (!is_writable($uploadDir)) {
+                return new JsonResponse(['error' => 'Le dossier de destination n\'est pas accessible en écriture'], 500);
+            }
 
             try {
                 $photoFile->move(
