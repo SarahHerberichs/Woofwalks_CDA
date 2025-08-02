@@ -7,3 +7,5 @@ woofwalks_front/.env
 .env
 
 certs/
+woofwalks_back/backupDb/
+
