@@ -40,19 +40,19 @@ services:
   App\Security\CookieTokenAuthenticator:
     arguments:
       $tokenExtractor: '@lexik_jwt_authentication.extractor.chain_extractor'
-      # CORRECTION : Changez le service injecté de 'jwt_encoder' à 'encoder'
       $jwtEncoder: '@lexik_jwt_authentication.encoder' # <-- C'EST LA LIGNE À CHANGER
       $userProvider: '@security.user.provider.concrete.app_user_provider'
-  # App\Security\LogoutSuccessHandler:
-  #     tags:
-  #         - { name: kernel.event_listener, event: Symfony\Component\Security\Http\Event\LogoutEvent, method: onLogoutSuccess }
+
+  App\EventListener\LogoutListener:
+    tags: ['kernel.event_subscriber']
+
   App\EventSubscriber\JWTCreatedSubscriber: ~
   App\EventSubscriber\UserRegistrationSubscriber:
     tags: ['kernel.event_subscriber']
   App\EventListener\JwtCookieListener:
     tags:
       - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: 10 }
-    public : true
+    public: true
   App\EventListener\JWTTokenFromCookieListener:
     tags:
       - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 300 }
@@ -92,3 +92,7 @@ services:
       - { name: "serializer.normalizer", priority: 100 }
   App\Repository\WalkRepository:
     tags: ["doctrine.repository_service"]
+
+  # App\Repository\RefreshTokenRepository:
+  #       autowire: true
+  #       autoconfigure: true

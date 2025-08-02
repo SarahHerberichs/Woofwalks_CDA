@@ -13,8 +13,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
   const [photo, setPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   //Récupération token pour affichage immédiat de non autorisation de poster si non loggé
- const { isAuthenticated, isLoading } = useAuth();
-console.log(isAuthenticated);
+  const { isAuthenticated, isLoading } = useAuth();
   const {
     //Pour enregistrer un champ et appliquer des règles de validations
     register,
@@ -102,7 +101,7 @@ console.log(isAuthenticated);
         is_custom_location:
         data.use_custom_location === "custom" ? true : false,
       };
-
+console.log(entityData);
       // 4. Envoi des données via controlleur symfony
       const postAd = await postGenericAd(entityData, entityType);
 

@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const BtnPostAdd = ({
   formContext,
   formGenericFieldsComponent: FormGenericFieldsComponent,
   entitySpecificFields,
+  isAuthenticated,
 }) => {
   const [showForm, setShowForm] = useState(false);
 
   const handleClick = () => {
+    if (!isAuthenticated) {
+      alert("Vous devez être connecté pour poster une annonce.");
+      return;
+    }
     setShowForm(true);
   };
 

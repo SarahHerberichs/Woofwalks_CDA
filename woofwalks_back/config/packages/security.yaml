@@ -1,19 +1,21 @@
 
 security:
+    #Algorithme auto de symfony pour le hashage
     password_hashers:
         App\Entity\User: 'auto'
-
+    #Classe User comme source de donnée des Utilisateurs (auth par mail)
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
-
+    #Déf générale de comment sont sécurisée les diff parties de l'appli
     firewalls:
+        #Fichiers qui restent accessible pendant le dev- sans etre authentifié
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-
+        #Route de login : login_check en utilisant les paramétrages de app_user_provider
         login:
             pattern: ^/api/login_check$
             stateless: true
@@ -25,29 +27,28 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
+        # Toutes les routes api sécurisées par custom_authenticatos (CookieTokenAuthenticator)
         api:
             pattern: ^/api
             stateless: true
             custom_authenticators:
               - App\Security\CookieTokenAuthenticator
             provider: app_user_provider
-            # jwt: ~
             user_checker: App\Security\UserChecker
             logout:
                 path: /api/logout
-            # entry_point: jwt
-
-        refresh_jwt:
-            pattern: ^/api/token/refresh$
-            stateless: true
-            refresh_jwt: ~
-            provider: app_user_provider
-            user_checker: App\Security\UserChecker
-
+        #Route de rafraichissement du refresh_jwt
+        # refresh_jwt:
+        #     pattern: ^/api/token/refresh$
+        #     stateless: true
+        #     refresh_jwt: ~
+        #     provider: app_user_provider
+        #     user_checker: App\Security\UserChecker
+        #Permet l'acces à la doc de l'api -- false 
         api_doc:
             pattern: ^/api/(docs|contexts)
             security: false
-
+    # Déclaration des path et droits associés
     access_control:
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
         - { path: ^/api/confirm-email/, roles: PUBLIC_ACCESS }

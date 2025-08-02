@@ -54,17 +54,17 @@ services:
     container_name: woofwalks_front
     volumes:
       - ./woofwalks_front:/app
-      - ./woofwalks_front/certs:/app/certs # << NOUVEAU: Monte le dossier des certificats du frontend
+      - ./woofwalks_front/certs:/app/certs
     ports:
       - "3000:3000"
     networks:
       - woofwalks-network
     environment:
       - CHOKIDAR_USEPOLLING=true
-      - REACT_APP_API_URL=https://localhost:8443 # << Modifie cette ligne vers HTTPS
-      - HTTPS=true # << NOUVEAU: Indique à Create React App de servir en HTTPS
-      - SSL_CRT_FILE=/app/certs/frontend_cert.crt # << NOUVEAU: Chemin du certificat frontend dans le conteneur
-      - SSL_KEY_FILE=/app/certs/frontend_key.key # << NOUVEAU: Chemin de la clé frontend dans le conteneur
+      - REACT_APP_API_URL=https://localhost:8443 
+      - HTTPS=true 
+      - SSL_CRT_FILE=/app/certs/frontend_cert.crt
+      - SSL_KEY_FILE=/app/certs/frontend_key.key
     stdin_open: true
     tty: true
     depends_on:
