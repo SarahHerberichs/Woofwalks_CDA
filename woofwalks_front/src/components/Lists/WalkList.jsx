@@ -27,7 +27,6 @@ const WalkList = () => {
   const filteredSortedWalks = filterAndSortByFutureDate(walks);
   // Prend uniquement ceux à afficher
   const visibleWalks = filteredSortedWalks.slice(0, visibleCount);
-
   // Gestion du clic "Charger plus"
   const handleLoadMore = () => {
     setVisibleCount((prev) => prev + 8);
@@ -35,6 +34,13 @@ const WalkList = () => {
 
   return (
     <div className="container-fluid mt-4">
+      <button onClick={async () => {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/token/refresh`, {}, { withCredentials: true });
+      alert('Token refreshed');
+    }}>
+      Refresh token manuellement
+    </button>
+
       {error && <p className="text-danger">{error}</p>}
 
       <div className="row g-4">

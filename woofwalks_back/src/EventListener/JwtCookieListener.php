@@ -13,12 +13,15 @@ class JwtCookieListener {
         error_log('🔍 JwtCookieListener appelé');
         $request = $event->getRequest();
 
-        // Ne traite que les réponses issues de la route /api/login_check
-        if (!str_contains($request->getPathInfo(), '/api/login_check')) {
+        $allowedPaths = [
+        '/api/login_check',
+        '/api/token/refresh',
+        ];
+
+        if (!in_array($request->getPathInfo(), $allowedPaths)) {
             error_log('⛔ JwtCookieListener ignoré, route incorrecte: ' . $request->getPathInfo());
             return;
         }
-
         // Récupère l'objet Response (la réponse HTTP en cours de construction)
         $response = $event->getResponse();
 
@@ -48,5 +51,18 @@ class JwtCookieListener {
             // Remplace le contenu JSON de la réponse par le nouveau contenu sans le token
             $response->setContent(json_encode($content));
         }
+        if (isset($content['refresh_token'])) {
+            $refreshToken = $content['refresh_token'];
+            $cookieRefresh = Cookie::create('REFRESH_TOKEN', $refreshToken)
+                ->withHttpOnly(true)
+                ->withSecure(true)
+                ->withSameSite('Lax')
+                ->withPath('/');
+            $response->headers->setCookie($cookieRefresh);
+
+            unset($content['refresh_token']);
+            $response->setContent(json_encode($content));
+        }
+
     }
 }

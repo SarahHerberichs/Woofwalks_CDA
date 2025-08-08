@@ -32,19 +32,25 @@ services:
         - '../src/DependencyInjection/'
         - '../src/Entity/'
         - '../src/Kernel.php'
+  
+  App\EventListener\AuthenticationSuccessListener:
+    arguments:
+      $refreshTokenTtl: 2592000 # 30 jours en secondes, modifie si besoin
+    tags:
+      - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccess }
   App\Security\Extractor\CookieTokenExtractor:
     arguments:
-      $cookieName: 'BEARER' # Nom du cookie où tu stockes le token JWT
+      $cookieName: 'BEARER' 
     tags:
       - { name: lexik_jwt_authentication.token_extractor, priority: 50 }
   App\Security\CookieTokenAuthenticator:
     arguments:
       $tokenExtractor: '@lexik_jwt_authentication.extractor.chain_extractor'
-      $jwtEncoder: '@lexik_jwt_authentication.encoder' # <-- C'EST LA LIGNE À CHANGER
+      $jwtEncoder: '@lexik_jwt_authentication.encoder'
       $userProvider: '@security.user.provider.concrete.app_user_provider'
 
-  App\EventListener\LogoutListener:
-    tags: ['kernel.event_subscriber']
+  # App\EventListener\LogoutListener:
+  #   tags: ['kernel.event_subscriber']
 
   App\EventSubscriber\JWTCreatedSubscriber: ~
   App\EventSubscriber\UserRegistrationSubscriber:

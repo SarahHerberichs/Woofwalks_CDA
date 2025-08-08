@@ -53,30 +53,37 @@ export const AuthProvider = ({ children }) => {
 
   // Intercepteur de réponse axios pour refresh automatique du token en cas de 401
   useEffect(() => {
-    //Va enregistrer les fonctions suivantes pr quelles soient apellées à chaque réponse recue
-    const responseInterceptor = axios.interceptors.response.use(
-      res => res,
-      async err => {
-        //Récupère la config de la requete qui a causé l'erreure
-        const originalRequest = err.config;
-        //Si 401(probleme token) et qu'on a pas encore réessayé)- on réessaye et déclare qu'on a déjà réessaye (Evite boucle infinie)
-        if (err.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-          //Appel au refresh du token pour ne plus etre en 401
-          try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/api/token/refresh`, {}, { withCredentials: true });
-            return axios(originalRequest);
-            //si le retry n'a pas été concluant, on rejete et fini
-          } catch {
-            setIsAuthenticated(false);
-            return Promise.reject(err);
-          }
-        }
-        return Promise.reject(err);
-      }
-    );
-    return () => axios.interceptors.response.eject(responseInterceptor);
-  }, []);
+  const responseInterceptor = axios.interceptors.response.use(
+    res => {
+      console.log('Response OK:', res);
+      return res;
+    },
+    async err => {
+      const originalRequest = err.config;
+      console.error('Interceptor caught error:', err.response?.status, err.response?.data);
+
+     if (err.response?.status === 401 && !originalRequest._retry) {
+  originalRequest._retry = true;
+  try {
+    console.log('Trying to refresh token...');
+    await axios.post(`${process.env.REACT_APP_API_URL}/api/token/refresh`, {}, { withCredentials: true });
+    console.log('Token refreshed, retrying original request...');
+    await new Promise(resolve => setTimeout(resolve, 100));
+    await checkAuth();
+    return axios({ ...originalRequest, withCredentials: true }); // ✅ Important !
+  } catch (e) {
+    console.error('Refresh token failed:', e);
+    setIsAuthenticated(false);
+    return Promise.reject(err);
+  }
+}
+
+      return Promise.reject(err);
+    }
+  );
+
+  return () => axios.interceptors.response.eject(responseInterceptor);
+}, []);
 
   //Déclaration du contexte englobant l'appli, permettant de consommer les procédures partout 
   return (

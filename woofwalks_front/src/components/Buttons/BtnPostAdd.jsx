@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { useAuth } from "../../utils/AuthContext"; //useAuth utilise le contexte authcontext qui contient la fonction login
+import { useAuth } from "../../utils/AuthContext";
 
 const BtnPostAdd = ({
   formContext,
   formGenericFieldsComponent: FormGenericFieldsComponent,
   entitySpecificFields,
-  isAuthenticated,
 }) => {
   const { isAuthenticated } = useAuth();
+
   const [showForm, setShowForm] = useState(false);
 
   const handleClick = () => {

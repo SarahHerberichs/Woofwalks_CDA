@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../components/services/api";
@@ -11,8 +12,17 @@ const WalkDetailsPage = () => {
   //Chercher les détails de la walk dont l'id est dans l'url
   
   const [user, setUser] = useState(null);
-
 useEffect(() => {
+  axios.get(`${process.env.REACT_APP_API_URL}/api/walks/${id}`, {
+    withCredentials: true
+  })
+  .then(res => {
+    console.log("Participants:", res.data.participants);
+  })
+  .catch(err => console.error(err));
+}, [id]);
+  
+  useEffect(() => {
   const fetchUser = async () => {
     try {
       const response = await api.get('/me');

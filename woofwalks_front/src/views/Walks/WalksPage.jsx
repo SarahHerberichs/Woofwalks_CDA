@@ -8,7 +8,6 @@ const WalksPage = () => {
   //Passage du context présent
   const formContext = "walks";
   const { isAuthenticated, isLoading } = useAuth();
-
   return (
     <>
       <BtnPostAdd

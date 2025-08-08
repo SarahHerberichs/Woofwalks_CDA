@@ -37,7 +37,19 @@ security:
             user_checker: App\Security\UserChecker
             logout:
                 path: /api/logout
+        refresh_token:
+            pattern: ^/api/token/refresh$
+            stateless: true
+            # Pas de custom_authenticator ici si tu gères via controller manuellement
+            # anonymous: true
         #Route de rafraichissement du refresh_jwt
+        # refresh:
+        #     pattern: ^/api/token/refresh$
+        #     stateless: true
+        #     custom_authenticators:
+        #         - App\Security\CookieTokenAuthenticator
+        #     provider: app_user_provider
+
         # refresh_jwt:
         #     pattern: ^/api/token/refresh$
         #     stateless: true
