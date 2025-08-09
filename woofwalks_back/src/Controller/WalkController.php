@@ -22,7 +22,7 @@ class WalkController extends AbstractController
             empty($data['datetime']) ||
             empty($data['photo']) || 
             empty($data['location']) ||
-           !isset($data['is_custom_location']) || // Vérifie si la clé existe
+           !isset($data['is_custom_location']) || 
         !is_bool($data['is_custom_location'])
         ) {
             return new JsonResponse(['error' => 'Missing required fields'], 400);

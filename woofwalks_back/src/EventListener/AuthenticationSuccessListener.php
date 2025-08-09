@@ -1,7 +1,10 @@
 <?php
 
 namespace App\EventListener;
-
+//Déclenché après la génération du JWT par lexik. 
+//Ce Listener est abonné à "authenticationSuccessEvent:lexik"
+//Ajout d'un token refreshtoken en plus de celui de lexik déjà crée et le place l'ensemble de la data (les 2 token) dans la response
+//JWTCookieListener prend le relai pour en créer des Cookies et unset cette data
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 use App\Entity\RefreshToken;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,6 +21,7 @@ class AuthenticationSuccessListener
             $this->refreshTokenTtl = $refreshTokenTtl;
         }
 
+    //En plus du token lexik, ajout du refreshtoken 
     public function onAuthenticationSuccess(AuthenticationSuccessEvent $event)
     {
         $user = $event->getUser();
@@ -27,13 +31,16 @@ class AuthenticationSuccessListener
 
         // Génération du refresh token (UUID par exemple)
         $newRefreshTokenString = bin2hex(random_bytes(40)); // 80 caractères hexadécimaux aléatoires
+
+        $validityDate = new \DateTime();
+        $validityDate->modify('+' . $this->refreshTokenTtl . ' seconds');
+
         // Création de l'entité RefreshToken
         $refreshToken = new RefreshToken();
         $refreshToken->setRefreshToken($newRefreshTokenString);
         $refreshToken->setUsername($user->getEmail());
-        $refreshToken->setValid(new \DateTime('+30 days'));
+        $refreshToken->setValid($validityDate);
 
-        // Tu peux gérer date d'expiration etc.
 
         $this->em->persist($refreshToken);
         $this->em->flush();

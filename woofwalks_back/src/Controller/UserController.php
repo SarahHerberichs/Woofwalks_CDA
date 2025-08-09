@@ -1,5 +1,8 @@
 <?php
-
+//Apellée pour avoir les détails de l'user à partir du token envoyé dans la requete
+//Apellée par lAuthProvider pour :
+// 1.vérif si user est connecté au chargement de la page
+// 2. vérif apr_s refresh du token pour vérifier que le nouveau token est valide et que user est toujours connecté
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

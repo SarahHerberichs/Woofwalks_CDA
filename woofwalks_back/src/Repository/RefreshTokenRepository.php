@@ -16,6 +16,5 @@ class RefreshTokenRepository extends ServiceEntityRepository
         parent::__construct($registry, RefreshToken::class);
     }
 
-    // Ici tu peux ajouter des méthodes de recherche personnalisées si besoin
-    // Exemple : public function findOneBySomeField($value): ?RefreshToken { ... }
+  
 }

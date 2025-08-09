@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Security;
+// Cet authenticator lit les tokens JWT directement depuis un cookie
+// et les valide pour sécuriser les routes de l'API.
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,11 +14,11 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
-
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\ChainTokenExtractor;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\LcobucciJWTEncoder;
 
-class CookieTokenAuthenticator extends AbstractAuthenticator {
+class CookieTokenAuthenticator extends AbstractAuthenticator
+{
     private ChainTokenExtractor $tokenExtractor;
     private LcobucciJWTEncoder $jwtEncoder;
     private UserProviderInterface $userProvider;
@@ -31,10 +33,13 @@ class CookieTokenAuthenticator extends AbstractAuthenticator {
         $this->userProvider = $userProvider;
     }
 
-    public function supports(Request $request): ?bool {
+    // Détermine si l'authenticator doit être exécuté.
+    public function supports(Request $request): ?bool
+    {
+        // Routes publiques ou l'authentification n'est pas requise.
         $publicPaths = [
             '^/api/confirm-email/',
-            '^/api/users$',   
+            // '^/api/users$',
             '^/api/token/refresh',
             '^/api/walks/?$',
             '^/api/parks/?$',
@@ -45,31 +50,27 @@ class CookieTokenAuthenticator extends AbstractAuthenticator {
         $path = $request->getPathInfo();
         foreach ($publicPaths as $pattern) {
             if (preg_match("#$pattern#", $path)) {
-                error_log("⛔ JwtCookieListener ignoré, route publique : $path");
+                error_log("⛔ CookieTokenAuthenticator ignoré, route publique : $path");
                 return false;
             }
         }
 
-        $hasToken = $request->cookies->has('BEARER');
-        if (!$hasToken) {
-            error_log('⛔ Pas de cookie BEARER trouvé');
-            return false;
-        } else {
-            error_log('✅ Cookie BEARER présent');
-        }
-
-        return true;
+        //Utilisation de la chaîne d'extracteurs pour vérifier la présence d'un token.
+        return $this->tokenExtractor->extract($request) !== null;
     }
 
-
-
-    public function authenticate(Request $request): Passport {
-        $token = $request->cookies->get('BEARER');
+    //Logique d'authentification pricnipale
+    public function authenticate(Request $request): Passport
+    {
+        //Utilisation de la chaîne d'extracteurs pour vérifier la présence d'un token.
+        $token = $this->tokenExtractor->extract($request);
+        
         if (!$token) {
-            throw new CustomUserMessageAuthenticationException('Aucun token JWT dans les cookies.');
+            throw new CustomUserMessageAuthenticationException('Aucun token JWT dans la requête.');
         }
 
         try {
+            // Décodage du token pour extraire les données.
             $data = $this->jwtEncoder->decode($token);
             if (!$data) {
                 throw new CustomUserMessageAuthenticationException('Token invalide.');
@@ -78,21 +79,25 @@ class CookieTokenAuthenticator extends AbstractAuthenticator {
             throw new CustomUserMessageAuthenticationException('Token invalide ou mal formé.');
         }
 
-        if (!$data || !isset($data['email'])) {
+        if (!isset($data['email'])) {
             throw new CustomUserMessageAuthenticationException('Token JWT invalide ou email absent.');
         }
-        //Récupère l'utilisateur complet à partir de son email , charges toutes ses données associées (role, permission...)
+
+        // Chargement de l'utilisateur à partir de l'email contenu dans le token.
         return new SelfValidatingPassport(new UserBadge($data['email'], function ($userIdentifier) {
             return $this->userProvider->loadUserByIdentifier($userIdentifier);
         }));
     }
 
-
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response {
-        return null; 
+    // Appelé en cas de succès de l'authentification --Rien
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
+    {
+        return null;
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response {
+    // Appelé en cas d'échec de l'authentification.
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
+    {
         return new Response(json_encode(['error' => $exception->getMessage()]), 401, ['Content-Type' => 'application/json']);
     }
 }

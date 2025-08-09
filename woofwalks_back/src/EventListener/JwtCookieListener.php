@@ -1,8 +1,8 @@
 <?php
 
 namespace App\EventListener;
-//Intercepte la réponse de login_check quand symfony prépare la réponse http 
-//- récupère le token jwt de la réponse - l'injecte dans un cookie -supprime le token du corps json de la réponse
+//Après  un login_check ou un refresh
+//- Récupère le token jwt de la réponse - l'injecte dans un cookie -supprime le token du corps json de la réponse
 
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -12,7 +12,7 @@ class JwtCookieListener {
     {
         error_log('🔍 JwtCookieListener appelé');
         $request = $event->getRequest();
-
+        //Routes ou le listener doit s'executer
         $allowedPaths = [
         '/api/login_check',
         '/api/token/refresh',
@@ -28,7 +28,9 @@ class JwtCookieListener {
         // Décode le contenu JSON de la réponse (pour accéder au token)
         $content = json_decode($response->getContent(), true);
         
-        // Vérifie si un token JWT est présent dans la réponse
+        // Vérifie si un token JWT est présent dans la réponse -- Si c'est le cas, va creer deux cookies
+        //ce n'est normalement pas le cas dans le cadre d'une sortie de tokenrefreshcontroller mais c'est le cas lors
+        //de la connexion
         if (isset($content['token'])) {
             // Log le token reçu (à usage de debug — attention à ne pas faire ça en production)
             error_log('🎯 Token reçu dans JwtCookieListener: ' . $content['token']);
@@ -61,6 +63,7 @@ class JwtCookieListener {
             $response->headers->setCookie($cookieRefresh);
 
             unset($content['refresh_token']);
+            
             $response->setContent(json_encode($content));
         }
 

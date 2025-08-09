@@ -215,6 +215,9 @@ class Walk
     {
         if (!$this->participants->contains($participant)) {
             $this->participants[] = $participant;
+
+            $participant->addParticipatedWalk($this);
+
         }
         return $this;
     }
@@ -222,6 +225,9 @@ class Walk
     public function removeParticipant(User $participant): self
     {
         $this->participants->removeElement($participant);
+
+        $participant->removeParticipatedWalk($this);
+
         return $this;
     }
 

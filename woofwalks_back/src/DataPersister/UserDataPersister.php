@@ -59,7 +59,7 @@ class UserDataPersister implements ProcessorInterface
             $data->setPlainPassword(null);
         
             if ($operation->getMethod() === 'POST' && $data->getId() === null) {
-                            $this->logger->info('Frontend URL utilisée pour le mail : ' . $this->frontendUrl); // <-- Cette ligne !
+                    $this->logger->info('Frontend URL utilisée pour le mail : ' . $this->frontendUrl); 
                 // Génération token
                 $token = Uuid::v4()->toRfc4122();
                 $data->setConfirmationToken($token); 

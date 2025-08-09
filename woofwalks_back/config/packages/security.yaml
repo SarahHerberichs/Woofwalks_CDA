@@ -19,14 +19,25 @@ security:
         login:
             pattern: ^/api/login_check$
             stateless: true
+            #Provider utilisé pour charger user depuis la bdd via loadUserByIdentifier
             provider: app_user_provider
             json_login:
                 check_path: /api/login_check
                 username_path: email
                 password_path: password
+                #Services fournis par Lexik implémenté par AuthenticationSuccessHandler
+                #ce success handler recupere User , crée le jwt, construit 
+                #la data contenant le token,crée et dispatch un AuthenticationSuccessEvent
+                #Parm dont se sert onAuthenticationSuccess ()
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-
+        refresh_token:
+            pattern: ^/api/token/refresh$
+            stateless: true
+            #chemin pour gérer la vérification des token
+            custom_authenticators:
+                - App\Security\RefreshTokenAuthenticator 
+            provider: app_user_provider
         # Toutes les routes api sécurisées par custom_authenticatos (CookieTokenAuthenticator)
         api:
             pattern: ^/api
@@ -37,26 +48,8 @@ security:
             user_checker: App\Security\UserChecker
             logout:
                 path: /api/logout
-        refresh_token:
-            pattern: ^/api/token/refresh$
-            stateless: true
-            # Pas de custom_authenticator ici si tu gères via controller manuellement
-            # anonymous: true
-        #Route de rafraichissement du refresh_jwt
-        # refresh:
-        #     pattern: ^/api/token/refresh$
-        #     stateless: true
-        #     custom_authenticators:
-        #         - App\Security\CookieTokenAuthenticator
-        #     provider: app_user_provider
-
-        # refresh_jwt:
-        #     pattern: ^/api/token/refresh$
-        #     stateless: true
-        #     refresh_jwt: ~
-        #     provider: app_user_provider
-        #     user_checker: App\Security\UserChecker
-        #Permet l'acces à la doc de l'api -- false 
+                invalidate_session: true
+                delete_cookies: ['BEARER', 'REFRESH_TOKEN']       
         api_doc:
             pattern: ^/api/(docs|contexts)
             security: false

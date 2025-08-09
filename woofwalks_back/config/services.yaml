@@ -23,7 +23,7 @@ parameters:
 services:
   _defaults:
     autowire: true # Autowiring permet à Symfony d'injecter automatiquement les dépendances
-    autoconfigure: true #
+    autoconfigure: true 
     public: false
     
   App\:
@@ -32,25 +32,23 @@ services:
         - '../src/DependencyInjection/'
         - '../src/Entity/'
         - '../src/Kernel.php'
-  
   App\EventListener\AuthenticationSuccessListener:
     arguments:
-      $refreshTokenTtl: 2592000 # 30 jours en secondes, modifie si besoin
+      $refreshTokenTtl: 2592000 
     tags:
       - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccess }
+  #Service utilisé pour l'extraction de token jwt d'une requete http depuis un COOKIE
   App\Security\Extractor\CookieTokenExtractor:
     arguments:
       $cookieName: 'BEARER' 
     tags:
       - { name: lexik_jwt_authentication.token_extractor, priority: 50 }
+  App\Security\RefreshTokenAuthenticator: ~
   App\Security\CookieTokenAuthenticator:
     arguments:
       $tokenExtractor: '@lexik_jwt_authentication.extractor.chain_extractor'
       $jwtEncoder: '@lexik_jwt_authentication.encoder'
       $userProvider: '@security.user.provider.concrete.app_user_provider'
-
-  # App\EventListener\LogoutListener:
-  #   tags: ['kernel.event_subscriber']
 
   App\EventSubscriber\JWTCreatedSubscriber: ~
   App\EventSubscriber\UserRegistrationSubscriber:
@@ -59,14 +57,6 @@ services:
     tags:
       - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: 10 }
     public: true
-  App\EventListener\JWTTokenFromCookieListener:
-    tags:
-      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 300 }
-  # App\EventListener\:
-  #   resource: '../src/EventListener'
-  #   exclude: '../src/EventListener/JwtCookieListener.php' # Exclure celui que vous avez défini spécifiquement
-  #   autowire: true
-  #   autoconfigure: true
   App\DataPersister\UserDataPersister: 
     arguments:
       $frontendUrl: '%env(FRONTEND_URL)%' 
@@ -77,7 +67,7 @@ services:
   App\Controller\:
     resource: "../src/Controller"
     exclude: "../src/Controller/{Debugger,Tests,Test}"
-    public: true # Rend le contrôleur public
+    public: true 
   App\Service\:
     resource: "../src/Service/*"
     public: false
@@ -98,7 +88,6 @@ services:
       - { name: "serializer.normalizer", priority: 100 }
   App\Repository\WalkRepository:
     tags: ["doctrine.repository_service"]
-
-  # App\Repository\RefreshTokenRepository:
-  #       autowire: true
-  #       autoconfigure: true
+  App\EventListener\LogoutListener:
+    tags:
+        - { name: kernel.event_listener, event: Symfony\Component\Security\Http\Event\LogoutEvent, method: onLogout }

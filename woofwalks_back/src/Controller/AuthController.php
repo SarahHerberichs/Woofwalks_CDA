@@ -1,6 +1,7 @@
 <?php
 
-
+//login_check est géré nativement par lexik qui va vérifier les identifiants et générer un token JWT 
+//Il crée un tableau avec ce token sous la clé 'token'
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

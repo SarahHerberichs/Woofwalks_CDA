@@ -68,7 +68,7 @@ class WalkCreationService
         $walk->setLocation($location);
         $walk->setCreator($creator);
         $walk->setIsCustomLocation($isCustomLocation);
-
+        $walk->addParticipant($creator);
         $chat = new Chat();
         $chat->setWalk($walk);
 

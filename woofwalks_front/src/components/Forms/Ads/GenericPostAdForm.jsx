@@ -101,7 +101,6 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
         is_custom_location:
         data.use_custom_location === "custom" ? true : false,
       };
-console.log(entityData);
       // 4. Envoi des données via controlleur symfony
       const postAd = await postGenericAd(entityData, entityType);
 

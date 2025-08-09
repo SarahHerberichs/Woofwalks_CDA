@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Controller;
-
-use App\Entity\User;
+//Récupération des jwt , création de cookie pour les 2 tokens, suppresion du corps de la reponse
 use App\Entity\RefreshToken;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class TokenRefreshController extends AbstractController
 {
@@ -19,69 +22,78 @@ class TokenRefreshController extends AbstractController
     public function refresh(
         Request $request,
         EntityManagerInterface $em,
-        JWTTokenManagerInterface $jwtManager
+        JWTTokenManagerInterface $jwtManager,
+        Security $security
     ): JsonResponse {
-        // 1. Lire le cookie 'BEARER'
+        // Le RefreshTokenAuthenticator s'est déjà assuré que l'utilisateur est authentifié.
+        // On récupère directement l'utilisateur à partir du jeton de rafraîchissement validé.
+        /** @var UserInterface|null $user */
+        $user = $security->getUser();
+
+        if (!$user instanceof User) {
+            throw new AuthenticationException('Could not retrieve authenticated user from refresh token.');
+        }
+
+        // On récupère le token de rafraîchissement qui a servi à l'authentification
         $refreshTokenValue = $request->cookies->get('REFRESH_TOKEN');
 
-
         if (!$refreshTokenValue) {
-            return $this->json(['message' => 'Missing refresh token'], Response::HTTP_UNAUTHORIZED);
+            // Cette erreur ne devrait pas se produire car l'authenticator l'a déjà vérifiée.
+            // On la garde pour une sécurité accrue.
+            throw new AuthenticationException('Refresh token cookie not found.');
         }
 
-        // 2. Vérifier si le token est en BDD
-        $token = $em->getRepository(RefreshToken::class)->findOneBy(['refreshToken' => $refreshTokenValue]);
+        // On trouve l'entité RefreshToken en base de données.
+        // On s'assure que le token de rafraîchissement correspond bien à l'utilisateur.
+        $refreshTokenEntity = $em->getRepository(RefreshToken::class)->findOneBy([
+            'refreshToken' => $refreshTokenValue,
+            'username' => $user->getUserIdentifier()
+        ]);
 
-        if (!$token || $token->getValid() < new \DateTime()) {
-            return $this->json(['message' => 'Invalid or expired refresh token'], Response::HTTP_UNAUTHORIZED);
+        if (!$refreshTokenEntity || $refreshTokenEntity->getValid() < new \DateTimeImmutable()) {
+            throw new AuthenticationException('Invalid or expired refresh token.');
         }
 
-        // 3. Récupérer l’utilisateur
-        /** @var User $user */
-        $user = $em->getRepository(User::class)->findOneBy(['email' => $token->getUsername()]);
-
-        if (!$user) {
-            return $this->json(['message' => 'User not found'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        // 4. Générer un nouveau JWT
+        // 1. Générer un nouveau JWT (token d'accès)
         $newJwt = $jwtManager->create($user);
 
-        // 5. Si single-use : supprimer le refresh token actuel
-        $em->remove($token);
+        // 2. Supprimer l'ancien refresh token
+        $em->remove($refreshTokenEntity);
         $em->flush();
 
-        // 6. Émettre un nouveau refresh token (si tu veux en recréer un ici)
-        $newRefreshToken = new RefreshToken();
-        $newRefreshToken->setRefreshToken(bin2hex(random_bytes(64)));
-        $newRefreshToken->setUsername($user->getUserIdentifier());
-        $newRefreshToken->setValid((new \DateTime())->modify('+30 days'));
+        // 3. Émettre un nouveau refresh token
+        $newRefreshTokenEntity = new RefreshToken();
+        $newRefreshTokenEntity->setRefreshToken(bin2hex(random_bytes(64)));
+        $newRefreshTokenEntity->setUsername($user->getUserIdentifier());
+        $newRefreshTokenEntity->setValid((new \DateTimeImmutable())->modify('+30 days'));
 
-        $em->persist($newRefreshToken);
+        $em->persist($newRefreshTokenEntity);
         $em->flush();
 
-        // 7. Réémettre le cookie sécurisé
+        // 4. Préparer la réponse
+        $response = $this->json(['message' => 'Token refreshed successfully']);
+
+        // 5. Configurer les cookies pour les nouveaux tokens
         $refreshCookie = Cookie::create('REFRESH_TOKEN')
-        ->withValue($newRefreshToken->getRefreshToken())
-        ->withHttpOnly(true)
-        ->withSecure(true)
-        ->withSameSite('lax')
-        ->withPath('/')
-        ->withExpires(strtotime('+30 days'));
+            ->withValue($newRefreshTokenEntity->getRefreshToken())
+            ->withHttpOnly(true)
+            ->withSecure(true)
+            ->withSameSite('lax')
+            ->withPath('/')
+            ->withExpires(strtotime('+30 days'));
 
-        // 🔥 Cookie du nouveau JWT
-    $jwtCookie = Cookie::create('BEARER')
-        ->withValue($newJwt)
-        ->withHttpOnly(true)
-        ->withSecure(true)
-        ->withSameSite('lax')
-        ->withPath('/')
-            ->withExpires((new \DateTime())->modify('+60 seconds')); // correspond au token_ttl de 60s
+        $jwtCookie = Cookie::create('BEARER')
+            ->withValue($newJwt)
+            ->withHttpOnly(true)
+            ->withSecure(true)
+            ->withSameSite('lax')
+            ->withPath('/')
+            ->withExpires((new \DateTimeImmutable())->modify('+60 seconds'));
 
-    $response = $this->json(['message' => 'Token refreshed']);
-    $response->headers->setCookie($refreshCookie);
-    $response->headers->setCookie($jwtCookie);
+        // 6. Ajouter les cookies à la réponse
+        $response->headers->setCookie($refreshCookie);
+        $response->headers->setCookie($jwtCookie);
 
-    return $response;
+        return $response;
     }
 }
