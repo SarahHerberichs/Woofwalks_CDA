@@ -4,6 +4,8 @@ namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Entity\User;
+use App\Entity\MainPhoto;
+use App\Entity\Location;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 // La classe de test étend WebTestCase, ce qui fournit les outils nécessaires pour les tests fonctionnels Symfony
@@ -24,8 +26,13 @@ class WalkControllerFunctionalTest extends WebTestCase
         // 2. Préparation des données d'authentification
         // Utilise la base de données de test pour trouver le premier utilisateur (créé par les fixtures).
         $user = $container->get('doctrine')->getRepository(User::class)->findOneBy([]);
+        // Trouve une Photo et une Location qui existent déjà dans la base de données de test
+        $photo = $container->get('doctrine')->getRepository(MainPhoto::class)->findOneBy([]);
+        $location = $container->get('doctrine')->getRepository(Location::class)->findOneBy([]);
         // Vérifie que l'utilisateur existe bien pour que le test puisse continuer.
         $this->assertNotNull($user, 'Aucun utilisateur trouvé pour le test');
+        $this->assertNotNull($photo, 'Aucune photo trouvée dans les fixtures.');
+        $this->assertNotNull($location, 'Aucune localisation trouvée dans les fixtures.');
 
         // Récupère le service de gestion des tokens JWT pour en générer un.
         $jwtManager = $container->get(JWTTokenManagerInterface::class);
@@ -39,11 +46,11 @@ class WalkControllerFunctionalTest extends WebTestCase
         $data = [
             'title' => 'Balade test',
             'description' => 'Description de la balade de test',
-            'datetime' => '2025-08-16T10:00:00', // Correspond à la clé attendue par le contrôleur et le service
-            'photo' => 2, // L'ID d'une photo qui doit exister dans la base de données de test (via les fixtures)
-            'location' => 2, // L'ID d'une localisation qui doit exister dans la base de données de test (via les fixtures)
+            'datetime' => '2025-08-16T10:00:00',
+            'photo' => $photo->getId(),      // <-- ID dynamique
+            'location' => $location->getId(), // <-- ID dynamique
             'is_custom_location' => true,
-            'max_participants' => 10, // Un champ attendu par le service de création
+            'max_participants' => 10,
         ];
 
         // 4. Envoi de la requête HTTP
