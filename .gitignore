@@ -4,7 +4,7 @@ woofwalks_back/.env.test
 
 woofwalks_front/.env
 
-.env
+.env.docker
 
 certs/
 woofwalks_back/backupDb/
