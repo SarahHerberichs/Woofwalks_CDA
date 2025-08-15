@@ -3,7 +3,11 @@ env:
   - excludePaths: []
     name: baseline
     urls:
+<<<<<<< HEAD
     - https://localhost:8443
+=======
+    - https://woofwalks_nginx:443
+>>>>>>> develop
   parameters:
     failOnError: true
     progressToStdout: false
@@ -14,7 +18,11 @@ jobs:
   type: passiveScan-config
 - parameters:
     maxDuration: 1
+<<<<<<< HEAD
     url: https://localhost:8443
+=======
+    url: https://woofwalks_nginx:443
+>>>>>>> develop
   type: spider
 - parameters:
     maxDuration: 0
