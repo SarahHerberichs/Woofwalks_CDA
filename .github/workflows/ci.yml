@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env: # <-- Placez les variables d'environnement ici
+    env:
       APP_ENV: test
       DATABASE_URL: 'mysql://root:@127.0.0.1:3306/woofwalks_test'
       
@@ -49,11 +49,11 @@ jobs:
       - name: Prepare Test Database
         run: |
           chmod +x bin/console
-          bin/console doctrine:database:create
-          bin/console doctrine:migrations:migrate --no-interaction
-          bin/console doctrine:fixtures:load --no-interaction
+          bin/console doctrine:database:create --env=test
+          bin/console doctrine:migrations:migrate --no-interaction --env=test
+          bin/console doctrine:fixtures:load --no-interaction --env=test
         working-directory: woofwalks_back
 
       - name: Run PHPUnit Tests
-        run: ./vendor/bin/phpunit
+        run: ./vendor/bin/phpunit --env=test
         working-directory: woofwalks_back
