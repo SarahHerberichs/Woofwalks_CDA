@@ -8,6 +8,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env: # <-- Placez les variables d'environnement ici
+      APP_ENV: test
+      DATABASE_URL: 'mysql://root:@127.0.0.1:3306/woofwalks_test'
+      
     services:
       mysql:
         image: mysql:8.0
@@ -29,10 +33,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: 'pdo_mysql, mbstring' 
+          extensions: 'pdo_mysql, mbstring'
           tools: composer
-
-      # Nouvelle étape pour créer un fichier .env temporaire
+      
       - name: Create .env file for CI
         run: |
           echo 'APP_SECRET=a_secure_secret' > .env
@@ -44,10 +47,7 @@ jobs:
         working-directory: woofwalks_back
 
       - name: Prepare Test Database
-        env:
-          APP_ENV: test
-          DATABASE_URL: 'mysql://root:@127.0.0.1:3306/woofwalks_test' 
-        run: |
+        run: | # <-- Plus de bloc 'env' ici
           bin/console doctrine:database:create
           bin/console doctrine:migrations:migrate --no-interaction
           bin/console doctrine:fixtures:load --no-interaction
