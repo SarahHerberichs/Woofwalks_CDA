@@ -51,7 +51,7 @@ jobs:
           chmod +x bin/console
           bin/console doctrine:database:create --env=test
           bin/console doctrine:migrations:migrate --no-interaction --env=test
-          bin/console doctrine:fixtures:load --no-interaction --env=test
+          bin/console doctrine:fixtures:load --no-interaction --purge-with-truncate --env=test # <-- C'est cette ligne qui a été modifiée
         working-directory: woofwalks_back
 
       - name: Run PHPUnit Tests
