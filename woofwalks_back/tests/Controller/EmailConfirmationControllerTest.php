@@ -68,8 +68,8 @@ class EmailConfirmationControllerTest extends TestCase
     {
         // Create a mock User
         $user = $this->getMockBuilder(User::class)
-                     ->onlyMethods(['isVerified', 'setConfirmationToken', 'setIsVerified'])
-                     ->getMock();
+            ->onlyMethods(['isVerified', 'setConfirmationToken', 'setIsVerified', 'getConfirmationRequestedAt'])
+            ->getMock();
 
         $user->method('isVerified')->willReturn(false);
         $user->method('getConfirmationRequestedAt')->willReturn(new \DateTimeImmutable()); 

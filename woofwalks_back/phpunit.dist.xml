@@ -18,6 +18,8 @@
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0"/>
     </php>
 
+    <env name="KERNEL_CLASS" value="App\Kernel"/>
+
     <testsuites>
         <testsuite name="Project Test Suite">
             <directory>tests</directory>
