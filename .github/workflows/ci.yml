@@ -49,9 +49,11 @@ jobs:
       - name: Prepare Test Database
         run: |
           chmod +x bin/console
-          bin/console doctrine:database:create --env=test
-          bin/console doctrine:migrations:migrate --no-interaction --env=test
-          bin/console doctrine:fixtures:load --no-interaction --purge-with-truncate --env=test # <-- C'est cette ligne qui a été modifiée
+          bin/console doctrine:database:create --if-not-exists --env=test
+          bin/console doctrine:schema:update --force --env=test # <-- Met à jour le schéma de la base de données
+          bin/console doctrine:query:sql "SET FOREIGN_KEY_CHECKS=0;" --env=test
+          bin/console doctrine:fixtures:load --no-interaction --env=test
+          bin/console doctrine:query:sql "SET FOREIGN_KEY_CHECKS=1;" --env=test
         working-directory: woofwalks_back
 
       - name: Run PHPUnit Tests
