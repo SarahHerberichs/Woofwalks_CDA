@@ -61,20 +61,20 @@ class WalkControllerFunctionalTest extends WebTestCase
         );
 
         // Récupère l'objet de réponse HTTP.
-    // ...
-$response = $client->getResponse();
-$responseData = json_decode($response->getContent(), true);
+                // ...
+            $response = $client->getResponse();
+            $responseData = json_decode($response->getContent(), true);
 
-echo "\nStatus : " . $response->getStatusCode() . "\n";
-echo "Contenu : " . json_encode($responseData, JSON_PRETTY_PRINT) . "\n";
+            echo "\nStatus : " . $response->getStatusCode() . "\n";
+            echo "Contenu : " . json_encode($responseData, JSON_PRETTY_PRINT) . "\n";
 
-// Si vous avez un champ 'errors' dans la réponse, affichez-le
-if (isset($responseData['errors'])) {
-    echo "Erreurs de validation: \n" . json_encode($responseData['errors'], JSON_PRETTY_PRINT) . "\n";
-}
+            // Si vous avez un champ 'errors' dans la réponse, affichez-le
+            if (isset($responseData['errors'])) {
+                echo "Erreurs de validation: \n" . json_encode($responseData['errors'], JSON_PRETTY_PRINT) . "\n";
+            }
 
-$this->assertEquals(201, $response->getStatusCode(), 'Status code incorrect');
-// ...
+            $this->assertEquals(201, $response->getStatusCode(), 'Status code incorrect');
+            // ...
 
         // 5. Débogage
         // Ces lignes affichent le statut et le contenu de la réponse pour aider au débogage.
