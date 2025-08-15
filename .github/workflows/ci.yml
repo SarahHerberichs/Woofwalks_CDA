@@ -1,5 +1,3 @@
-# .github/workflows/ci.yml
-
 name: Continuous Integration
 
 on:
@@ -31,8 +29,15 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: 'pdo_mysql, mbstring' # <-- Notez "pdo_mysql" au lieu de "pdo_sqlite"
+          extensions: 'pdo_mysql, mbstring' 
           tools: composer
+
+      # Nouvelle étape pour créer un fichier .env temporaire
+      - name: Create .env file for CI
+        run: |
+          echo 'APP_SECRET=a_secure_secret' > .env
+          echo 'APP_ENV=test' >> .env
+        working-directory: woofwalks_back
 
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
@@ -41,7 +46,7 @@ jobs:
       - name: Prepare Test Database
         env:
           APP_ENV: test
-          DATABASE_URL: 'mysql://root:@127.0.0.1:3306/woofwalks_test' # <-- Notez la nouvelle URL
+          DATABASE_URL: 'mysql://root:@127.0.0.1:3306/woofwalks_test' 
         run: |
           bin/console doctrine:database:create
           bin/console doctrine:migrations:migrate --no-interaction
