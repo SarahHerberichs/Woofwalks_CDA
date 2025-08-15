@@ -4,10 +4,10 @@ on:
   push:
     branches:
       - main
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -17,18 +17,21 @@ jobs:
           php-version: '8.2'
           extensions: 'pdo_sqlite, mbstring'
           tools: composer
-
+          
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
+        working-directory: woofwalks_back # <-- Ajoutez cette ligne
 
       - name: Prepare Test Database
         env:
           APP_ENV: test
-          DATABASE_URL: 'sqlite:///%kernel.project_dir%/var/data.db'
+          DATABASE_URL: 'sqlite:///%kernel.project_dir%/var/data.db' 
         run: |
           bin/console doctrine:database:create --if-not-exists
           bin/console doctrine:migrations:migrate --no-interaction
           bin/console doctrine:fixtures:load --no-interaction
+        working-directory: woofwalks_back # <-- Ajoutez cette ligne
 
       - name: Run PHPUnit Tests
         run: ./vendor/bin/phpunit
+        working-directory: woofwalks_back # <-- Ajoutez cette ligne
