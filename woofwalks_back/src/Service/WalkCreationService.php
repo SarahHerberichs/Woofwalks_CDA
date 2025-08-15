@@ -40,12 +40,18 @@ class WalkCreationService
             return null; 
         }
 
+        // try {
+        //     $datetime = new \DateTime($data['date']);
+        // } catch (\Exception $e) {
+        //     return null; 
+        // }
+
         try {
-            $datetime = new \DateTime($data['date']);
+            $datetime = new \DateTime($data['datetime']);
         } catch (\Exception $e) {
             return null; 
-        }
-
+        }       
+        
         $photo = $this->photoRepository->find($data['photo']);
         if (!$photo) {
             return null; 

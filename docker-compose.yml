@@ -11,8 +11,8 @@ services:
       - woofwalks-network
     expose:
       - 9000
-    environment:
-      - APP_ENV=dev
+    # environment:
+      # - APP_ENV=dev
     depends_on:
       - db
 
@@ -31,23 +31,6 @@ services:
     depends_on:
       - php-fpm
 
-  # frontend:
-  #   build:
-  #     context: ./woofwalks_front
-  #   container_name: woofwalks_front
-  #   volumes:
-  #     - ./woofwalks_front:/app
-  #   ports:
-  #     - "3000:3000"
-  #   networks:
-  #     - woofwalks-network
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
-  #     - REACT_APP_API_URL=http://woofwalks_nginx:8000
-  #   stdin_open: true
-  #   tty: true
-  #   depends_on:
-  #     - nginx
   frontend:
     build:
       context: ./woofwalks_front
@@ -76,14 +59,14 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
-      # MYSQL_USER: ${DB_USER}
-      # MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3306:3306"
     networks:
       - woofwalks-network
     volumes:
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d 
       - mysql_data:/var/lib/mysql
+      
     healthcheck:
       test: ["CMD-SHELL", "mysql -uroot -p$${MYSQL_ROOT_PASSWORD} -e 'SELECT 1;'"]      
       interval: 10s
@@ -109,6 +92,7 @@ networks:
     driver: bridge
 
 volumes:
+
   mysql_data:
     driver: local
   symfony_cache:
