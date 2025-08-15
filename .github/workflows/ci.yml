@@ -1,17 +1,13 @@
-name: Continuous Integration
-
-on:
-  push:
-    branches:
-      - main
-
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       APP_ENV: test
       DATABASE_URL: 'mysql://root:@127.0.0.1:3306/woofwalks_test'
-      
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+      JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
+
     services:
       mysql:
         image: mysql:8.0
@@ -50,12 +46,12 @@ jobs:
         run: |
           chmod +x bin/console
           bin/console doctrine:database:create --if-not-exists --env=test
-          bin/console doctrine:schema:update --force --env=test # <-- Met à jour le schéma de la base de données
+          bin/console doctrine:schema:update --force --env=test
           bin/console doctrine:query:sql "SET FOREIGN_KEY_CHECKS=0;" --env=test
           bin/console doctrine:fixtures:load --no-interaction --env=test
           bin/console doctrine:query:sql "SET FOREIGN_KEY_CHECKS=1;" --env=test
         working-directory: woofwalks_back
 
       - name: Run PHPUnit Tests
-        run: APP_ENV=test JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" JWT_PUBLIC_KEY="${{ secrets.JWT_PUBLIC_KEY }}" JWT_PASSPHRASE="${{ secrets.JWT_PASSPHRASE }}" ./vendor/bin/phpunit
+        run: ./vendor/bin/phpunit
         working-directory: woofwalks_back
