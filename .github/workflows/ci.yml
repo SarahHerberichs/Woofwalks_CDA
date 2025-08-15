@@ -47,7 +47,10 @@ jobs:
         working-directory: woofwalks_back
 
       - name: Prepare Test Database
-        run: | # <-- Plus de bloc 'env' ici
+        run: chmod +x bin/console
+        working-directory: woofwalks_back
+
+      - name: Prepare test Database
           bin/console doctrine:database:create
           bin/console doctrine:migrations:migrate --no-interaction
           bin/console doctrine:fixtures:load --no-interaction
