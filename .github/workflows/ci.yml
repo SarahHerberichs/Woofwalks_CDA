@@ -57,5 +57,5 @@ jobs:
         working-directory: woofwalks_back
 
       - name: Run PHPUnit Tests
-        run: APP_ENV=test ./vendor/bin/phpunit
+        run: APP_ENV=test JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" JWT_PUBLIC_KEY="${{ secrets.JWT_PUBLIC_KEY }}" JWT_PASSPHRASE="${{ secrets.JWT_PASSPHRASE }}" ./vendor/bin/phpunit
         working-directory: woofwalks_back
