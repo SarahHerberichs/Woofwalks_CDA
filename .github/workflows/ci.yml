@@ -49,15 +49,15 @@ jobs:
         run: composer install --no-interaction --prefer-dist
         working-directory: woofwalks_back
 
-      - name: Prepare Test Database
-        run: |
-          chmod +x bin/console
-          bin/console doctrine:database:create --if-not-exists --env=test
-          bin/console doctrine:schema:update --force --env=test
-          bin/console doctrine:query:sql "SET FOREIGN_KEY_CHECKS=0;" --env=test
-          bin/console doctrine:fixtures:load --no-interaction --env=test --purge-with-truncate
-          bin/console doctrine:query:sql "SET FOREIGN_KEY_CHECKS=1;" --env=test
-        working-directory: woofwalks_back
+    - name: Prepare Test Database
+      run: |
+        chmod +x bin/console
+        bin/console doctrine:database:create --if-not-exists --env=test
+        bin/console doctrine:schema:update --force --env=test
+        bin/console doctrine:query:sql "SET FOREIGN_KEY_CHECKS=0;" --env=test
+        bin/console doctrine:fixtures:load --no-interaction --env=test --purge-with-truncate
+        bin/console doctrine:query:sql "SET FOREIGN_KEY_CHECKS=1;" --env=test
+      working-directory: woofwalks_back
 
       - name: Run PHPUnit Tests
         run: ./vendor/bin/phpunit
