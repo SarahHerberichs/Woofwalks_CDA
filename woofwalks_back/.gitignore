@@ -12,6 +12,8 @@ woofwalks_front/Dockerfile
 /public/bundles/
 /var/
 /vendor/
+/var/cache/
+/var/log/
 ###< symfony/framework-bundle ###
 
 ###> lexik/jwt-authentication-bundle ###
