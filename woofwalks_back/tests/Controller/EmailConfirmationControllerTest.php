@@ -72,6 +72,7 @@ class EmailConfirmationControllerTest extends TestCase
                      ->getMock();
 
         $user->method('isVerified')->willReturn(false);
+        $user->method('getConfirmationRequestedAt')->willReturn(new \DateTimeImmutable()); 
         $user->expects($this->once())->method('setConfirmationToken')->with(null);
         $user->expects($this->once())->method('setIsVerified')->with(true);
 
