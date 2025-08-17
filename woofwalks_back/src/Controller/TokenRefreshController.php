@@ -88,7 +88,8 @@ class TokenRefreshController extends AbstractController
             ->withSecure(true)
             ->withSameSite('lax')
             ->withPath('/')
-            ->withExpires((new \DateTimeImmutable())->modify('+60 seconds'));
+            ->withExpires((new \DateTimeImmutable())->modify('+15 minutes')->getTimestamp());
+
 
         // 6. Ajouter les cookies à la réponse
         $response->headers->setCookie($refreshCookie);

@@ -9,3 +9,9 @@ down:
 
 restart:
 	docker compose --env-file .env.docker restart
+
+restart-php:
+	docker compose --env-file .env.docker restart php-fpm
+
+restart-front:
+	docker compose --env-file .env.docker restart front

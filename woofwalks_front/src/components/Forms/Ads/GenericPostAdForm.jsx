@@ -117,7 +117,6 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
         ...entitySpecificFields.initialValues,
       });
       setPhoto(null);
-
     } catch (error) {
       alert("Une erreur est survenue : " + error.message);
       console.error(error);

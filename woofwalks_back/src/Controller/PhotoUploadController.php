@@ -13,7 +13,9 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class PhotoUploadController extends AbstractController
 {
+
     #[Route('/api/main_photo', name: 'upload_photo', methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function uploadPhoto(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): JsonResponse
     {
         $photoFile = $request->files->get('file');
