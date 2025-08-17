@@ -11,8 +11,9 @@ services:
       - woofwalks-network
     expose:
       - 9000
-    # environment:
+    environment:
       # - APP_ENV=dev
+       - APP_ENV=prod
     depends_on:
       - db
 

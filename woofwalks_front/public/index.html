@@ -29,7 +29,16 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval';
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: https:;
+      font-src 'self' https:;
+      connect-src 'self' https://localhost:8443;
+      frame-ancestors 'none';
+      base-uri 'self';
+  ">
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

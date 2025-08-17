@@ -15,3 +15,5 @@ restart-php:
 
 restart-front:
 	docker compose --env-file .env.docker restart front
+restart-nginx:
+	docker compose --env-file .env.docker restart nginx
