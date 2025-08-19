@@ -39,7 +39,7 @@ class CookieTokenAuthenticator extends AbstractAuthenticator
         // Routes publiques ou l'authentification n'est pas requise.
         $publicPaths = [
             '^/api/confirm-email/',
-            // '^/api/users$',
+            '^/api/users(\.json)?$',
             '^/api/token/refresh',
             '^/api/walks/?$',
             '^/api/parks/?$',

@@ -20,22 +20,15 @@
 #             - 'strict-origin-when-cross-origin'
 # config/packages/nelmio_security.yaml
 nelmio_security:
-    csp:
-        enabled: true
-        enforce: true
-        hosts:
-            'self': true
-            'fonts.googleapis.com': true
-            'fonts.gstatic.com': true
-        report: []
-    clickjacking:
-        paths:
-            '^/': 
-                header: 'DENY'
-    content_type:
-        nosniff: true
-    forced_ssl:
-        hosts: ['localhost']
-        hsts_max_age: 31536000
-        hsts_subdomains: true
-        hsts_preload: false 
+  csp:
+    enabled: false   #  désactivé, géré par nginx
+  clickjacking:
+    paths:
+      '^/': { header: DENY }
+  content_type:
+    nosniff: true
+  forced_ssl:
+    hosts: ['localhost']
+    hsts_max_age: 31536000
+    hsts_subdomains: true
+    hsts_preload: true
