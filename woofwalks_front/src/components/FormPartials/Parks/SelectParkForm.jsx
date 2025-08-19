@@ -1,16 +1,17 @@
+import '../../../style/SelectPark.css';
 import useParks from "../../Lists/ParkList";
 
 const SelectParkForm = ({ register, errors }) => {
   const { parks, error } = useParks();
 
   return (
-    <div className="mb-3">
-      <label className="form-label">Choisir un parc</label>
+    <div className="select-park-container">
+      <label className="select-park-label">Choisir un parc</label>
       <select
         {...register("park_location_id", {
           required: "Veuillez choisir un parc",
         })}
-        className="form-select"
+        className="select-park-select"
       >
         <option value="">-- Sélectionner un parc --</option>
         {parks.map((park) => (
@@ -19,9 +20,9 @@ const SelectParkForm = ({ register, errors }) => {
           </option>
         ))}
       </select>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="select-park-error">{error}</p>}
       {errors.park_location_id && (
-        <p style={{ color: "red" }}>{errors.park_location_id.message}</p>
+        <p className="select-park-error">{errors.park_location_id.message}</p>
       )}
     </div>
   );

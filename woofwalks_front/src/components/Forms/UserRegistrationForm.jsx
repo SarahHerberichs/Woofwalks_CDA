@@ -1,5 +1,6 @@
 // src/components/UserRegistrationForm.js
 import { useState } from "react";
+import '../../style/UserRegistration.css';
 
 const UserRegistrationForm = () => {
   const [username, setUsername] = useState("");
@@ -140,84 +141,85 @@ const UserRegistrationForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Inscription</h2>
+   <form className="user-registration-form" onSubmit={handleSubmit}>
+  <h2>Inscription</h2>
 
-      {registrationSuccess && (
-        <p style={{ color: "green" }}>
-          Inscription réussie, un email de vérification vous a été envoyé !
-        </p>
-      )}
-      {errors.general && <p style={{ color: "red" }}>{errors.general}</p>}
+  {registrationSuccess && (
+    <p className="success-message">
+      Inscription réussie, un email de vérification vous a été envoyé !
+    </p>
+  )}
+  {errors.general && <p className="error-message">{errors.general}</p>}
 
-      <div>
-        <label htmlFor="email">E-mail:</label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
-      </div>
+  <div className="form-group">
+    <label htmlFor="email">E-mail:</label>
+    <input
+      type="email"
+      id="email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      required
+    />
+    {errors.email && <p className="error-message">{errors.email}</p>}
+  </div>
 
-      <div>
-        <label htmlFor="username">Nom d'utilisateur:</label>
-        <input
-          type="text"
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        {errors.username && <p style={{ color: "red" }}>{errors.username}</p>}
-      </div>
+  <div className="form-group">
+    <label htmlFor="username">Nom d'utilisateur:</label>
+    <input
+      type="text"
+      id="username"
+      value={username}
+      onChange={(e) => setUsername(e.target.value)}
+      required
+    />
+    {errors.username && <p className="error-message">{errors.username}</p>}
+  </div>
 
-      <div>
-        <label htmlFor="password">Mot de passe:</label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
-      </div>
+  <div className="form-group">
+    <label htmlFor="password">Mot de passe:</label>
+    <input
+      type="password"
+      id="password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+    />
+    {errors.password && <p className="error-message">{errors.password}</p>}
+  </div>
 
-      <div>
-        <label htmlFor="confirmPassword">Confirmer le mot de passe:</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
-        {errors.confirmPassword && (
-          <p style={{ color: "red" }}>{errors.confirmPassword}</p>
-        )}
-      </div>
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={cgv}
-            onChange={(e) => setCgv(e.target.checked)}
-          />
-          J'accepte les{" "}
-          <a href="/conditions" target="_blank">
-            Conditions Générales de Vente
-          </a>
-        </label>
-        {errors.cgv && <p style={{ color: "red" }}>{errors.cgv}</p>}
-      </div>
+  <div className="form-group">
+    <label htmlFor="confirmPassword">Confirmer le mot de passe:</label>
+    <input
+      type="password"
+      id="confirmPassword"
+      value={confirmPassword}
+      onChange={(e) => setConfirmPassword(e.target.value)}
+      required
+    />
+    {errors.confirmPassword && (
+      <p className="error-message">{errors.confirmPassword}</p>
+    )}
+  </div>
 
-      <button type="submit" disabled={loading}>
-        {loading ? "Inscription en cours..." : "S'inscrire"}
-      </button>
-    </form>
+  <div className="form-group">
+    <label>
+      <input
+        type="checkbox"
+        checked={cgv}
+        onChange={(e) => setCgv(e.target.checked)}
+      />
+      J'accepte les{" "}
+      <a href="/conditions" target="_blank">
+        Conditions Générales de Vente
+      </a>
+    </label>
+    {errors.cgv && <p className="error-message">{errors.cgv}</p>}
+  </div>
+
+  <button type="submit" disabled={loading}>
+    {loading ? "Inscription en cours..." : "S'inscrire"}
+  </button>
+</form>
   );
 };
 

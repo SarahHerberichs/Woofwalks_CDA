@@ -19,3 +19,23 @@ restart-nginx:
 	docker compose --env-file .env.docker restart nginx
 reload-nginx:
 	docker compose --env-file .env.docker exec nginx nginx -s reload
+
+# Lancer en prod avec rebuild complet frontend + nginx
+build-prod-env:
+	docker compose -f docker-compose.prod.yml --env-file .env.docker up -d --build frontend nginx
+
+# Stopper seulement frontend et nginx
+stop-prod-env:
+	docker compose -f docker-compose.prod.yml --env-file .env.docker stop frontend nginx
+
+# Redémarrer frontend et nginx
+restart-prod-env:
+	docker compose -f docker-compose.prod.yml --env-file .env.docker restart frontend nginx
+
+# Supprimer les conteneurs frontend et nginx (clean)
+down-prod-env:
+	docker compose -f docker-compose.prod.yml --env-file .env.docker rm -f frontend nginx
+
+# Up frontend et nginx sans rebuild (déjà buildés)
+up-prod-env:
+	docker compose -f docker-compose.prod.yml --env-file .env.docker up -d frontend nginx

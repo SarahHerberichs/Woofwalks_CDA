@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import "../../style/BtnLogout.css";
 import { useAuth } from "../../utils/AuthContext";
 
 
@@ -11,18 +12,8 @@ const BtnLogout = () => {
     navigate("/login");
   };
 
-  return (
-    <button
-      onClick={handleLogout}
-      style={{
-        padding: "10px 20px",
-        backgroundColor: "#dc3545",
-        color: "white",
-        border: "none",
-        borderRadius: "5px",
-        cursor: "pointer",
-      }}
-    >
+ return (
+    <button className="btn-logout" onClick={handleLogout}>
       Déconnexion
     </button>
   );

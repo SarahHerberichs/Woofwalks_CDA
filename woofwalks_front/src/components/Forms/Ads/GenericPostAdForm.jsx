@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import '../../../style/PostAd.css';
 import { useAuth } from "../../../utils/AuthContext";
 import SelectLocationForm from "../../FormPartials/Locations/SelectLocationForm";
 import WalkLocationSection from "../../FormPartials/Walks/WalkLocationSection";
@@ -128,107 +129,95 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
  
     return (
       <div>
-        {/* déclenchement du onSubmit : appel à handle sybmit qui récupere tous les champs register et fais les vérifications */}
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label>
-              Titre:
+  <form className="post-ad-form" onSubmit={handleSubmit(onSubmit)}>
+    <div className="form-group">
+      <label>Titre:</label>
+      <input
+        {...register("title", { required: "Le titre est requis" })}
+        type="text"
+        name="title"
+      />
+      {errors.title && (
+        <p className="error-message">{errors.title.message}</p>
+      )}
+    </div>
+
+    <div className="form-group">
+      <label>Description:</label>
+      <textarea
+        {...register("description", {
+          required: "La description est requise",
+        })}
+        name="description"
+      />
+      {errors.description && (
+        <p className="error-message">{errors.description.message}</p>
+      )}
+    </div>
+
+    {entitySpecificFields.fields.map((field) => (
+      <div key={field.name} className="form-group">
+        <label>{field.label}:</label>
+        {field.type === "radio" ? (
+          field.options.map((option) => (
+            <label key={option.value}>
               <input
-                {...register("title", { required: "Le titre est requis" })}
-                type="text"
-                name="title"
+                type="radio"
+                value={option.value}
+                {...register(field.name, { required: true })}
               />
+              {option.label}
             </label>
-            {errors.title && (
-              <p style={{ color: "red" }}>{errors.title.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label>
-              Description:
-              <textarea
-                {...register("description", {
-                  required: "La description est requise",
-                })}
-                name="description"
-              />
-            </label>
-            {errors.description && (
-              <p style={{ color: "red" }}>{errors.description.message}</p>
-            )}
-          </div>
-
-          {/* Champs spécifiques injectés dynamiquement */}
-          {entitySpecificFields.fields.map((field) => (
-            <div key={field.name}>
-              {/* SI c'est des input radio */}
-              <label>{field.label}:</label>
-              {field.type === "radio" ? (
-                field.options.map((option) => (
-                  <label key={option.value} style={{ marginRight: "1em" }}>
-                    <input
-                      type="radio"
-                      value={option.value}
-                      {...register(field.name, { required: true })}
-                    />
-                    {option.label}
-                  </label>
-                ))
-              ) : (
-                // Pour les autres cas
-                <input
-                  {...register(field.name, {
-                    required: `${field.label} est requis`,
-                  })}
-                  type={field.type}
-                  name={field.name}
-                />
-              )}
-              {errors[field.name] && (
-                <p style={{ color: "red" }}>{errors[field.name].message}</p>
-              )}
-            </div>
-          ))}
-
-          {/* LocationForm contrôle la sélection des coordonnées */}
-          {entityType === "walks" ? (
-            <WalkLocationSection
-              locationType={locationType}
-              control={control}
-              register={register}
-              errors={errors}
-            />
-          ) : (
-            //Utilisation d'un controller car SelectLocationForm gère ses propres états 
-          <Controller
-            // Controller gère un champ unique "locationData" qui est un objet contenant plusieurs sous-champs
-            name="locationData"
-            control={control} // fournis par useForm, permet de gérer les champs contrôlés
-            defaultValue={{      // Valeurs initiales du champ "locationData"
-              city: "",
-              street: "",
-              latitude: null,
-              longitude: null,
-              name: "",
-            }}
-            // Dans render, on récupère un objet "field" fourni par react-hook-form,
-            // qui contient la valeur actuelle (field.value) et la fonction pour la mettre à jour (field.onChange)
-            render={({ field }) => (
-              <SelectLocationForm
-                value={field.value}                 // Valeur actuelle passée au composant
-                onLocationDataChange={field.onChange}  // Fonction pour notifier les changements
-              />
-            )}
+          ))
+        ) : (
+          <input
+            {...register(field.name, {
+              required: `${field.label} est requis`,
+            })}
+            type={field.type}
+            name={field.name}
           />
-
-          )}
-            <PhotoForm photo={photo} onFileChange={handleFileChange}/>
-          <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "En cours..." : `Créer ${entityType}`}
-          </button>
-        </form>
+        )}
+        {errors[field.name] && (
+          <p className="error-message">{errors[field.name].message}</p>
+        )}
       </div>
+    ))}
+
+    {entityType === "walks" ? (
+      <WalkLocationSection
+        locationType={locationType}
+        control={control}
+        register={register}
+        errors={errors}
+      />
+    ) : (
+      <Controller
+        name="locationData"
+        control={control}
+        defaultValue={{
+          city: "",
+          street: "",
+          latitude: null,
+          longitude: null,
+          name: "",
+        }}
+        render={({ field }) => (
+          <SelectLocationForm
+            value={field.value}
+            onLocationDataChange={field.onChange}
+          />
+        )}
+      />
+    )}
+
+    <PhotoForm photo={photo} onFileChange={handleFileChange} />
+
+    <button type="submit" disabled={isSubmitting}>
+      {isSubmitting ? "En cours..." : `Créer ${entityType}`}
+    </button>
+  </form>
+</div>
     );
   }
 
