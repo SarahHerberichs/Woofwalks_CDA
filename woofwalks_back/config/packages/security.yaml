@@ -30,7 +30,9 @@ security:
                 #la data contenant le token,crée et dispatch un AuthenticationSuccessEvent
                 #Parm dont se sert onAuthenticationSuccess ()
                 success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+                #Custom handler pour limiter nb de tentatives
+                failure_handler: App\Security\CustomAuthenticationFailureHandler
+
         refresh_token:
             pattern: ^/api/token/refresh$
             stateless: true

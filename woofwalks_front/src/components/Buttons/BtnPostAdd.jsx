@@ -32,7 +32,7 @@ const BtnPostAdd = ({
       ) : (
         <button
           onClick={handleClick}
-          disabled={!isAuthenticated} // optionnel : bouton désactivé si non connecté
+          disabled={!isAuthenticated} // bouton désactivé si non connecté
           className="btn btn-success btn-lg shadow-lg rounded-pill px-3 py-1"
           title={!isAuthenticated ? "Connectez-vous pour poster" : undefined}
         >

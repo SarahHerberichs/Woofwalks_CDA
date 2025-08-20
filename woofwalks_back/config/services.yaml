@@ -91,3 +91,18 @@ services:
   App\EventListener\LogoutListener:
     tags:
         - { name: kernel.event_listener, event: Symfony\Component\Security\Http\Event\LogoutEvent, method: onLogout }
+  App\Service\WalkCreationServiceInterface: '@App\Service\WalkCreationService'
+
+  App\EventListener\ApiRateLimiterListener:
+    arguments:
+        $limiterFactory: '@limiter.global_limiter'
+        $security: '@security.helper'
+        $logger: '@logger'
+    tags:
+        - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 50 }
+
+  App\Security\CustomAuthenticationFailureHandler:
+    arguments:
+        $jwtManager: '@lexik_jwt_authentication.jwt_manager'
+        $logger: '@logger'
+        $loginLimiter: '@limiter.login'

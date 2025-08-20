@@ -16,7 +16,7 @@ restart-php:
 restart-front:
 	docker compose --env-file .env.docker restart front-end
 restart-nginx:
-	docker compose --env-file .env.docker restart nginx
+	docker compose --env-file .env.docker restart front-end
 reload-nginx:
 	docker compose --env-file .env.docker exec nginx nginx -s reload
 

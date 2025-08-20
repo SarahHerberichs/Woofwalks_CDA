@@ -18,7 +18,12 @@ const LoginForm = () => {
       await login(email, password);
       navigate("/");
     } catch (err) {
-      setError("Email ou mot de passe incorrect");
+      //En erreur 429 , les robots s'arrêtent , donc protéction brute force
+       if (err.response && err.response.status === 429) {
+                setError("Trop de tentatives de connexion. Veuillez réessayer plus tard.");
+            } else {
+                setError("Email ou mot de passe incorrect.");
+            }
     }
   };
 

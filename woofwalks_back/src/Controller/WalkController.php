@@ -7,11 +7,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\WalkCreationServiceInterface;
 
 class WalkController extends AbstractController
 {
     #[Route('/api/walkscustom', name: 'create_walk', methods: ['POST'])]
-    public function createWalk(Request $request, WalkCreationService $walkCreationService): JsonResponse
+    public function createWalk(Request $request, WalkCreationServiceInterface $walkCreationServiceInterface): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
   
@@ -28,7 +29,7 @@ class WalkController extends AbstractController
             return new JsonResponse(['error' => 'Missing required fields'], 400);
         }
 
-        $walk = $walkCreationService->createWalkAndChat($data);
+        $walk = $walkCreationServiceInterface->createWalkAndChat($data);
 
         if (!$walk) {
             return new JsonResponse(['error' => 'Failed to create walk (invalid data or dependencies)'], 400);

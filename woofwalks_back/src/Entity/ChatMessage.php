@@ -7,13 +7,41 @@ use App\Repository\ChatMessageRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch; 
+use ApiPlatform\Metadata\GetCollection;
+
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+
 #[ApiResource(
     normalizationContext: ['groups' => ['message:read']],
     denormalizationContext: ['groups' => ['message:write']],
 )]
+#[GetCollection(
+    security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_USER')",
+    securityMessage: "Vous devez être connecté pour voir les messages."
+)]
+#[Get(
+    security: "is_granted('ROLE_ADMIN') or object.sender == user or object.chat.walk.participants.contains(user)",
+    securityMessage: "Vous ne pouvez voir ce message que si vous en êtes l'auteur ou participant du chat."
+)]
+#[Post(
+    security: "is_granted('ROLE_USER')",
+    securityMessage: "Vous devez être connecté pour envoyer un message."
+)]
+#[Delete(
+    security: "is_granted('ROLE_ADMIN') or object.sender == user",
+    securityMessage: "Seul l'auteur ou un admin peut supprimer ce message."
+)]
 #[ORM\Entity(repositoryClass: ChatMessageRepository::class)]
-class ChatMessage
-{
+
+
+class ChatMessage {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

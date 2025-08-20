@@ -4,15 +4,18 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ChatRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     normalizationContext: ['groups' => ['chat:read']],
     denormalizationContext: ['groups' => ['chat:write']],
+    security: "is_granted('ROLE_ADMIN') or object.walk.participants.contains(user)",
+    securityMessage: "Vous devez être participant de la walk pour accéder à ce chat."
 )]
+
 #[ORM\Entity(repositoryClass: ChatRepository::class)]
 class Chat
 {
