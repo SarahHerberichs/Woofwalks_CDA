@@ -19,8 +19,6 @@ use App\Controller\WalkUnparticipateController;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-
-
 #[ApiResource(
     operations: [
 
