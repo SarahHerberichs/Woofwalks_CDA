@@ -13,13 +13,14 @@ use Symfony\Component\Uid\Uuid;
 
 class AuthenticationSuccessListener
 {
-    private $em;
-   
+     private EntityManagerInterface $em;
+    private int $refreshTokenTtl; // <-- déclaration manquante
+
     public function __construct(EntityManagerInterface $em, int $refreshTokenTtl)
-        {
-            $this->em = $em;
-            $this->refreshTokenTtl = $refreshTokenTtl;
-        }
+    {
+        $this->em = $em;
+        $this->refreshTokenTtl = $refreshTokenTtl;
+    }
 
     //En plus du token lexik, ajout du refreshtoken 
     public function onAuthenticationSuccess(AuthenticationSuccessEvent $event)

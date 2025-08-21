@@ -1,16 +1,13 @@
 <?php
 namespace App\EventListener;
 
-use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Doctrine\ORM\Mapping\AsEntityListener;
+use Doctrine\ORM\Events;
 use App\Entity\Walk;
 use App\Entity\WalkAlertRequest;
 use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
- 
 
-#[AsEntityListener(event: Events::postUpdate, entity: Walk::class)]
 
 class WalkUpdateListener
 {

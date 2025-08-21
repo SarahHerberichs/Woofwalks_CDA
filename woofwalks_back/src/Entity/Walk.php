@@ -8,9 +8,8 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Patch; 
-
 use ApiPlatform\Metadata\GetCollection;
-
+use App\EventListener\WalkUpdateListener;
 use App\Repository\WalkRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -41,8 +40,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
         new Patch(
             denormalizationContext: ['groups' => ['walk:write']],
-            security: "object.getCreator() == user",
-            securityMessage: "Vous ne pouvez modifier que vos propres Walks."
+            security: "is_granted('ROLE_USER')",
+            securityMessage: "Vous devez être connecté pour modifier la participation."
         ),
         new Delete(
             security: "object.getCreator() == user",
@@ -50,7 +49,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
     ],
 )]
-
+#[ORM\EntityListeners([WalkUpdateListener::class])]
 #[ORM\Entity(repositoryClass: WalkRepository::class)]
 class Walk
 {
