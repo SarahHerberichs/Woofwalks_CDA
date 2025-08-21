@@ -13,7 +13,8 @@ use App\EventListener\WalkUpdateListener;
 use App\Repository\WalkRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
+use App\Controller\WalkParticipateController;
+use App\Controller\WalkUnparticipateController;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -22,6 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     operations: [
+
         new GetCollection(
             normalizationContext: ['groups' => ['walk:read']],
         ),
@@ -47,6 +49,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: "object.getCreator() == user",
             securityMessage: "Vous ne pouvez supprimer que vos propres Walks."
         ),
+         // custom : participer
+        new Post(
+            uriTemplate: '/walks/{id}/participate',
+            controller: WalkParticipateController::class,
+        ),
+        new Post(
+            uriTemplate: '/walks/{id}/unparticipate',
+            controller: WalkUnparticipateController::class,
+        )
     ],
 )]
 #[ORM\EntityListeners([WalkUpdateListener::class])]
@@ -101,7 +112,7 @@ class Walk
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'participatedWalks')]
     #[ORM\JoinTable(name: 'walk_participants')]
-    #[Groups(['walk:read', 'walk:write'])]
+    #[Groups(['walk:read'])]
     private Collection $participants;
 
     #[ORM\OneToOne(targetEntity: Chat::class, mappedBy: 'walk', cascade: ['persist', 'remove'])]

@@ -78,53 +78,43 @@ const WalkDetailsPage = () => {
     }
   };
 
-  const handleParticipate = async () => {
-    if (!user || !user.id) {
-      setMessage("Vous devez être connecté pour participer à une balade.");
-      return;
-    }
+    const handleParticipate = async () => {
+    if (!user) {
+        setMessage("Vous devez être connecté pour participer à une balade.");
+        return;
+    }
+    try {
+        const response = await api.post(
+        `/walks/${id}/participate`,
+        {}, // corps vide
+        { headers: { "Content-Type": "application/json" } }
+        );
+        setWalk(response.data);
+        setIsParticipating(true);
+        setMessage("Vous participez maintenant à la balade !");
+    } catch (error) {
+        console.error("Erreur lors de la participation :", error.response?.data || error);
+        setError("Erreur lors de la participation.");
+    }
+    };
 
-    try {
-      // L'IRI de l'utilisateur connecté est toujours correct.
-      const userIRI = `/api/users/${user.id}`;
-      
-      // 1. On extrait les IRIs des participants existants.
-      // On utilise p['@id'] si p est un objet, ou p si c'est déjà une chaîne.
-      const existingIRIs = walk.participants ? walk.participants.map(p => typeof p === 'object' ? p['@id'] : p) : [];
-      
-      // 2. On corrige les IRIs mal formés ("/api/me") pour qu'ils correspondent à l'utilisateur connecté.
-      const correctedIRIs = existingIRIs.map(iri => iri === '/api/me' ? userIRI : iri);
+    const handleUnparticipate = async () => {
+    try {
+        const response = await api.post(
+        `/walks/${id}/unparticipate`,
+        {}, // corps vide
+        { headers: { "Content-Type": "application/json" } }
+        );
+        setWalk(response.data);
+        setIsParticipating(false);
+        setMessage("Vous ne participez plus à la balade !");
+    } catch (error) {
+        console.error("Erreur lors de la désinscription :", error.response?.data || error);
+        setError("Erreur lors de la désinscription.");
+    }
+    };
 
-      let updatedParticipants;
 
-      if (isParticipating) {
-        // En cas de désinscription, on filtre le tableau d'IRIs
-        updatedParticipants = correctedIRIs.filter(iri => iri !== userIRI);
-      } else {
-        // En cas d'inscription, on ajoute l'IRI de l'utilisateur
-        updatedParticipants = [...correctedIRIs, userIRI];
-      }
-
-      // 3. On envoie le tableau d'IRIs mis à jour
-      const response = await api.patch(`/walks/${id}`,
-        { participants: updatedParticipants },
-        {
-          headers: {
-            "Content-Type": "application/merge-patch+json",
-          }
-        }
-      );
-
-      setWalk(response.data);
-      setIsParticipating(!isParticipating);
-      setMessage(isParticipating ? "Vous ne participez plus à la balade !" : "Vous participez maintenant à la balade !");
-
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour de la participation :", error.response ? error.response.data : error);
-      setError("Erreur lors de la mise à jour de la participation.");
-      setMessage("Erreur lors de la mise à jour de la participation.");
-    }
-  };
 
   if (error) return <p className="error">{error}</p>;
   if (!walk) return <p>Chargement de la balade...</p>;
@@ -139,7 +129,7 @@ const WalkDetailsPage = () => {
       
       {user ? (
         isParticipating ? (
-          <button onClick={handleParticipate}>
+          <button onClick={handleUnparticipate}>
             Ne plus participer
           </button>
         ) : isFull ? (
