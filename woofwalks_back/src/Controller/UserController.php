@@ -24,7 +24,7 @@ class UserController extends AbstractController
         // On retourne quelques infos utilisateur (exemple : id, email, roles)
         return new JsonResponse([
             'id' => $user->getId(),
-            'email' => $user->getUserIdentifier(), // ou getEmail()
+            'email' => $user->getUserIdentifier(), 
             'roles' => $user->getRoles(),
         ]);
     }

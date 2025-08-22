@@ -91,7 +91,9 @@ services:
   App\EventListener\LogoutListener:
     tags:
         - { name: kernel.event_listener, event: Symfony\Component\Security\Http\Event\LogoutEvent, method: onLogout }
-  App\Service\WalkCreationServiceInterface: '@App\Service\WalkCreationService'
+  App\Service\Contract\WalkCreationServiceInterface:
+    alias: App\Service\WalkCreationService
+
 
   App\EventListener\ApiRateLimiterListener:
     arguments:

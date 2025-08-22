@@ -16,6 +16,7 @@ class JwtCookieListener {
         $allowedPaths = [
         '/api/login_check',
         '/api/token/refresh',
+        
         ];
 
         if (!in_array($request->getPathInfo(), $allowedPaths)) {
@@ -32,15 +33,13 @@ class JwtCookieListener {
         //ce n'est normalement pas le cas dans le cadre d'une sortie de tokenrefreshcontroller mais c'est le cas lors
         //de la connexion
         if (isset($content['token'])) {
-            // Log le token reçu (à usage de debug — attention à ne pas faire ça en production)
-            error_log('🎯 Token reçu dans JwtCookieListener: ' . $content['token']);
             // Récupère le token JWT
             $token = $content['token'];
 
             // Crée un cookie nommé "BEARER" contenant le token
             $cookie = Cookie::create('BEARER', $token)
                 ->withHttpOnly(true) // Le cookie ne sera pas accessible en JavaScript (sécurité XSS)
-                ->withSecure(true)  // Le cookie ne sera pas limité au HTTPS (à mettre à true en prod)
+                ->withSecure(true) 
                 ->withSameSite('Lax') // Protège un peu contre les attaques CSRF
                 ->withPath('/');     // Le cookie sera envoyé pour toutes les requêtes sur le site
 

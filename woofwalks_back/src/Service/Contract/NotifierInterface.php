@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Interface; // ou App\Service, selon ta structure
+namespace App\Service\Contract;
 
 interface NotifierInterface
 {

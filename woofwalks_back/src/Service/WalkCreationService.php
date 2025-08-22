@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Service;
-
+use App\Service\Contract\WalkCreationServiceInterface;
 use App\Entity\Chat;
 use App\Entity\User;
 use App\Entity\Walk;

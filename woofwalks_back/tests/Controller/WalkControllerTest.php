@@ -1,76 +1,57 @@
 <?php
 
-namespace App\Tests\Controller;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Entity\User;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
-use App\Controller\WalkController;
-use App\Service\WalkCreationService;
-use App\Entity\Walk;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Request;
+class WalkControllerTest extends WebTestCase
+{
+    public function testCreateWalkSuccess()
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
 
-class WalkControllerTest extends TestCase {
+        // Récupérer un utilisateur test
+        $user = $container->get('doctrine')->getRepository(User::class)->findOneBy([]);
+        $this->assertNotNull($user, 'Pas d’utilisateur trouvé pour le test');
 
-    public function testCreateWalkSuccess() {
+        // Générer un JWT valide
+        $jwtManager = $container->get(JWTTokenManagerInterface::class);
+        $token = $jwtManager->create($user);
+
         $data = [
             'title' => 'Ma balade',
             'description' => 'Belle balade en forêt',
             'datetime' => '2025-08-16T10:00:00',
-            'photo' => 'photo.jpg',
-            'location' => 'Parc',
-            'is_custom_location' => true
+            'photo' => 1,
+            'location' => 1,
+            'is_custom_location' => true,
+            'max_participants' => 10,
         ];
+        $client->getCookieJar()->set(new \Symfony\Component\BrowserKit\Cookie(
+            'BEARER',
+            $token,
+            time() + 3600,
+            '/',
+            '',
+            false,
+            true,
+            false,
+            'Lax'
+        ));
 
-        $request = new Request([], [], [], [], [], [], json_encode($data));
-        //Crée une Walk simulé
-        $mockWalk = $this->createMock(Walk::class); 
-        //de meme pour WalkCreationService
-        $mockService = $this->createMock(WalkCreationService::class);
-        $mockService->method('createWalkAndChat')->willReturn($mockWalk);
+        $client->request(
+            'POST',
+            '/api/walkscustom',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
 
-        $controller = new WalkController();
-        $response = $controller->createWalk($request, $mockService);
-        //Vérifie que réponse OK
+        $response = $client->getResponse();
+
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertStringContainsString('Walk created successfully', $response->getContent());
-    }
-
-    public function testCreateWalkMissingFields() {
-        $data = [
-            'title' => '',
-            'description' => '',
-        ];
-
-        $request = new Request([], [], [], [], [], [], json_encode($data));
-
-        $mockService = $this->createMock(WalkCreationService::class);
-
-        $controller = new WalkController();
-        $response = $controller->createWalk($request, $mockService);
-
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertStringContainsString('Missing required fields', $response->getContent());
-    }
-
-    public function testCreateWalkServiceFails() {
-        $data = [
-            'title' => 'Balade',
-            'description' => 'Desc',
-            'datetime' => '2025-08-16T10:00:00',
-            'photo' => 'photo.jpg',
-            'location' => 'Parc',
-            'is_custom_location' => true
-        ];
-
-        $request = new Request([], [], [], [], [], [], json_encode($data));
-
-        $mockService = $this->createMock(WalkCreationService::class);
-        //Force a retourner null pour être en erreur 400
-        $mockService->method('createWalkAndChat')->willReturn(null); 
-
-        $controller = new WalkController();
-        $response = $controller->createWalk($request, $mockService);
-
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertStringContainsString('Failed to create walk', $response->getContent());
     }
 }

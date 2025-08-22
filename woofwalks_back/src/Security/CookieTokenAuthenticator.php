@@ -45,6 +45,7 @@ class CookieTokenAuthenticator extends AbstractAuthenticator
             '^/api/parks/?$',
             '^/api/(docs|contexts)',
             '^/$',
+            
         ];
 
         $path = $request->getPathInfo();
