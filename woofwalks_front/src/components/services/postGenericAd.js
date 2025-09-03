@@ -20,7 +20,7 @@ export const postGenericAd = async (data, entityType) => {
     );
     return result;
   } catch (error) {
-    console.error("Erreur gérée par l'intercepteur. Relance de l'erreur pour la gestion locale.");
+    console.error("Erreur gérée par l'intercepteur.");
     throw error;
   }
 };

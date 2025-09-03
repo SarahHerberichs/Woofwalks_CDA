@@ -78,14 +78,12 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
 
     const locationId = await getLocationId(data);
 
-    // if (!locationId) throw new Error("La location doit être spécifiée.");
      if (!locationId) {
         // Tu peux gérer cette erreur localement si c'est spécifique au formulaire
         alert("La location doit être spécifiée.");
         setIsSubmitting(false);
         return;
     }
-
 
     try {
       // 1. Upload de la photo
@@ -95,7 +93,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       const photoData = await uploadPhoto(photoFormData);
       const photoId = photoData.id;
 
-      // 3. Préparation des données à envoyer
+      // Préparation des données à envoyer
       const formattedDateTime = new Date(data.datetime).toISOString();
 
       const entityData = {
@@ -126,96 +124,98 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
   };
 
  
-    return (
-  <form className="post-ad-form" onSubmit={handleSubmit(onSubmit)}>
-    <div className="form-group">
-      <label>Titre:</label>
-      <input
-        {...register("title", { required: "Le titre est requis" })}
-        type="text"
-        name="title"
-      />
-      {errors.title && (
-        <p className="error-message">{errors.title.message}</p>
-      )}
-    </div>
-
-    <div className="form-group">
-      <label>Description:</label>
-      <textarea
-        {...register("description", {
-          required: "La description est requise",
-        })}
-        name="description"
-      />
-      {errors.description && (
-        <p className="error-message">{errors.description.message}</p>
-      )}
-    </div>
-
-    {entitySpecificFields.fields.map((field) => (
-      <div key={field.name} className="form-group">
-        <label>{field.label}:</label>
-        {field.type === "radio" ? (
-          field.options.map((option) => (
-            <label key={option.value}>
-              <input
-                type="radio"
-                value={option.value}
-                {...register(field.name, { required: true })}
-              />
-              {option.label}
-            </label>
-          ))
-        ) : (
-          <input
-            {...register(field.name, {
-              required: `${field.label} est requis`,
-            })}
-            type={field.type}
-            name={field.name}
-          />
-        )}
-        {errors[field.name] && (
-          <p className="error-message">{errors[field.name].message}</p>
+  return (
+    <form className="post-ad-form" onSubmit={handleSubmit(onSubmit)}>
+      {/* titre */}
+      <div className="form-group">
+        <label>Titre:</label>
+        <input
+          {...register("title", { required: "Le titre est requis" })}
+          type="text"
+          name="title"
+        />
+        {errors.title && (
+          <p className="error-message">{errors.title.message}</p>
         )}
       </div>
-    ))}
-
-    {entityType === "walks" ? (
-      <WalkLocationSection
-        locationType={locationType}
-        control={control}
-        register={register}
-        errors={errors}
-      />
-    ) : (
-      <Controller
-        name="locationData"
-        control={control}
-        defaultValue={{
-          city: "",
-          street: "",
-          latitude: null,
-          longitude: null,
-          name: "",
-        }}
-        render={({ field }) => (
-          <SelectLocationForm
-            value={field.value}
-            onLocationDataChange={field.onChange}
-          />
+        {/* description */}
+      <div className="form-group">
+        <label>Description:</label>
+        <textarea
+          {...register("description", {
+            required: "La description est requise",
+          })}
+          name="description"
+        />
+        {errors.description && (
+          <p className="error-message">{errors.description.message}</p>
         )}
-      />
-    )}
+      </div>
+      {/* affiche champs spéciaux */}
+      {entitySpecificFields.fields.map((field) => (
+        <div key={field.name} className="form-group">
+          <label>{field.label}:</label>
+          {field.type === "radio" ? (
+            field.options.map((option) => (
+              <label key={option.value}>
+                <input
+                  type="radio"
+                  value={option.value}
+                  {...register(field.name, { required: true })}
+                />
+                {option.label}
+              </label>
+            ))
+          ) : (
+            <input
+              {...register(field.name, {
+                required: `${field.label} est requis`,
+              })}
+              type={field.type}
+              name={field.name}
+            />
+          )}
+          {errors[field.name] && (
+            <p className="error-message">{errors[field.name].message}</p>
+          )}
+        </div>
+      ))}
+      {/* Pour Walks, choix entre parc et loc custom pour les locations */}
+      {entityType === "walks" ? (
+        <WalkLocationSection
+          locationType={locationType}
+          control={control}
+          register={register}
+          errors={errors}
+        />
+      ) : (
+        // localisation api gouvernement
+        <Controller
+          name="locationData"
+          control={control}
+          defaultValue={{
+            city: "",
+            street: "",
+            latitude: null,
+            longitude: null,
+            name: "",
+          }}
+          render={({ field }) => (
+            <SelectLocationForm
+              value={field.value}
+              onLocationDataChange={field.onChange}
+            />
+          )}
+        />
+      )}
 
-    <PhotoForm photo={photo} onFileChange={handleFileChange} />
+      <PhotoForm photo={photo} onFileChange={handleFileChange} />
+      
+      <button type="submit" className='button-green' disabled={isSubmitting}>
+        {isSubmitting ? "En cours..." : `Créer ${entityType}`}
+      </button>
     
-    <button type="submit" className='button-green' disabled={isSubmitting}>
-      {isSubmitting ? "En cours..." : `Créer ${entityType}`}
-    </button>
-   
-  </form>
+    </form>
 
     );
   }
