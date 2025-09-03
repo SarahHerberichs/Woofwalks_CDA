@@ -49,12 +49,10 @@ export const AuthProvider = ({ children }) => {
     // Configuration de l'intercepteur Axios et de la vérification initiale de l'authentification.--gère les 401
     useEffect(() => {
         let isRefreshing = false; 
-        
         const responseInterceptor = axios.interceptors.response.use(
             res => res,
             async err => {
                 const originalRequest = err.config;
-                
                 // Ne gère que les erreurs 401 sur les requêtes non-refresh.
                 if (err.response?.status === 401 && !originalRequest.url.endsWith('/api/token/refresh') && !isRefreshing) {
                     isRefreshing = true;
@@ -75,7 +73,6 @@ export const AuthProvider = ({ children }) => {
                         return Promise.reject(err);
                     }
                 }
-                
                 // Pour les autres erreurs ou si un rafraîchissement est déjà en cours, on rejette la promesse.
                 return Promise.reject(err);
             }

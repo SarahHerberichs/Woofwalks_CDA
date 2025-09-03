@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../style/LoginForm.css";
 import { useAuth } from "../../utils/AuthContext"; //useAuth utilise le contexte authcontext qui contient la fonction login
-
+import BtnLogin from "../Buttons/BtnLogin";
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,7 +44,7 @@ const LoginForm = () => {
         placeholder="Mot de passe"
         required
       />
-      <button type="submit">Se connecter</button>
+      {<BtnLogin/>}
     </form>
   );
 };

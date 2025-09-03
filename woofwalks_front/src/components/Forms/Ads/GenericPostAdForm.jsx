@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { Navigate, useNavigate } from "react-router-dom";
 import '../../../style/PostAd.css';
 import { useAuth } from "../../../utils/AuthContext";
 import SelectLocationForm from "../../FormPartials/Locations/SelectLocationForm";
@@ -13,8 +14,8 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
  
   const [photo, setPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  //Récupération token pour affichage immédiat de non autorisation de poster si non loggé
   const { isAuthenticated, isLoading } = useAuth();
+  const navigate = useNavigate();
   const {
     //Pour enregistrer un champ et appliquer des règles de validations
     register,
@@ -43,6 +44,20 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       ...entitySpecificFields.initialValues,
     },
   });
+    //Fonction récupération de l'id de la loc crée
+    const getLocationId = async (data) => {
+      if (data.use_custom_location === "custom") {
+        const locationData = await createLocation(data.locationData);
+        return parseInt(locationData["@id"].split("/").pop());
+      } else if (data.use_custom_location === "park") {
+        return parseInt(data.park_location_id);
+      }
+    return null;
+  };
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   //Surveille et MAJ la variable à chaque modif du champ "use_custom_location"
   const locationType = watch("use_custom_location");
@@ -59,8 +74,18 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       alert("Veuillez sélectionner une photo !");
       return;
     }
-
     setIsSubmitting(true);
+
+    const locationId = await getLocationId(data);
+
+    // if (!locationId) throw new Error("La location doit être spécifiée.");
+     if (!locationId) {
+        // Tu peux gérer cette erreur localement si c'est spécifique au formulaire
+        alert("La location doit être spécifiée.");
+        setIsSubmitting(false);
+        return;
+    }
+
 
     try {
       // 1. Upload de la photo
@@ -70,27 +95,6 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       const photoData = await uploadPhoto(photoFormData);
       const photoId = photoData.id;
 
-      // 2.Gestion location selon le type
-      let locationId;
-      //Si custom, création d'une location et stockage de son id
-      if (data.use_custom_location === "custom") {
-        //insert de la location en bdd
-        const locationData = await createLocation(data.locationData);
-        //Récup de son ID
-        locationId = parseInt(locationData["@id"].split("/").pop());
-
-        //Si park,récuperation de l'id de sa location
-      } else if (data.use_custom_location === "park") {
-        // Utilise l'ID du parc sélectionné
-        locationId = parseInt(data.park_location_id);
-      } else {
-        // Gérer autres cas si besoin
-        locationId = null;
-      }
-
-      if (!locationId) {
-        throw new Error("La location doit être spécifiée.");
-      }
       // 3. Préparation des données à envoyer
       const formattedDateTime = new Date(data.datetime).toISOString();
 
@@ -105,10 +109,6 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       // 4. Envoi des données via controlleur symfony
       const postAd = await postGenericAd(entityData, entityType);
 
-      if (!postAd) {
-        console.log("échec de l'ajout final de l'annonce")
-      }
-
       // Reset formulaire + photo
       reset({
         title: "",
@@ -119,7 +119,6 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       });
       setPhoto(null);
     } catch (error) {
-      alert("Une erreur est survenue : " + error.message);
       console.error(error);
     } finally {
       setIsSubmitting(false);
@@ -128,7 +127,6 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
 
  
     return (
-      <div>
   <form className="post-ad-form" onSubmit={handleSubmit(onSubmit)}>
     <div className="form-group">
       <label>Titre:</label>
@@ -212,12 +210,13 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
     )}
 
     <PhotoForm photo={photo} onFileChange={handleFileChange} />
-
-    <button type="submit" disabled={isSubmitting}>
+    
+    <button type="submit" className='button-green' disabled={isSubmitting}>
       {isSubmitting ? "En cours..." : `Créer ${entityType}`}
     </button>
+   
   </form>
-</div>
+
     );
   }
 

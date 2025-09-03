@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import api from "./api";
 
 export const postGenericAd = async (data, entityType) => {
@@ -5,34 +6,21 @@ export const postGenericAd = async (data, entityType) => {
     const response = await api.post(`${entityType}custom`, data);
     const result = response.data;
 
-    alert(
-      `${
-        entityType.charAt(0).toUpperCase() + entityType.slice(1)
-      } créé avec succès !`
+    toast.success(
+      `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} créé avec succès !`,
+      {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      }
     );
     return result;
   } catch (error) {
-    let errorMessage = `Erreur lors de la création de ${entityType}.`;
-
-    // Si l'erreur vient d'une réponse HTTP (et non un simple Network Error)
-    if (error.response) {
-      // API Platform renvoie souvent des messages d'erreur détaillés dans error.response.data.detail ou error.response.data.message
-      if (error.response.data && error.response.data.detail) {
-        errorMessage += ` Détails: ${error.response.data.detail}`;
-      } else if (error.response.data && error.response.data.message) {
-        errorMessage += ` Détails: ${error.response.data.message}`;
-      } else {
-        errorMessage += ` Statut: ${error.response.status}`;
-      }
-    } else if (error.request) {
-      // La requête a été faite mais aucune réponse n'a été reçue (ex: network down)
-      errorMessage += " Pas de réponse du serveur. Vérifiez votre connexion.";
-    } else {
-      // Autre chose a déclenché l'erreur (ex: erreur de configuration d'Axios)
-      errorMessage += ` Erreur de configuration: ${error.message}`;
-    }
-
-    alert(errorMessage);
-    throw new Error(errorMessage); // Relancer l'erreur pour la gestion en amont si nécessaire
+    console.error("Erreur gérée par l'intercepteur. Relance de l'erreur pour la gestion locale.");
+    throw error;
   }
 };

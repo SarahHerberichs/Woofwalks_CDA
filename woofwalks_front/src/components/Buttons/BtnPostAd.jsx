@@ -1,42 +1,43 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/AuthContext";
-
-const BtnPostAdd = ({
+import GenericPostAdForm from "../Forms/Ads/GenericPostAdForm";
+const BtnPostAd = ({
   formContext,
-  formGenericFieldsComponent: FormGenericFieldsComponent,
+  //Par exemple GenericPostAdForm
+  // formGenericFieldsComponent: FormGenericFieldsComponent,
   entitySpecificFields,
 }) => {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const [showForm, setShowForm] = useState(false);
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      alert("Vous devez être connecté pour poster une annonce.");
-      return;
+      navigate("/login", { replace: true }); //
+      return; 
     }
     setShowForm(true);
   };
 
-  return (
+ return (
     <>
       {showForm ? (
-        <FormGenericFieldsComponent
+        <GenericPostAdForm 
           entityType={formContext}
           entitySpecificFields={entitySpecificFields}
         />
       ) : (
         <button
           onClick={handleClick}
-          disabled={!isAuthenticated} // bouton désactivé si non connecté
-          className="btn btn-success btn-lg shadow-lg rounded-pill px-3 py-1"
-          title={!isAuthenticated ? "Connectez-vous pour poster" : undefined}
+          className="button-green btn-success btn-lg shadow-lg rounded-pill px-3 py-1"
         >
-          Post Add
+          Postez votre annonce
         </button>
       )}
     </>
   );
 };
 
-export default BtnPostAdd;
+export default BtnPostAd;

@@ -17,7 +17,6 @@ class UserController extends AbstractController
     {
         $user = $security->getUser();
         if (!$user) {
-            // Pas connecté : 401 Unauthorized
             return new JsonResponse(['message' => 'Unauthorized'], 401);
         }
 

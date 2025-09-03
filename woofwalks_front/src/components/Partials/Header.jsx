@@ -1,6 +1,8 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
+import logo from '../../assets/images/woofwalks_logo_white.png';
 import { useAuth } from "../../utils/AuthContext";
 import BtnLogout from "../Buttons/BtnLogout";
+import './Header.css';
 
 function Header() {
  const { isAuthenticated, isLoading } = useAuth();
@@ -11,17 +13,18 @@ function Header() {
     }
 
   return (
-    <Navbar bg="light" expand="lg" className="shadow-sm">
+    <Navbar expand="lg" className="shadow-sm navbar">
       <Container>
-        <Navbar.Brand href="/">DogWalks</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Brand><img src={logo} class='logo-woofwalks' alt="Woofwalks Logo" /></Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" className="btn"/>
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
             <Nav.Link href="/">Accueil</Nav.Link>
-            <Nav.Link href="/walks">Walks</Nav.Link>
+            <Nav.Link href="/walks">Balades</Nav.Link>
+            <Nav.Link href="/hikes">Randonnées</Nav.Link>
             <Nav.Link href="/parcs">Parcs</Nav.Link>
-            <Nav.Link href="/hikes">Hikes</Nav.Link>
-            <Nav.Link href="/apropos">À propos</Nav.Link>
+            <Nav.Link href="/shop">Boutique</Nav.Link>
+
             {!isAuthenticated && (
               <>
                 <Nav.Link href="/newaccount">Créer un compte</Nav.Link>
@@ -30,6 +33,8 @@ function Header() {
             )}
             {isAuthenticated && (
               <Nav.Item>
+                <Nav.Link href="/account">Mon compte</Nav.Link>
+                <Nav.Link href="/messages">Ma messagerie</Nav.Link>
                 <BtnLogout />
               </Nav.Item>
             )}

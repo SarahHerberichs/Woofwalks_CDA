@@ -92,7 +92,6 @@ networks:
     driver: bridge
 
 volumes:
-
   mysql_data:
     driver: local
   symfony_cache:

@@ -10,17 +10,20 @@ const WalkCard = ({ walk }) => {
     minute: "2-digit",
   });
 
-  const walkDate = new Date(walk.date);
-  const now = new Date();
-  const diffMs = walkDate.getTime() - now.getTime();
   const nbParticipants = walk.participants.length
   const maxParticipants = walk.maxParticipants;
   const isFull = nbParticipants === maxParticipants;
-  // Convertir la différence en minutes et heures
+  const walkDate = new Date(walk.date);
+
+  const now = new Date();
+  const diffMs = walkDate.getTime() - now.getTime();
+  // Conversion  la différence en minutes et heures
   const diffMinutes = Math.floor(diffMs / 60000);
   const hours = Math.floor(diffMinutes / 60);
   const minutes = diffMinutes % 60;
+  // Temps restant avant la walk
   const counter = `${hours}h${minutes}`;
+
   const consultDetails = () => {
     navigate(`/walks/${walk.id}`);
   };

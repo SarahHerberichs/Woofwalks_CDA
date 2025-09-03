@@ -60,6 +60,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 #[ORM\EntityListeners([WalkUpdateListener::class])]
 #[ORM\Entity(repositoryClass: WalkRepository::class)]
+
 class Walk
 {
     #[ORM\Id]

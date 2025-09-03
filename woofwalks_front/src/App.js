@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import "./App.css";
 import Footer from "./components/Partials/Footer";
 import Header from "./components/Partials/Header";
@@ -13,7 +15,6 @@ import WalksPage from "./views/Walks/WalksPage";
 function App() {
   return (
     <div className="App">
-      <h1>Bonjour Woofwalks</h1>
       <BrowserRouter>
         <Header />
         <div className="container">
@@ -30,6 +31,7 @@ function App() {
           </Routes>
         </div>
         <Footer />
+        <ToastContainer />
       </BrowserRouter>
     </div>
   );

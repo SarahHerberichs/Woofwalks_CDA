@@ -25,7 +25,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ApiResource(
-
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']],
     validationContext: ['groups' => ['user:write']],
@@ -60,6 +59,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]

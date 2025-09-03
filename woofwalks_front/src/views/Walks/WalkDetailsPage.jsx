@@ -126,24 +126,25 @@ const WalkDetailsPage = () => {
       <p>Lieu : {walk.location?.name}</p>
       <p>Date : {new Date(walk.date).toLocaleString("fr-FR")}</p>
       <p>Participants : {walk.participants ? walk.participants.length : 0}</p>
-      
-      {user ? (
-        isParticipating ? (
-          <button onClick={handleUnparticipate}>
-            Ne plus participer
-          </button>
-        ) : isFull ? (
-          <button onClick={handleAlertRequest}>
-            Demander une alerte
-          </button>
-        ) : (
-          <button onClick={handleParticipate}>
-            Participer
-          </button>
-        )
-      ) : (
-        <p>Connectez-vous pour participer à cette balade.</p>
-      )}
+      <div className="d-flex justify-content-center">
+          {user ? (
+            isParticipating ? (
+              <button onClick={handleUnparticipate} className="btn btn-danger">
+                Ne plus participer
+              </button>
+            ) : isFull ? (
+              <button onClick={handleAlertRequest} className="button-orange">
+                Demander une alerte
+              </button>
+            ) : (
+              <button onClick={handleParticipate} className="button-green">
+                Participer
+              </button>
+            )
+          ) : (
+            <p>Connectez-vous pour participer à cette balade.</p>
+          )}
+        </div>
     </div>
   );
 };

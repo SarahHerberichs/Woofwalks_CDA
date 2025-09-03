@@ -1,8 +1,8 @@
 <?php
 
-$host = 'ssl://smtp.hostinger.com'; // IMPORTANT : le préfixe 'ssl://' est crucial pour le SSL implicite
+$host = 'ssl://smtp.hostinger.com'; 
 $port = 465;
-$timeout = 30; // secondes
+$timeout = 30; 
 
 $errno = null;
 $errstr = null;
