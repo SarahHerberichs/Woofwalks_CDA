@@ -6,6 +6,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Service\SmsService;
 use App\Service\EmailService;
 use App\Service\MessageBuilder;
+use App\Entity\User;
+use App\Entity\Notification;
+use App\Entity\NotificationType;
+
 
 
 class NotificationService

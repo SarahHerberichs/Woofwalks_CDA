@@ -46,11 +46,11 @@ class WalkControllerFunctionalTest extends WebTestCase
         $data = [
             'title' => 'Balade test',
             'description' => 'Description de la balade de test',
-            'datetime' => '2025-08-16T10:00:00',
-            'photo' => $photo->getId(),      // <-- ID dynamique
-            'location' => $location->getId(), // <-- ID dynamique
+            'datetime' => '2025-08-16T10:00:00', 
+            'photo' => 1, 
+            'location' => 1, 
             'is_custom_location' => true,
-            'max_participants' => 10,
+            'max_participants' => 10, 
         ];
 
         // 4. Envoi de la requête HTTP
@@ -68,26 +68,22 @@ class WalkControllerFunctionalTest extends WebTestCase
         );
 
         // Récupère l'objet de réponse HTTP.
-                // ...
             $response = $client->getResponse();
             $responseData = json_decode($response->getContent(), true);
 
             echo "\nStatus : " . $response->getStatusCode() . "\n";
             echo "Contenu : " . json_encode($responseData, JSON_PRETTY_PRINT) . "\n";
 
-            // Si vous avez un champ 'errors' dans la réponse, affichez-le
+            // Si vous champ 'errors' dans la réponse, affichez-le
             if (isset($responseData['errors'])) {
                 echo "Erreurs de validation: \n" . json_encode($responseData['errors'], JSON_PRETTY_PRINT) . "\n";
             }
 
             $this->assertEquals(201, $response->getStatusCode(), 'Status code incorrect');
-            // ...
 
-        // 5. Débogage
-        // Ces lignes affichent le statut et le contenu de la réponse pour aider au débogage.
-        // C'est grâce à ça que vous avez pu résoudre les erreurs précédentes !
-        echo "\nStatus : " . $response->getStatusCode() . "\n";
-        echo "Contenu : " . $response->getContent() . "\n";
+            // 5. Débogage
+            echo "\nStatus : " . $response->getStatusCode() . "\n";
+            echo "Contenu : " . $response->getContent() . "\n";
 
         // 6. Assertions (Vérifications)
         // Vérifie que le code de statut de la réponse est bien 201 (Créé).
@@ -95,4 +91,84 @@ class WalkControllerFunctionalTest extends WebTestCase
         // Vérifie que le corps de la réponse contient le message de succès attendu.
         $this->assertStringContainsString('Walk created successfully', $response->getContent(), 'Message attendu non trouvé');
     }
+
+public function testCreateWalkWithAuthenticatedUser()
+{
+    $client = static::createClient();
+    $client->catchExceptions(false);
+    $container = static::getContainer();
+
+    // Récupère un utilisateur existant
+    $user = $container->get('doctrine')->getRepository(User::class)->findOneBy([]);
+    $this->assertNotNull($user, 'Aucun utilisateur trouvé pour le test');
+
+    // Crée un token JWT valide
+    /** @var JWTTokenManagerInterface $jwtManager */
+    $jwtManager = $container->get(JWTTokenManagerInterface::class);
+    $token = $jwtManager->create($user);
+
+    // Prépare les données de la requête
+    $data = [
+        'title' => 'Balade test',
+        'description' => 'Description de la balade de test',
+        'datetime' => '2025-08-16T10:00:00',
+        'photo' => 1,       // ID d'une photo existante en BDD
+        'location' => 1,    // ID d'une location existante en BDD
+        'is_custom_location' => true,
+        'max_participants' => 10,
+    ];
+
+    // Envoie la requête avec JWT dans l'en-tête Authorization
+    $client->request(
+        'POST',
+        '/api/walkscustom',
+        [],
+        [],
+        [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+            'CONTENT_TYPE' => 'application/json'
+        ],
+        json_encode($data)
+    );
+
+    $response = $client->getResponse();
+
+    // Vérifications
+    $this->assertEquals(201, $response->getStatusCode(), 'Le token valide doit permettre la création de la balade');
+    $this->assertStringContainsString('Walk created successfully', $response->getContent());
+}
+
+public function testCreateWalkWithUnauthenticatedUser()
+{
+    $client = static::createClient();
+    $client->catchExceptions(false);
+
+    // Prépare les données de la requête
+    $data = [
+        'title' => 'Balade test',
+        'description' => 'Description de la balade de test',
+        'datetime' => '2025-08-16T10:00:00',
+        'photo' => 1,
+        'location' => 1,
+        'is_custom_location' => true,
+        'max_participants' => 10,
+    ];
+
+    // Envoie la requête **sans JWT**
+    $client->request(
+        'POST',
+        '/api/walkscustom',
+        [],
+        [],
+        ['CONTENT_TYPE' => 'application/json'],
+        json_encode($data)
+    );
+
+    $response = $client->getResponse();
+
+    // Vérifications
+    $this->assertEquals(401, $response->getStatusCode(), 'Un utilisateur non authentifié doit recevoir un 401');
+$responseData = json_decode($response->getContent(), true);
+$this->assertEquals('Aucun token JWT dans la requête.', $responseData['error']);}
+
 }

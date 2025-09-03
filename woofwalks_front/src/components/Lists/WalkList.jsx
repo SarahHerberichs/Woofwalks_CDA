@@ -8,6 +8,7 @@ const WalkList = () => {
   const [error, setError] = useState(null);
   const [visibleCount, setVisibleCount] = useState(8);
 
+//Cherche liste des walks au premier rendu
   useEffect(() => {
     const fetchWalks = async () => {
       try {

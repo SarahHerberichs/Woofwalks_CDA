@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Service;
+use App\Entity\Notification;
 class MessageBuilder
 {
     public function build(Notification $notification): string

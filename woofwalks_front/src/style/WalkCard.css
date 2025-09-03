@@ -1,0 +1,80 @@
+.card {
+  width: 100%;
+  max-width: 500px;
+  height: 350px;
+  cursor: pointer;
+}
+
+.card img.card-img-top {
+  height: 200px;
+  object-fit: cover;
+}
+.badge-full,
+.badge-available {
+  display: inline-block;
+  width: 30px;       /* Taille du badge */
+  height: 30px;
+  border-radius: 50%; /* Cercle parfait */
+  z-index: 10;        /* Priorité d'affichage */
+  position: relative; /* Nécessaire pour que z-index fonctionne */
+}
+
+/* Couleurs selon disponibilité */
+.badge-full {
+  background-color: #dc3545; /* rouge */
+}
+
+.badge-available {
+  background-color: #28a745; /* vert */
+}
+
+
+.top-right-counter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0.5rem;
+  z-index: 1;
+  width: 60px;
+  text-align: center;
+}
+
+.top-right-counter img,
+.bottom-left-timer img {
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 0.25rem;
+}
+
+.bottom-left-timer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+  text-align: center;
+  color: white;
+}
+
+.card-body {
+  padding: 10px;
+}
+
+.card-text {
+  margin-bottom: 5px;
+  color: #6c757d; /* text-muted */
+}
+
+.card-location,
+.card-title {
+  margin-bottom: 5px;
+}
+
+.counter-text {
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 0.25rem;
+  font-size: 0.75rem; /* small */
+  color: #212529; /* text-dark */
+}

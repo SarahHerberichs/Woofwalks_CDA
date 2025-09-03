@@ -10,10 +10,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 
 class PhotoUploadController extends AbstractController
 {
+
     #[Route('/api/main_photo', name: 'upload_photo', methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function uploadPhoto(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): JsonResponse
     {
         $photoFile = $request->files->get('file');

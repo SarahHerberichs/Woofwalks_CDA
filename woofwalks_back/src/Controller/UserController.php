@@ -17,14 +17,13 @@ class UserController extends AbstractController
     {
         $user = $security->getUser();
         if (!$user) {
-            // Pas connecté : 401 Unauthorized
             return new JsonResponse(['message' => 'Unauthorized'], 401);
         }
 
         // On retourne quelques infos utilisateur (exemple : id, email, roles)
         return new JsonResponse([
             'id' => $user->getId(),
-            'email' => $user->getUserIdentifier(), // ou getEmail()
+            'email' => $user->getUserIdentifier(), 
             'roles' => $user->getRoles(),
         ]);
     }

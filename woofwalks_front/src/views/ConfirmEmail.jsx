@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import "../style/ConfirmEmail.css";
 
 const ConfirmEmail = () => {
   const [message, setMessage] = useState(
@@ -66,16 +67,14 @@ const ConfirmEmail = () => {
   }, [token, navigate]);
 
   return (
-    <div style={{ padding: "20px", textAlign: "center" }}>
+    <div className="confirm-email-container">
       <h1>Confirmation d'E-mail</h1>
-      {status === "loading" && <p>{message}</p>}
+      <p className={`confirm-email-message ${status}`}>{message}</p>
       {status === "success" && (
-        <p style={{ color: "green", fontWeight: "bold" }}>{message}</p>
+        <p className="confirm-email-redirect">
+          Redirection vers la page de connexion...
+        </p>
       )}
-      {status === "error" && (
-        <p style={{ color: "red", fontWeight: "bold" }}>{message}</p>
-      )}
-      {status === "success" && <p>Redirection vers la page de connexion...</p>}
     </div>
   );
 };

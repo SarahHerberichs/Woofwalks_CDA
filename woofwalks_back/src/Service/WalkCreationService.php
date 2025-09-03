@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Service;
-
+use App\Service\Contract\WalkCreationServiceInterface;
 use App\Entity\Chat;
 use App\Entity\User;
 use App\Entity\Walk;
@@ -10,8 +10,7 @@ use App\Repository\PhotoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
-class WalkCreationService
-{
+class WalkCreationService implements WalkCreationServiceInterface {
     private EntityManagerInterface $entityManager;
     private PhotoRepository $photoRepository;
     private LocationRepository $locationRepository;
@@ -39,12 +38,6 @@ class WalkCreationService
         ) {
             return null; 
         }
-
-        // try {
-        //     $datetime = new \DateTime($data['date']);
-        // } catch (\Exception $e) {
-        //     return null; 
-        // }
 
         try {
             $datetime = new \DateTime($data['datetime']);

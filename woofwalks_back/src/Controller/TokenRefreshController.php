@@ -26,8 +26,7 @@ class TokenRefreshController extends AbstractController
         Security $security
     ): JsonResponse {
         // Le RefreshTokenAuthenticator s'est déjà assuré que l'utilisateur est authentifié.
-        // On récupère directement l'utilisateur à partir du jeton de rafraîchissement validé.
-        /** @var UserInterface|null $user */
+
         $user = $security->getUser();
 
         if (!$user instanceof User) {
@@ -88,7 +87,8 @@ class TokenRefreshController extends AbstractController
             ->withSecure(true)
             ->withSameSite('lax')
             ->withPath('/')
-            ->withExpires((new \DateTimeImmutable())->modify('+60 seconds'));
+            ->withExpires((new \DateTimeImmutable())->modify('+15 minutes')->getTimestamp());
+
 
         // 6. Ajouter les cookies à la réponse
         $response->headers->setCookie($refreshCookie);

@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import "../../../style/WalkCard.css";
+
 const WalkCard = ({ walk }) => {
   const navigate = useNavigate();
   //Formatage des dates et heures
@@ -8,96 +10,72 @@ const WalkCard = ({ walk }) => {
     minute: "2-digit",
   });
 
-  const walkDate = new Date(walk.date);
-  const now = new Date();
-  const diffMs = walkDate.getTime() - now.getTime();
   const nbParticipants = walk.participants.length
   const maxParticipants = walk.maxParticipants;
   const isFull = nbParticipants === maxParticipants;
-  // Convertir la différence en minutes et heures
+  const walkDate = new Date(walk.date);
+
+  const now = new Date();
+  const diffMs = walkDate.getTime() - now.getTime();
+  // Conversion  la différence en minutes et heures
   const diffMinutes = Math.floor(diffMs / 60000);
   const hours = Math.floor(diffMinutes / 60);
   const minutes = diffMinutes % 60;
+  // Temps restant avant la walk
   const counter = `${hours}h${minutes}`;
+
   const consultDetails = () => {
     navigate(`/walks/${walk.id}`);
   };
 
-  return (
-    <div
-      className="card"
-      onClick={consultDetails}
-      style={{
-        width: "100%",
-        maxWidth: "500px",
-        height: "350px",
-        cursor: "pointer",
-      }}
-    >
+ return (
+    <div className="card" onClick={consultDetails}>
       <div className="position-relative">
         <img
           src={`${process.env.REACT_APP_API_URL}/media/${walk.mainPhoto.filePath}`}
           className="card-img-top"
           alt="Walk"
-          style={{ height: "200px", objectFit: "cover" }}
         />
 
-        <div
-          className="position-absolute top-0 start-0 m-2"
-          style={{ zIndex: 1 }}
-        >
+        <div className="position-absolute top-0 start-0 m-2">
           {isFull ? (
-            <span className="badge bg-danger rounded-circle p-3"> </span>
+            <span className="badge-full"> </span>
           ) : (
-            <span className="badge bg-success rounded-circle p-3"> </span>
-         )}
-          
+            <span className="badge-available"> </span>
+          )}
         </div>
 
-        {/* Image compteur-de-vitesse en haut à droite */}
-        <div
-          className="position-absolute top-0 end-0 m-2 text-center"
-          style={{ zIndex: 1, width: '60px' }}
-        >
+        <div className="top-right-counter">
           <img
             src={`${process.env.PUBLIC_URL}/images/compteur-de-vitesse.png`}
             alt="Compteur de vitesse"
-            className="p-2 bg-light bg-opacity-75 rounded"
             width="50"
             height="50"
           />
-          <p className="mt-1 px-2 py-1 bg-light bg-opacity-75 rounded small text-dark">
-            Max: {maxParticipants}
-          </p>
+          <p className="counter-text">Max: {maxParticipants}</p>
         </div>
 
-        {/* Image sablier en bas à gauche */}
-        <div className="position-absolute bottom-0 start-0 mb-4 ms-2 text-white text-center">
+        <div className="bottom-left-timer">
           <img
             src={`${process.env.PUBLIC_URL}/images/sablier.png`}
             alt="Sablier"
-            className="p-2 bg-light bg-opacity-75 rounded"
             width="50"
             height="50"
           />
-          <p className="mt-1 px-2 py-1 bg-light bg-opacity-75 rounded small text-dark">
-            {counter}
-          </p>
+          <p className="counter-text">{counter}</p>
         </div>
       </div>
-      <div className="card-body" style={{ padding: "10px" }}>
-        <p className="card-text text-muted" style={{ marginBottom: "5px" }}>
+
+      <div className="card-body">
+        <p className="card-text">
           Le : {formattedDate} à {formattedTime}
         </p>
-        <h5 className="card-location" style={{ marginBottom: "5px" }}>
-          {walk.location?.name}
-        </h5>
-        <p className="card-title" style={{ marginBottom: "5px" }}>
-          {walk.title}
-        </p>
+        <h5 className="card-location">{walk.location?.name}</h5>
+        <p className="card-title">{walk.title}</p>
       </div>
     </div>
   );
 };
+
 
 export default WalkCard;

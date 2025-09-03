@@ -1,0 +1,14 @@
+.navbar .nav-link {
+  font-size: 16px; /* Ajustez la taille selon vos préférences */
+  padding: 10px 15px; /* Optionnel : ajoutez du padding pour plus d'espace */
+}
+.navbar-toggler-icon {
+  color: #D9D9D9;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+.navbar a{
+    color:#F5F5F5;
+}
+.navbar {
+  margin-bottom: 1em;
+}

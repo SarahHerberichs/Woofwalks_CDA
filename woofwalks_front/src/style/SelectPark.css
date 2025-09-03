@@ -1,0 +1,24 @@
+.select-park-container {
+  margin-bottom: 1rem;
+}
+
+.select-park-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.select-park-select {
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.select-park-error {
+  color: #dc3545; /* rouge */
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}

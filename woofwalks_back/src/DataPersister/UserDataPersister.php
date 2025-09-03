@@ -23,24 +23,22 @@ class UserDataPersister implements ProcessorInterface
     private string $frontendUrl;//propriété pour l'URL du frontend
     private LoggerInterface $logger;
 
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher,
-        MailerInterface $mailer,
-        RouterInterface $router,
-        string $frontendUrl = '', // Valeur par défaut pour le constructeur, sera surchargée par le paramètre
-        LoggerInterface $logger
-        
-    )
-    {
-        $this->entityManager = $entityManager;
-        $this->passwordHasher = $passwordHasher;
-        $this->mailer = $mailer;
-        $this->router = $router;
-        $this->frontendUrl = $frontendUrl;
-        $this->logger = $logger;
-       
-    }
+        public function __construct(
+            EntityManagerInterface $entityManager,
+            UserPasswordHasherInterface $passwordHasher,
+            MailerInterface $mailer,
+            RouterInterface $router,
+            LoggerInterface $logger,        
+            string $frontendUrl = ''   
+        )
+        {
+            $this->entityManager = $entityManager;
+            $this->passwordHasher = $passwordHasher;
+            $this->mailer = $mailer;
+            $this->router = $router;
+            $this->logger = $logger;
+            $this->frontendUrl = $frontendUrl;
+        }
 
     /**
      * @param User $data

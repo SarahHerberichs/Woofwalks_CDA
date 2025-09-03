@@ -1,0 +1,49 @@
+.post-ad-form {
+  padding: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.post-ad-form div.form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-ad-form label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.post-ad-form input[type="text"],
+.post-ad-form input[type="number"],
+.post-ad-form input[type="file"],
+.post-ad-form textarea {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.post-ad-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.post-ad-form input[type="radio"] {
+  margin-right: 0.5rem;
+}
+
+.post-ad-form .error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+
+.post-ad-form button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}

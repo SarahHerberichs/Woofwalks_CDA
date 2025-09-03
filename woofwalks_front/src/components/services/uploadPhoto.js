@@ -1,12 +1,7 @@
 import api from "./api";
 
 export const uploadPhoto = async (data) => {
-  try {
-    const response = await api.post("/main_photo", data);
-    return response.data;
-  } catch (error) {
-    console.error("Erreur upload photo avec axios", error.response?.data || error.message);
-    // Relance l'erreur pour que l'appelant puisse gérer
-    throw error;
-  }
+  // L'intercepteur gère les erreurs, donc pas besoin de try...catch ici.
+  const response = await api.post("/main_photo", data);
+  return response.data;
 };

@@ -4,29 +4,63 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Patch; 
-use ApiPlatform\Metadata\Delete;
-
+use ApiPlatform\Metadata\GetCollection;
+use App\EventListener\WalkUpdateListener;
 use App\Repository\WalkRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Controller\WalkParticipateController;
+use App\Controller\WalkUnparticipateController;
+
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     operations: [
-        new GetCollection(normalizationContext: ['groups' => ['walk:read']]),
-        new Post(denormalizationContext: ['groups' => ['walk:write']]),
-        new Get(normalizationContext: ['groups' => ['walk:read']]),
-        new Put(denormalizationContext: ['groups' => ['walk:write']]),
-        new Patch(denormalizationContext: ['groups' => ['walk:write']]), 
-        new Delete(),
+
+        new GetCollection(
+            normalizationContext: ['groups' => ['walk:read']],
+        ),
+        new Get(
+            normalizationContext: ['groups' => ['walk:read']],
+        ),
+        new Post(
+            denormalizationContext: ['groups' => ['walk:write']],
+            security: "is_granted('ROLE_USER')", // Seulement les utilisateurs connectés peuvent créer
+            securityMessage: "Vous devez être connecté pour créer une Walk."
+        ),
+        new Put(
+            denormalizationContext: ['groups' => ['walk:write']],
+            security: "object.getCreator() == user", // Seulement le créateur peut modifier
+            securityMessage: "Vous ne pouvez modifier que vos propres Walks."
+        ),
+        new Patch(
+            denormalizationContext: ['groups' => ['walk:write']],
+            security: "is_granted('ROLE_USER')",
+            securityMessage: "Vous devez être connecté pour modifier la participation."
+        ),
+        new Delete(
+            security: "object.getCreator() == user",
+            securityMessage: "Vous ne pouvez supprimer que vos propres Walks."
+        ),
+         // custom : participer
+        new Post(
+            uriTemplate: '/walks/{id}/participate',
+            controller: WalkParticipateController::class,
+        ),
+        new Post(
+            uriTemplate: '/walks/{id}/unparticipate',
+            controller: WalkUnparticipateController::class,
+        )
     ],
 )]
+#[ORM\EntityListeners([WalkUpdateListener::class])]
 #[ORM\Entity(repositoryClass: WalkRepository::class)]
+
 class Walk
 {
     #[ORM\Id]
@@ -77,7 +111,7 @@ class Walk
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'participatedWalks')]
     #[ORM\JoinTable(name: 'walk_participants')]
-    #[Groups(['walk:read', 'walk:write'])]
+    #[Groups(['walk:read'])]
     private Collection $participants;
 
     #[ORM\OneToOne(targetEntity: Chat::class, mappedBy: 'walk', cascade: ['persist', 'remove'])]

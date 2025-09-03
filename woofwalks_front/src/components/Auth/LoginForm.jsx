@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../../style/LoginForm.css";
 import { useAuth } from "../../utils/AuthContext"; //useAuth utilise le contexte authcontext qui contient la fonction login
-
+import BtnLogin from "../Buttons/BtnLogin";
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,16 +18,33 @@ const LoginForm = () => {
       await login(email, password);
       navigate("/");
     } catch (err) {
-      setError("Email ou mot de passe incorrect");
+      //En erreur 429 , les robots s'arrêtent , donc protéction brute force
+       if (err.response && err.response.status === 429) {
+                setError("Trop de tentatives de connexion. Veuillez réessayer plus tard.");
+            } else {
+                setError("Email ou mot de passe incorrect.");
+            }
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit}>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required />
-      <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Mot de passe" required />
-      <button type="submit">Se connecter</button>
+ return (
+    <form className="login-form" onSubmit={handleSubmit}>
+      {error && <p className="error-message">{error}</p>}
+      <input
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        placeholder="Email"
+        required
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        placeholder="Mot de passe"
+        required
+      />
+      {<BtnLogin/>}
     </form>
   );
 };

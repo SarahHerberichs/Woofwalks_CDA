@@ -8,3 +8,7 @@ woofwalks_front/.env
 
 certs/
 woofwalks_back/backupDb/
+
+backup_db.sh
+
+backups/

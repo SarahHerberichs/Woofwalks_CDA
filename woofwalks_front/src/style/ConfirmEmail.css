@@ -1,0 +1,30 @@
+.confirm-email-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.confirm-email-container h1 {
+  margin-bottom: 20px;
+}
+
+.confirm-email-message {
+  margin: 10px 0;
+}
+
+.confirm-email-message.loading {
+  color: #000; /* texte normal pour le chargement */
+}
+
+.confirm-email-message.success {
+  color: green;
+  font-weight: bold;
+}
+
+.confirm-email-message.error {
+  color: red;
+  font-weight: bold;
+}
+
+.confirm-email-redirect {
+  margin-top: 10px;
+}
