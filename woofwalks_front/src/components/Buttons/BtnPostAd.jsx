@@ -4,8 +4,7 @@ import { useAuth } from "../../utils/AuthContext";
 import GenericPostAdForm from "../Forms/Ads/GenericPostAdForm";
 const BtnPostAd = ({
   formContext,
-  //Par exemple GenericPostAdForm
-  // formGenericFieldsComponent: FormGenericFieldsComponent,
+  //Par exemple champs spécifiques à walks
   entitySpecificFields,
 }) => {
   const { isAuthenticated } = useAuth();
@@ -15,7 +14,7 @@ const BtnPostAd = ({
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      navigate("/login", { replace: true }); //
+      navigate("/login", { replace: true }); 
       return; 
     }
     setShowForm(true);

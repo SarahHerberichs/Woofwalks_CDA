@@ -1,5 +1,33 @@
-FROM node:18
+# FROM node:18
+# WORKDIR /app
+# COPY package*.json ./
+# RUN npm install
+# COPY . .
+# Étape 1 : Le "build" de l'application front-end
+FROM node:18 AS build
+
+# Définition du répertoire de travail à l'intérieur du conteneur
 WORKDIR /app
+
+# Copie des fichiers de configuration et installation des dépendances
 COPY package*.json ./
-RUN npm install
+RUN npm ci
+
+# Copie du reste des fichiers
 COPY . .
+
+# Exécution du script de "build" pour la production
+RUN npm run build
+
+# Étape 2 : L'image finale pour la production
+# On utilise une image plus légère (nginx) pour servir les fichiers statiques
+FROM nginx:alpine
+
+# Copie des fichiers compilés depuis l'étape de "build" vers le bon dossier de Nginx
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Exposition du port
+EXPOSE 80
+
+# Commande pour démarrer le serveur Nginx
+CMD ["nginx", "-g", "daemon off;"]
