@@ -2,7 +2,6 @@ nelmio_security:
   #Désactivation pour le dev
   csp:
     enabled: false 
-    # ajoute l'en-tête X-Content-Type-Options: nosniff, ce qui force le navigateur à respecter le type de contenu déclaré : .txt = .txt - jamais exécuté comme du JS
   clickjacking:
     paths:
       '^/': { header: DENY }

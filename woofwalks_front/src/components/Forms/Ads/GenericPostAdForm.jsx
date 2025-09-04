@@ -79,12 +79,10 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
     const locationId = await getLocationId(data);
 
      if (!locationId) {
-        // Tu peux gérer cette erreur localement si c'est spécifique au formulaire
         alert("La location doit être spécifiée.");
         setIsSubmitting(false);
         return;
     }
-
     try {
       // 1. Upload de la photo
       const photoFormData = new FormData();

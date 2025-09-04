@@ -30,12 +30,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
         new Post(
             denormalizationContext: ['groups' => ['walk:write']],
-            security: "is_granted('ROLE_USER')", // Seulement les utilisateurs connectés peuvent créer
+            security: "is_granted('ROLE_USER')",
             securityMessage: "Vous devez être connecté pour créer une Walk."
         ),
         new Put(
             denormalizationContext: ['groups' => ['walk:write']],
-            security: "object.getCreator() == user", // Seulement le créateur peut modifier
+            security: "object.getCreator() == user", 
             securityMessage: "Vous ne pouvez modifier que vos propres Walks."
         ),
         new Patch(

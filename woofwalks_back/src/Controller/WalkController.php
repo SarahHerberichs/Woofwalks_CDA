@@ -9,8 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Service\Contract\WalkCreationServiceInterface;
 
-class WalkController extends AbstractController
-{
+class WalkController extends AbstractController {
     #[Route('/api/walkscustom', name: 'create_walk', methods: ['POST'])]
     public function createWalk(Request $request, WalkCreationServiceInterface $walkCreationServiceInterface): JsonResponse
     {
@@ -20,7 +19,7 @@ class WalkController extends AbstractController
             }
         $data = json_decode($request->getContent(), true);
   
-        // Validation basique dans le contrôleur (peut être améliorée avec des Formulaires Symfony)
+        // Validation basique dans le contrôleur
         if (
             empty($data['title']) ||
             empty($data['description']) ||

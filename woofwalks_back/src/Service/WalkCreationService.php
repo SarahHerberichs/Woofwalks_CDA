@@ -24,8 +24,7 @@ class WalkCreationService implements WalkCreationServiceInterface {
         $this->security = $security;
     }
 
-    public function createWalkAndChat(array $data): ?Walk
-    {
+    public function createWalkAndChat(array $data): ?Walk {
         //Vérifications
         if (
             empty($data['title']) ||

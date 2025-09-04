@@ -25,6 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ApiResource(
+    //Seule les propriétés qui ont groups user:read seront inclues dans le processus de normalisation
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']],
     validationContext: ['groups' => ['user:write']],
