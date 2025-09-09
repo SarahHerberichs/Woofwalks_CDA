@@ -4,22 +4,19 @@
 FROM php:8.2-fpm
 
 # Installer Nginx, Node.js, et les dépendances nécessaires
-# On installe Nginx, Node.js, npm, gettext-base, etc. dans la même image
 RUN apt-get update && apt-get install -y \
     nginx gettext-base \
     libzip-dev unzip git curl default-mysql-client \
-    && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-install zip pdo pdo_mysql
+    && docker-php-ext-install zip pdo pdo_mysql \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
 
 # Installer Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php \
     && mv composer.phar /usr/local/bin/composer \
     && rm composer-setup.php
-
-# Installer Node.js et npm manuellement sur la même image
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
 
 # Préparer le backend Symfony
 WORKDIR /var/www/html
@@ -38,7 +35,8 @@ RUN npm ci
 COPY woofwalks_front/ .
 RUN npm run build
 # Déplacer le frontend dans le dossier de Nginx
-RUN mv /app/build /usr/share/nginx/html
+RUN mkdir -p /usr/share/nginx/html \
+    && mv /app/build/* /usr/share/nginx/html
 
 # Préparer Nginx
 RUN mkdir -p /var/lib/nginx/body /var/cache/nginx /var/lib/nginx/proxy /var/lib/nginx/fastcgi /var/lib/nginx/uwsgi /var/lib/nginx/scgi \
