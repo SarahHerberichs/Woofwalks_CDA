@@ -2,7 +2,7 @@
 # Build unique avec Nginx, PHP-FPM, Symfony et React
 # -----------------------
 FROM php:8.2-fpm
-
+ENV APP_ENV=prod
 # Installer Nginx, Node.js, et les dépendances nécessaires
 RUN apt-get update && apt-get install -y \
     nginx gettext-base \
