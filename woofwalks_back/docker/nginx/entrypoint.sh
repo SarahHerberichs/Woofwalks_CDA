@@ -2,17 +2,20 @@
 set -e
 
 echo "=== Contenu de /usr/share/nginx/html ==="
-ls -l /usr/share/nginx/html
+ls -l /usr/share/nginx/html || true
 
-echo "=== Contenu de /etc/nginx/conf.d/default.conf avant modification ==="
+echo "=== Config Nginx avant modification ==="
 cat /etc/nginx/conf.d/default.conf
 
 # Remplacer le port par la variable Railway
 sed -i "s/listen .*/listen ${PORT};/" /etc/nginx/conf.d/default.conf
 
-echo "=== Contenu de /etc/nginx/conf.d/default.conf après modification ==="
+echo "=== Config Nginx après modification ==="
 cat /etc/nginx/conf.d/default.conf
 
-# Lancer PHP-FPM et Nginx
-php-fpm -F &          # PHP-FPM en arrière-plan
-nginx -g 'daemon off;' # Nginx en avant-plan
+# Vérifier la config
+nginx -t
+
+# Lancer PHP-FPM (en arrière-plan) et Nginx (en avant-plan)
+php-fpm -F &
+nginx -g 'daemon off;'
