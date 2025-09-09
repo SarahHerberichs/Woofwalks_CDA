@@ -1,22 +1,13 @@
 #!/bin/bash
 set -e
 
-# Vérifier la variable PORT
-if [ -z "$PORT" ]; then
-  echo "PORT non défini, utilisation 8080 par défaut"
-  PORT=8080
-fi
-
-# Remplacer la variable dans default.conf
-sed -i "s/\${PORT}/$PORT/" /etc/nginx/conf.d/default.conf
-
-# Afficher les logs pour debug
-echo "=== Contenu de /etc/nginx/conf.d/default.conf ==="
-cat /etc/nginx/conf.d/default.conf
-
-echo "=== Contenu de /usr/share/nginx/html ==="
-ls -l /usr/share/nginx/html
+# Remplacer ${PORT} par la vraie variable d'environnement
+PORT=${PORT:-8080}
+# Utiliser envsubst pour substituer les variables d'environnement dans le fichier de configuration de Nginx
+# Cette commande est plus robuste que sed pour ce genre de tâche
+envsubst '$PORT' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf.temp && \
+mv /etc/nginx/conf.d/default.conf.temp /etc/nginx/conf.d/default.conf
 
 # Lancer PHP-FPM et Nginx
-php-fpm -F &
-nginx -g 'daemon off;'
+php-fpm -F &          # PHP-FPM en arrière-plan
+nginx -g 'daemon off;' # Nginx en avant-plan

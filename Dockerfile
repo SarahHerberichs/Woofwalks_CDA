@@ -3,13 +3,13 @@
 # -----------------------
 FROM php:8.2-fpm
 
-# Installer Nginx
-RUN apt-get update && apt-get install -y nginx \
+# Installer Nginx et envsubst (gettext-base)
+RUN apt-get update && apt-get install -y nginx gettext-base \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Préparer Nginx
+# Préparer Nginx et donner les permissions
 RUN mkdir -p /var/lib/nginx/body /var/cache/nginx /var/lib/nginx/proxy /var/lib/nginx/fastcgi /var/lib/nginx/uwsgi /var/lib/nginx/scgi \
-    && chown -R www-data:www-data /var/lib/nginx
+    && chown -R www-data:www-data /var/lib/nginx /usr/share/nginx/html
 
 # Copier backend et frontend
 COPY --from=php_builder /var/www/html /var/www/html
