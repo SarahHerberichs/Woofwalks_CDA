@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev unzip git curl default-mysql-client \
     && docker-php-ext-install zip pdo pdo_mysql
 
-# Installer Composer
+# Installer Composer correctement
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php \
     && mv composer.phar /usr/local/bin/composer \
@@ -29,7 +29,6 @@ RUN mkdir -p public/media var/cache var/log \
 # Build frontend React
 # -----------------------
 FROM node:18 as frontend_builder
-
 WORKDIR /app
 COPY woofwalks_front/package*.json ./
 RUN npm ci
@@ -46,15 +45,14 @@ RUN apt-get update && apt-get install -y nginx \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Préparer Nginx
-RUN mkdir -p /var/lib/nginx/body /var/cache/nginx /var/lib/nginx/proxy \
-    /var/lib/nginx/fastcgi /var/lib/nginx/uwsgi /var/lib/nginx/scgi \
+RUN mkdir -p /var/lib/nginx/body /var/cache/nginx /var/lib/nginx/proxy /var/lib/nginx/fastcgi /var/lib/nginx/uwsgi /var/lib/nginx/scgi \
     && chown -R www-data:www-data /var/lib/nginx
 
-# Copier backend Symfony et frontend React
+# Copier backend et frontend
 COPY --from=php_builder /var/www/html /var/www/html
 COPY --from=frontend_builder /app/build /usr/share/nginx/html
 
-# Copier config Nginx et entrypoint
+# Copier config et entrypoint
 COPY woofwalks_back/docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY woofwalks_back/docker/nginx/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
