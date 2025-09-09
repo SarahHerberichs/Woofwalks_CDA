@@ -65,8 +65,6 @@ RUN mkdir -p /var/run/php
 # Exposer le port Nginx
 EXPOSE 80
 
-# Exécuter les services en tant que www-data
-USER www-data
 
 # Démarrer le conteneur en exécutant le script d'entrée
 CMD ["/usr/local/bin/entrypoint.sh"]
