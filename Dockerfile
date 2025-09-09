@@ -53,4 +53,4 @@ COPY --from=frontend /app/build /usr/share/nginx/html
 COPY woofwalks_back/docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
-CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "php-fpm && nginx -g 'daemon off;'"]
