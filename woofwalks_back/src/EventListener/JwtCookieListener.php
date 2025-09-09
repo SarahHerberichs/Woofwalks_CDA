@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 class JwtCookieListener {
     public function onKernelResponse(ResponseEvent $event): void
     {
-        error_log('🔍 JwtCookieListener appelé');
+        // error_log('🔍 JwtCookieListener appelé');
         $request = $event->getRequest();
         //Routes ou le listener doit s'executer
         $allowedPaths = [
@@ -20,7 +20,7 @@ class JwtCookieListener {
         ];
 
         if (!in_array($request->getPathInfo(), $allowedPaths)) {
-            error_log('⛔ JwtCookieListener ignoré, route incorrecte: ' . $request->getPathInfo());
+            // error_log('⛔ JwtCookieListener ignoré, route incorrecte: ' . $request->getPathInfo());
             return;
         }
         // Récupère l'objet Response (la réponse HTTP en cours de construction)

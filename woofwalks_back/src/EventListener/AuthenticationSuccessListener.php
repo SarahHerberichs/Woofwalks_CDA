@@ -14,7 +14,7 @@ use Symfony\Component\Uid\Uuid;
 class AuthenticationSuccessListener
 {
      private EntityManagerInterface $em;
-    private int $refreshTokenTtl; // <-- déclaration manquante
+    private int $refreshTokenTtl; 
 
     public function __construct(EntityManagerInterface $em, int $refreshTokenTtl)
     {
@@ -23,8 +23,7 @@ class AuthenticationSuccessListener
     }
 
     //En plus du token lexik, ajout du refreshtoken 
-    public function onAuthenticationSuccess(AuthenticationSuccessEvent $event)
-    {
+    public function onAuthenticationSuccess(AuthenticationSuccessEvent $event) {
         $user = $event->getUser();
         if (!$user instanceof UserInterface) {
             return;

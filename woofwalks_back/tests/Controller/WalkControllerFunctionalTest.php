@@ -11,6 +11,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 // La classe de test étend WebTestCase, ce qui fournit les outils nécessaires pour les tests fonctionnels Symfony
 class WalkControllerFunctionalTest extends WebTestCase
 {
+
     // C'est la méthode de test, le nom commence par 'test' pour être détecté par PHPUnit
     public function testCreateWalkEndpoint()
     {
@@ -19,7 +20,6 @@ class WalkControllerFunctionalTest extends WebTestCase
         $client = static::createClient();
         // Désactive la gestion des exceptions de Symfony pour qu'elles soient levées directement par PHPUnit
         $client->catchExceptions(false);
-
         // Récupère le conteneur de services de l'application
         $container = static::getContainer();
 

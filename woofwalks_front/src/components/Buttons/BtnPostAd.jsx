@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../utils/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import GenericPostAdForm from "../Forms/Ads/GenericPostAdForm";
 const BtnPostAd = ({
   formContext,

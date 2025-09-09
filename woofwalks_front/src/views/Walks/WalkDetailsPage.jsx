@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import api from "../../components/services/api";
+import api from "../../services/api";
 
 const WalkDetailsPage = () => {
   const { id } = useParams();

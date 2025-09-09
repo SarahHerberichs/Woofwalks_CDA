@@ -72,6 +72,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     #[Groups(['user:read', 'user:write', 'walk:read', 'user:me'])]
     #[Assert\NotBlank(message: "L'email ne peut pas être vide.")]
+    #[Assert\Length(max: 180, maxMessage: "L'email ne peut pas dépasser {{ limit }} caractères.")]
     #[Assert\Email(message: "L'email '{{ value }}' n'est pas une adresse email valide.")]
     private ?string $email = null;
 
@@ -79,16 +80,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:me'])] 
     private array $roles = [];
 
-
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
     #[Groups(['user:write'])]
     #[Assert\NotBlank(groups: ['user:write'], message: "Le mot de passe ne peut pas être vide.")]
     #[Assert\Length(min: 6, minMessage: "Le mot de passe doit contenir au moins {{ limit }} caractères.", groups: ['user:write'])]
+    #[Assert\Regex(
+        pattern: "/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=<>?]).+$/",
+        message: "Le mot de passe doit contenir au moins une majuscule, un chiffre et un caractère spécial.",
+        groups: ['user:write']
+    )]
     private ?string $plainPassword = null;
 
     #[ORM\OneToMany(mappedBy: 'creator', targetEntity: Walk::class, orphanRemoval: true)]
@@ -99,6 +101,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Groups(['user:read', 'user:write', 'user:me'])]
     #[Assert\NotBlank(message: "Le nom d'utilisateur est requis.")]
+    #[Assert\Length(max: 100, maxMessage: "Le nom d'utilisateur ne peut pas dépasser {{ limit }} caractères.")]
     #[ORM\Column(length: 100)]
     private ?string $username = null;
 

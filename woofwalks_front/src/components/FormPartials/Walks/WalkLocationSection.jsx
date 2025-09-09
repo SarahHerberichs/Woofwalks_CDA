@@ -11,9 +11,12 @@ const WalkLocationSection = ({
   return (
     <>
       {locationType === "custom" && (
-        //Lib react hook form -
+        //Lib react hook form - Controller se connect à "control" qui vient de GenericPostAdForm par ex
+        //Le Controller utilise control" pr communiquer avec le form principal , 
+        //récupère donc la valeur actuelle de field.value et envoi changements via field.onChange
         <Controller
           name="locationData"
+          //Controlleur de valeur
           control={control}
           defaultValue={{
             city: "",

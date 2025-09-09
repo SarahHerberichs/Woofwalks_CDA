@@ -1,6 +1,6 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import logo from '../../assets/images/woofwalks_logo_white.png';
-import { useAuth } from "../../utils/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import BtnLogout from "../Buttons/BtnLogout";
 import './Header.css';
 
@@ -15,7 +15,7 @@ function Header() {
   return (
     <Navbar expand="lg" className="shadow-sm navbar">
       <Container>
-        <Navbar.Brand><img src={logo} class='logo-woofwalks' alt="Woofwalks Logo" /></Navbar.Brand>
+        <Navbar.Brand><img src={logo} className='logo-woofwalks' alt="Woofwalks Logo" /></Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" className="btn"/>
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
@@ -32,11 +32,11 @@ function Header() {
               </>
             )}
             {isAuthenticated && (
-              <Nav.Item>
+              <>
                 <Nav.Link href="/account">Mon compte</Nav.Link>
                 <Nav.Link href="/messages">Ma messagerie</Nav.Link>
                 <BtnLogout />
-              </Nav.Item>
+              </>
             )}
           </Nav>
         </Navbar.Collapse>

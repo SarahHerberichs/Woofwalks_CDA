@@ -1,5 +1,6 @@
+import DOMPurify from "dompurify";
 import { useState } from "react";
-
+import "./SelectLocationForm.css";
 const SelectLocationForm = ({ value, onLocationDataChange }) => {
   const [cityInput, setCityInput] = useState("");
   const [nameInput, setNameInput] = useState("");
@@ -29,7 +30,8 @@ const SelectLocationForm = ({ value, onLocationDataChange }) => {
     } else {
       setCities([]);
     }
-    updateLocationData({ city: val });
+    const santizedCity = DOMPurify.sanitize(val)
+    updateLocationData({ city: santizedCity });
   };
 
   // Lorsqu'une ville est sélectionnée parmi les suggestions :
@@ -46,8 +48,10 @@ const SelectLocationForm = ({ value, onLocationDataChange }) => {
 
   // Met à jour nameInput et appelle updateLocationData avec le nouveau nom  const handleNameChange = async (e) => {
   const handleNameChange = async (e) => {
-    setNameInput(e.target.value);
-    updateLocationData({ name: e.target.value });
+    const val = e.target.value;
+    setNameInput(val); 
+    const sanitizedName = DOMPurify.sanitize(val);
+    updateLocationData({ name: sanitizedName })
   };
   // Suggère les rues correspondantes en fonction de la saisie et du code commune  const handleStreetChange = async (e) => {
   const handleStreetChange = async (e) => {
@@ -62,11 +66,13 @@ const SelectLocationForm = ({ value, onLocationDataChange }) => {
     } else {
       setStreets([]);
     }
-    updateLocationData({ street: val });
+    const santizedStreet = DOMPurify.sanitize(val)
+    updateLocationData({ street: santizedStreet });
   };
 
   const handleStreetSelect = (street) => {
     const [lng, lat] = street.geometry.coordinates;
+
     //Injection dans l'input de la valeur
     setStreetInput(street.properties.name);
     //RAZ streets
@@ -78,60 +84,87 @@ const SelectLocationForm = ({ value, onLocationDataChange }) => {
     });
   };
 
-  return (
-    <div>
-      <label>Ville:</label>
-      <input
-        type="text"
-        value={cityInput}
-        onChange={handleCityChange}
-        placeholder="Entrez une ville"
-      />
-      {cities.length > 0 && (
-        <ul>
-          {cities.map((city) => (
-            <li
-              key={city.properties.citycode}
-              onClick={() => handleCitySelect(city)}
-            >
-              {city.properties.label}
-            </li>
-          ))}
-        </ul>
-      )}
 
-      {selectedCityCode && (
-        <>
-          <label>Rue:</label>
+
+return (
+  <div className="form-location">
+    {/* CHAMP VILLE */}
+    <div className="form-row"> 
+      <label htmlFor="city-input">Ville:</label> 
+      <div className="autocomplete-wrapper">
+        <input
+          id="city-input" 
+          type="text"
+          value={cityInput}
+          onChange={handleCityChange}
+          placeholder="Entrez une ville"
+        />
+        {cities.length > 0 && (
+          <div className="autocomplete-dropdown">
+            {cities.map(city => (
+              <div
+                key={city.properties.citycode}
+                className="autocomplete-item"
+                onClick={() => handleCitySelect(city)}
+                tabIndex={0}
+                onKeyDown={e => e.key === 'Enter' && handleCitySelect(city)}
+              >
+                {city.properties.label}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* CHAMP RUE - MIS À JOUR */}
+    {selectedCityCode && (
+      <div className="form-row">
+        <label htmlFor="street-input">Rue:</label> 
+        <div className="autocomplete-wrapper">
           <input
+            id="street-input" 
             type="text"
             value={streetInput}
             onChange={handleStreetChange}
             placeholder="Entrez une rue"
           />
           {streets.length > 0 && (
-            <ul>
+            <div className="autocomplete-dropdown">
               {streets.map((street) => (
-                <li
+                <div
                   key={street.properties.id}
+                  className="autocomplete-item"
                   onClick={() => handleStreetSelect(street)}
+                  tabIndex={0}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && handleStreetSelect(street)
+                  }
                 >
                   {street.properties.name}
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
-        </>
-      )}
-      <label>Nom du lieu:</label>
+        </div>
+      </div>
+    )}
+
+    {/* CHAMP NOM DU LIEU */}
+    <div className="form-row"> 
+      <label htmlFor="name-input">Nom du lieu:</label>
       <input
+        id="name-input"
         type="text"
         value={nameInput}
         onChange={handleNameChange}
         placeholder="Donnez un nom"
       />
     </div>
-  );
+
+  </div>
+);
+
 };
 
 export default SelectLocationForm;

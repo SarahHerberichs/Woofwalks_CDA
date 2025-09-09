@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile.php-fpm
     container_name: woofwalks_php-fpm
     volumes:
+      - ./logs:/var/www/html/var/log
       - ./woofwalks_back:/var/www/html
     networks:
       - woofwalks-network

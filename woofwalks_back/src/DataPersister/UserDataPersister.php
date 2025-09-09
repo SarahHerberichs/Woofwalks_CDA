@@ -14,8 +14,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserDataPersister implements ProcessorInterface
-{
+class UserDataPersister implements ProcessorInterface {
     private EntityManagerInterface $entityManager;
     private UserPasswordHasherInterface $passwordHasher;
     private MailerInterface $mailer;
@@ -43,8 +42,7 @@ class UserDataPersister implements ProcessorInterface
     /**
      * @param User $data
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
-    {
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed {
         if (!$data instanceof User) {
             return $data;
         }

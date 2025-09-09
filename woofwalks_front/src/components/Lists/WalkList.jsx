@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { filterAndSortByFutureDate } from "../../utils/orderAds";
-import WalkCard from "../Cards/Walks/WalkCard";
+import WalkCard from "../Cards/WalkCard";
 
 const WalkList = () => {
   const [walks, setWalks] = useState([]);

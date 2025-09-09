@@ -20,20 +20,27 @@ class Location
     #[Groups(['location:read', 'park:read'])] 
     private ?int $id = null;
 
-    #[ORM\Column(type: 'float')]
-    #[Groups(['location:read', 'location:write', 'walk:read'])]
+    #[ORM\Column(type:'float')]
+    #[Assert\NotBlank]
+    #[Assert\Range(min: -90, max: 90)]
+    #[Groups(['location:write'])]
     private ?float $latitude = null;
 
-    #[ORM\Column(type: 'float')]
-    #[Groups(['location:read', 'location:write', 'walk:read'])]
+    #[ORM\Column(type:'float')]
+    #[Assert\NotBlank]
+    #[Assert\Range(min: -180, max: 180)]
+    #[Groups(['location:write'])]
     private ?float $longitude = null;
 
     #[ORM\Column(type:'string', length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     #[Groups(['location:read', 'location:write','walk:read', 'park:read'])]
     private ?string $name = null;
 
-    #[ORM\Column(type:'string', length: 255, nullable: true)] 
-    #[Groups(['location:read', 'location:write','walk:read'])]
+    #[ORM\Column(type:'string', length:255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max:255)]
+    #[Groups(['location:write'])]
     private ?string $city = null;
 
     #[ORM\Column(type:'string', length: 255, nullable: true)] 
@@ -79,7 +86,6 @@ class Location
         return $this;
     }
 
-    // AJOUTEZ CES GETTERS ET SETTERS
     public function getCity(): ?string
     {
         return $this->city;
