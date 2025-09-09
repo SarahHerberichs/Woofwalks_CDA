@@ -1,8 +1,10 @@
 #!/usr/bin/env php
 <?php
 
+
 use App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Dotenv\Dotenv;
 
 if (!is_dir(dirname(__DIR__).'/vendor')) {
     throw new LogicException('Dependencies are missing. Try running "composer install".');
@@ -14,8 +16,17 @@ if (!is_file(dirname(__DIR__).'/vendor/autoload_runtime.php')) {
 
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
+// Charger le .env seulement s'il existe (pour ne pas planter sur Railway)
+if (file_exists(dirname(__DIR__).'/.env')) {
+    (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
+}
+
 return function (array $context) {
-    $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+    // On récupère les variables d'environnement directement depuis $context ou getenv()
+    $env = $context['APP_ENV'] ?? getenv('APP_ENV') ?? 'prod';
+    $debug = isset($context['APP_DEBUG']) ? (bool)$context['APP_DEBUG'] : (bool)getenv('APP_DEBUG');
+
+    $kernel = new Kernel($env, $debug);
 
     return new Application($kernel);
 };
