@@ -24,16 +24,22 @@ RUN mkdir -p public/media var/cache var/log \
 # --- Étape 2 : Build du frontend React ---
 FROM node:18 as frontend_builder
 
-# Définir le répertoire de travail et copier le code
 WORKDIR /app
+
+# Copier package.json et package-lock.json puis installer les dépendances
 COPY woofwalks_front/package*.json ./
 RUN npm ci
+
+# Copier tout le code front ensuite
 COPY woofwalks_front/ .
+
+# Build React
 RUN npm run build
 
-# ✅ Vérification du build React
+# Debug
 RUN ls -l /app/build
 RUN cat /app/build/index.html | head -n 10
+
 
 # --- Étape finale : Production ---
 FROM php:8.2-fpm
