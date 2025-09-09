@@ -33,6 +33,7 @@ COPY woofwalks_front/package*.json ./
 RUN npm ci
 COPY woofwalks_front/ .
 RUN npm run build
+RUN ls -la /app
 
 # --- Étape finale : Création de l'image de production ---
 # Utiliser une image qui contient déjà PHP-FPM
