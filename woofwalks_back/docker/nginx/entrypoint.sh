@@ -6,5 +6,6 @@ ls -l /usr/share/nginx/html
 echo "=== Début index.html ==="
 head -n 10 /usr/share/nginx/html/index.html
 
-php-fpm8.2 -F &   # PHP-FPM en foreground
+# Lance PHP-FPM et Nginx
+php-fpm -F &   # foreground
 nginx -g 'daemon off;'
