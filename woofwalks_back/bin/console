@@ -20,7 +20,6 @@
 //     return new Application($kernel);
 // };
 #!/usr/bin/env php
-<?php
 
 // DEBUG : vérifier si les variables Railway sont visibles
 echo "APP_ENV = " . ($_ENV['APP_ENV'] ?? 'non défini') . PHP_EOL;
