@@ -44,8 +44,8 @@ RUN apt-get update && apt-get install -y nginx \
 
 # Créer les répertoires Nginx et donner les permissions à l'utilisateur www-data
 # Créer les répertoires Nginx et donner les permissions à l'utilisateur www-data
-RUN mkdir -p /var/lib/nginx/body /var/cache/nginx /var/lib/nginx/proxy \
-    && chown -R www-data:www-data /var/lib/nginx/body /var/cache/nginx /var/lib/nginx/proxy
+RUN mkdir -p /var/lib/nginx/body /var/cache/nginx /var/lib/nginx/proxy /var/lib/nginx/fastcgi \
+    && chown -R www-data:www-data /var/lib/nginx/body /var/cache/nginx /var/lib/nginx/proxy /var/lib/nginx/fastcgi
 
 # Copier les fichiers du backend
 COPY --from=php_builder /var/www/html /var/www/html
