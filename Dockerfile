@@ -15,7 +15,6 @@ RUN mkdir -p /var/lib/nginx/body /var/cache/nginx /var/lib/nginx/proxy /var/lib/
 COPY --from=php_builder /var/www/html /var/www/html
 COPY --from=frontend_builder /app/build /usr/share/nginx/html
 
-# Copier config et entrypoint
 COPY woofwalks_back/docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY woofwalks_back/docker/nginx/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
