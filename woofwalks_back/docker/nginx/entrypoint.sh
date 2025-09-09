@@ -10,11 +10,11 @@ envsubst '$PORT' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.co
 mv /etc/nginx/conf.d/default.conf.temp /etc/nginx/conf.d/default.conf
 
 # Créer la base de données si elle n'existe pas
-APP_ENV=prod SYMFONY_DOTENV_VARS_ON_DEMAND=1 php bin/console doctrine:database:create --if-not-exists --no-interaction
+php bin/console doctrine:database:create --if-not-exists --no-interaction
 
 # Appliquer les migrations
-APP_ENV=prod SYMFONY_DOTENV_VARS_ON_DEMAND=1 php bin/console doctrine:migrations:migrate --no-interaction
+php bin/console doctrine:migrations:migrate --no-interaction
 
 # Lancer PHP-FPM et Nginx
-APP_ENV=prod php-fpm -F &
+php-fpm -F &
 nginx -g 'daemon off;' -c /etc/nginx/nginx.conf
