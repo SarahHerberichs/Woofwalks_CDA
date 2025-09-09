@@ -96,7 +96,7 @@ return (
           id="city-input" 
           type="text"
           value={cityInput}
-          onChange={handleCityChange}
+          // onChange={handleCityChange}
           placeholder="Entrez une ville"
         />
         {cities.length > 0 && (
