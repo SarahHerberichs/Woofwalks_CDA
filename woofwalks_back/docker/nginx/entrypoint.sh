@@ -1,8 +1,4 @@
 #!/bin/bash
-# entrypoint.sh
-
-# Démarre PHP-FPM en arrière-plan
-php-fpm -D
-
-# Démarre Nginx au premier plan
+set -e
+php-fpm8.2 -F &   # -F = foreground, & pour laisser le script continuer
 nginx -g 'daemon off;'
