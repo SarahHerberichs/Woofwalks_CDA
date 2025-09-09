@@ -2,6 +2,11 @@
 # Build unique avec Nginx, PHP-FPM, Symfony et React
 # -----------------------
 FROM php:8.2-fpm
+
+# Force cache bust for Railway deployment
+# This line has no effect on the image, but it forces a rebuild.
+# Updated: Sep 9, 2025
+
 # Définir les variables d'environnement de l'application
 ENV APP_ENV=prod
 ENV SYMFONY_DOTENV_VARS_ON_DEMAND=1
