@@ -33,7 +33,7 @@ COPY woofwalks_front/package*.json ./
 RUN npm ci
 COPY woofwalks_front/ .
 RUN npm run build
-
+RUN ls -l /app/build
 # --- Étape finale : Création de l'image de production ---
 FROM php:8.2-fpm
 
