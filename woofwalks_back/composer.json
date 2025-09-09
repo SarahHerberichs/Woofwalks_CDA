@@ -95,8 +95,8 @@
   "extra": {
     "symfony": {
       "allow-contrib": false,
-      "require": "6.4.*",
-      "dotenv_allow_env_file": true
+      "require": "6.4.*"
     }
   }
 }
+
