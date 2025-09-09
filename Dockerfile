@@ -39,6 +39,7 @@ RUN npm run build
 FROM php:8.2-fpm
 
 # Installer Nginx et supprimer le fichier de configuration par défaut
+# Installer Nginx
 RUN apt-get update && apt-get install -y nginx \
     && rm -f /etc/nginx/conf.d/default.conf \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -57,6 +58,9 @@ RUN mkdir -p /var/run/php
 
 # Exposer le port Nginx
 EXPOSE 80
+
+# Exécute Nginx sous l'utilisateur www-data pour les permissions
+USER www-data
 
 # Démarrer Nginx et PHP-FPM
 CMD ["sh", "-c", "php-fpm && nginx -g 'daemon off;'"]
