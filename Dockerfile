@@ -53,6 +53,9 @@ COPY --from=frontend_builder /app/build /usr/share/nginx/html
 # Copier la configuration Nginx
 COPY woofwalks_back/docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 
+COPY woofwalks_back/docker/nginx/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Créer un répertoire de socket pour PHP-FPM
 RUN mkdir -p /var/run/php
 
