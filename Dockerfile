@@ -38,8 +38,9 @@ RUN npm run build
 # Utiliser une image qui contient déjà PHP-FPM
 FROM php:8.2-fpm
 
-# Installer Nginx
+# Installer Nginx et supprimer le fichier de configuration par défaut
 RUN apt-get update && apt-get install -y nginx \
+    && rm /etc/nginx/conf.d/default.conf \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copier les fichiers du backend
@@ -48,11 +49,13 @@ COPY --from=php_builder /var/www/html /var/www/html
 # Copier les fichiers du frontend
 COPY --from=frontend_builder /app/build /usr/share/nginx/html
 
+# Copier et rendre exécutable le script d'entrée
 COPY woofwalks_back/docker/nginx/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Copier la configuration Nginx
-COPY woofwalks_back/docker/nginx/default.conf /etc/nginx/conf.d/app.conf
+COPY woofwalks_back/docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+
 # Créer un répertoire de socket pour PHP-FPM
 RUN mkdir -p /var/run/php
 
