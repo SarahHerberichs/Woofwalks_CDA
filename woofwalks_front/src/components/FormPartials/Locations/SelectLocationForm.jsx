@@ -18,21 +18,21 @@ const SelectLocationForm = ({ value, onLocationDataChange }) => {
   // - mise à jour de cityInput avec la valeur tapée
   // - appel à l'API pour récupérer les villes correspondantes
   // - mise à jour de cities avec les suggestions de l'API
-  const handleCityChange = async (e) => {
-    const val = e.target.value;
-    setCityInput(val);
-    if (val.length > 2) {
-      const response = await fetch(
-        `https://api-adresse.data.gouv.fr/search/?q=${val}&type=municipality`
-      );
-      const data = await response.json();
-      setCities(data.features);
-    } else {
-      setCities([]);
-    }
-    const santizedCity = DOMPurify.sanitize(val)
-    updateLocationData({ city: santizedCity });
-  };
+  // const handleCityChange = async (e) => {
+  //   const val = e.target.value;
+  //   setCityInput(val);
+  //   if (val.length > 2) {
+  //     const response = await fetch(
+  //       `https://api-adresse.data.gouv.fr/search/?q=${val}&type=municipality`
+  //     );
+  //     const data = await response.json();
+  //     setCities(data.features);
+  //   } else {
+  //     setCities([]);
+  //   }
+  //   const santizedCity = DOMPurify.sanitize(val)
+  //   updateLocationData({ city: santizedCity });
+  // };
 
   // Lorsqu'une ville est sélectionnée parmi les suggestions :
   // - mise à jour de cityInput (affichage dans l'input)
