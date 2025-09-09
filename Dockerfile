@@ -34,6 +34,8 @@ RUN npm ci
 COPY woofwalks_front/ .
 RUN npm run build
 RUN ls -l /app/build
+RUN cat /app/build/index.html | head -n 10
+
 # --- Étape finale : Création de l'image de production ---
 FROM php:8.2-fpm
 

@@ -1,3 +1,3 @@
-#!/bin/sh
-php-fpm -F -R &  # -F = foreground, -R = listen as TCP
+
+php-fpm
 nginx -g 'daemon off;'
