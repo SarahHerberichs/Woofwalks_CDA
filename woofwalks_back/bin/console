@@ -20,13 +20,6 @@
 //     return new Application($kernel);
 // };
 #!/usr/bin/env php
-
-// DEBUG : vérifier si les variables Railway sont visibles
-echo "APP_ENV = " . ($_ENV['APP_ENV'] ?? 'non défini') . PHP_EOL;
-echo "APP_DEBUG = " . ($_ENV['APP_DEBUG'] ?? 'non défini') . PHP_EOL;
-echo "DATABASE_URL = " . ($_ENV['DATABASE_URL'] ?? 'non défini') . PHP_EOL;
-
-// Kernel normal
 use App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
@@ -40,4 +33,3 @@ return function (array $context) {
 
     return new Application($kernel);
 };
-
