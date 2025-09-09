@@ -9,7 +9,7 @@ nelmio_security:
     nosniff: true
     #Forçage du HTTPS
   forced_ssl:
-    hosts: ['localhost']
+    hosts: ["%env(APP_HOST)%"]
     hsts_max_age: 31536000
     hsts_subdomains: true
     hsts_preload: true
