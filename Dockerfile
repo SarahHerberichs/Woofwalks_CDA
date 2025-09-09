@@ -62,5 +62,4 @@ EXPOSE 80
 # Exécute Nginx sous l'utilisateur www-data pour les permissions
 USER www-data
 
-# Démarrer Nginx et PHP-FPM
-CMD ["sh", "-c", "php-fpm && nginx -g 'daemon off;'"]
+CMD ["/usr/local/bin/entrypoint.sh"]
