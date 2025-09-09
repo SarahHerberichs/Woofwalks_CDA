@@ -1,7 +1,6 @@
 #!/bin/sh
-
-# Lancer PHP-FPM en TCP sur 9000
+echo "=== Nginx config ==="
+cat /etc/nginx/conf.d/default.conf
 php-fpm -R &
-
-# Lancer Nginx en foreground
+sleep 2
 nginx -g 'daemon off;'
