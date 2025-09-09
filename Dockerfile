@@ -40,7 +40,7 @@ FROM php:8.2-fpm
 
 # Installer Nginx et supprimer le fichier de configuration par défaut
 RUN apt-get update && apt-get install -y nginx \
-    && rm /etc/nginx/conf.d/default.conf \
+    && rm -f /etc/nginx/conf.d/default.conf \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copier les fichiers du backend
