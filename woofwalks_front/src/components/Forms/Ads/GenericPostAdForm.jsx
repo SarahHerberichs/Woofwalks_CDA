@@ -53,6 +53,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
   const getLocationId = async (data) => {
     if (data.use_custom_location === "custom") {
       const locationData = await createLocation(data.locationData);
+
       return parseInt(locationData["@id"].split("/").pop());
     } else if (data.use_custom_location === "park") {
       return parseInt(data.park_location_id);
@@ -71,6 +72,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
   };
 
   const onSubmit = async (data) => {
+          console.log(data.locationData);
     if (!photo) {
       alert("Veuillez sélectionner une photo !");
       return;
@@ -84,13 +86,16 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       description: DOMPurify.sanitize(data.description),
     };
     // On vérifie si locationData existe avant de le désinfecter
-    if (data.locationData) {
-      sanitizedData.locationData = {
-        city: DOMPurify.sanitize(data.locationData.city),
-        street: DOMPurify.sanitize(data.locationData.street),
-        name: DOMPurify.sanitize(data.locationData.name),
-      };
-    }
+  if (data.locationData) {
+    sanitizedData.locationData = {
+      city: DOMPurify.sanitize(data.locationData.city),
+      street: DOMPurify.sanitize(data.locationData.street),
+      name: DOMPurify.sanitize(data.locationData.name),
+      latitude: data.locationData.latitude,
+      longitude: data.locationData.longitude,
+    };
+  }
+
 
     const locationId = await getLocationId(sanitizedData);
 
