@@ -26,6 +26,9 @@ RUN mkdir -p public/media && \
 
 COPY composer.json composer.lock ./
 
+RUN mkdir -p var/cache var/log \
+    && chown -R www-data:www-data var/cache var/log
+
 RUN composer install --no-scripts --no-autoloader --prefer-dist
 
 COPY . .
