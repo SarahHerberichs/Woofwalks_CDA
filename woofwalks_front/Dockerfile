@@ -3,15 +3,15 @@ FROM node:18-alpine as builder
 
 # Définir le répertoire de travail
 WORKDIR /app
-
+ARG REACT_APP_API_URL
 # Copier les fichiers de l'application
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
 
 # Lancer la commande de build
-RUN npm run build
-
+# RUN npm run build
+RUN REACT_APP_API_URL=$REACT_APP_API_URL npm run build
 # Étape 2: Servir l'application avec Nginx
 FROM nginx:stable-alpine
 
