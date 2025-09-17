@@ -64,7 +64,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-
+  //Pour la partie Walk, surveille si le btn de choix de location(parc ou custom)change
   const locationType = watch("use_custom_location");
 
   const handleFileChange = (e) => {
@@ -72,7 +72,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
   };
 
   const onSubmit = async (data) => {
-          console.log(data.locationData);
+    
     if (!photo) {
       alert("Veuillez sélectionner une photo !");
       return;
@@ -85,7 +85,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       title: DOMPurify.sanitize(data.title),
       description: DOMPurify.sanitize(data.description),
     };
-    // On vérifie si locationData existe avant de le désinfecter
+  // Vérif que locationData existe avant de Sanitize
   if (data.locationData) {
     sanitizedData.locationData = {
       city: DOMPurify.sanitize(data.locationData.city),
@@ -95,7 +95,6 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       longitude: data.locationData.longitude,
     };
   }
-
 
     const locationId = await getLocationId(sanitizedData);
 
