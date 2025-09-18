@@ -22,17 +22,13 @@ class UserRegistrationSubscriber implements EventSubscriberInterface
         $this->entityManager = $entityManager;
     }
 // va se déclencher apres désérialisation mais avant valiation et persistance
-    public static function getSubscribedEvents(): array
-    {
-        // S'exécute avec une priorité élevée (-100) pour s'assurer qu'il est après les autres subscribers
-        // mais avant la validation standard d'ApiPlatform.
+    public static function getSubscribedEvents(): array {
         return [
             KernelEvents::VIEW => ['onPreRegisterUser', 200],                       
         ];
     }
 
-    public function onPreRegisterUser(ViewEvent $event): void
-    {
+    public function onPreRegisterUser(ViewEvent $event): void {
         $user = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
 
@@ -40,38 +36,29 @@ class UserRegistrationSubscriber implements EventSubscriberInterface
         if (!$user instanceof User || $method !== 'POST') {
             return;
         }
-
         // Récupère l'e-mail du nouvel utilisateur qui tente de s'inscrire
         $email = $user->getEmail();
         if (empty($email)) {
-            // L'email ne devrait pas être vide si on arrive ici normalement mais controle quand meme
             return;
         }
-
         // Recherche un utilisateur existant avec cet e-mail
         $existingUser = $this->userRepository->findOneBy(['email' => $email]);
-
         if ($existingUser) {
-            // Définit la limite de temps pour l'expiration (24 heures)
             $expirationTime = (new \DateTimeImmutable())->modify('-24 hours');
-
-            // Vérifie si l'utilisateur existant n'est pas vérifié ET que son lien de confirmation est expiré
+            //Si l'utilisateur est en BDD mais n'a pas validé son compte meme s'il a recu son mail - on supprime
             if (!$existingUser->isVerified() && 
                 $existingUser->getConfirmationRequestedAt() !== null && 
                 $existingUser->getConfirmationRequestedAt() < $expirationTime) {
                 
-                // --- LOGIQUE DE SUPPRESSION ---
                 $this->entityManager->remove($existingUser);
-                $this->entityManager->flush(); // Exécute la suppression immédiatement
-
+                $this->entityManager->flush(); 
                 return; 
-            } else {
-                // Si l'utilisateur existant est vérifié OU non vérifié mais non expiré, on bloque la nouvelle inscriptiuon
-                // La contrainte #[UniqueEntity] se chargera de générer le bon message d'erreur
-                return;
             }
+
+            $event->setResponse(new JsonResponse([
+                'detail' => 'Cet email est déjà utilisé pour un autre compte.'
+            ], 400));
+            return;
         }
-        // Si aucun utilisateur existant avec cet email n'est trouvé,
-        // le nouveau $user sera traité normalement par le DataPersister.
     }
 }

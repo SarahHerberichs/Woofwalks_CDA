@@ -1,5 +1,5 @@
-import '../../../style/SelectPark.css';
 import useParks from "../../Lists/ParkList";
+import './SelectPark.css';
 
 const SelectParkForm = ({ register, errors }) => {
   const { parks, error } = useParks();

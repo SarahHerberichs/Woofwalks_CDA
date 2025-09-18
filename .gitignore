@@ -12,3 +12,7 @@ woofwalks_back/backupDb/
 backup_db.sh
 
 backups/
+
+logs/
+
+docker/mysql-init/

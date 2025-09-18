@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Security;
 
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationFailureHandler;
@@ -11,9 +12,9 @@ use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-class CustomAuthenticationFailureHandler extends AuthenticationFailureHandler
-{
+class CustomAuthenticationFailureHandler extends AuthenticationFailureHandler {
     private RateLimiterFactory $loginLimiter;
 
     public function __construct(
@@ -23,21 +24,58 @@ class CustomAuthenticationFailureHandler extends AuthenticationFailureHandler
         LoggerInterface $logger,
         RateLimiterFactory $loginLimiter
     ) {
-        // Le parent constructeur est appelé avec les arguments corrects.
         parent::__construct($dispatcher, $translator, $jwtManager, $logger);
         $this->loginLimiter = $loginLimiter;
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
-    {
-        $limiter = $this->loginLimiter->create($request->getClientIp());
-        
-        // Consomme un jeton et vérifie si la consommation a été acceptée en une seule ligne.
-        if (!$limiter->consume()->isAccepted()) {
-            return new Response('Trop de tentatives de connexion, veuillez réessayer plus tard.', Response::HTTP_TOO_MANY_REQUESTS);
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response {
+        try {
+            $limiter = $this->loginLimiter->create($request->getClientIp());
+
+            if (!$limiter->consume()->isAccepted()) {
+                // On renvoie un 429 si la limite est dépassée
+                return new JsonResponse(
+                    ['message' => 'Trop de tentatives de connexion, veuillez réessayer plus tard.'],
+                    Response::HTTP_TOO_MANY_REQUESTS
+                );
+            }
+        } catch (\Exception $e) {
+            // Cette partie du code attrape l'erreur et empêche le 500
+            $this->logger->error(sprintf(
+                'Erreur critique dans le rate limiter : %s',
+                $e->getMessage()
+            ));
+
+            // On renvoie une réponse appropriée au lieu d'un 500
+            return new JsonResponse(
+                ['message' => 'Service d\'authentification temporairement indisponible.'],
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
-        // Si la limite n'est pas atteinte, on retourne la réponse par défaut.
+        if ($exception instanceof CustomUserMessageAccountStatusException) {
+            return new JsonResponse(
+                ['message' => $exception->getMessage()],
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+               // Gère les exceptions d'identifiants incorrects
+        if ($exception instanceof BadCredentialsException) {
+            return new JsonResponse(
+                ['message' => 'L\'email ou le mot de passe que vous avez saisi est incorrect.'], 
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+
+        // Gère les exceptions d'utilisateur non trouvé
+        if ($exception instanceof UserNotFoundException) {
+            return new JsonResponse(
+                ['message' => 'L\'email que vous avez saisi est incorrect.'], 
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+        
+
         return parent::onAuthenticationFailure($request, $exception);
     }
 }

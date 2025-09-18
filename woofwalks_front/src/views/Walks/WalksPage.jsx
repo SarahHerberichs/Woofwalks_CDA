@@ -1,5 +1,5 @@
 import BtnPostAd from "../../components/Buttons/BtnPostAd";
-import walkSpecificFields from "../../components/Forms/Walks/walkSpecificFields";
+import walkSpecificFields from "../../components/FormSpecificFields/Walks/walkSpecificFields";
 import WalkList from "../../components/Lists/WalkList";
 
 const WalksPage = () => {

@@ -1,9 +1,4 @@
-# FROM node:18
-# WORKDIR /app
-# COPY package*.json ./
-# RUN npm install
-# COPY . .
-# Étape 1 : Le "build" de l'application front-end
+
 FROM node:18 AS build
 
 # Définition du répertoire de travail à l'intérieur du conteneur

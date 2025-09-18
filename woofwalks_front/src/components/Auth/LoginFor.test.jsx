@@ -9,7 +9,7 @@ jest.mock("react-router-dom", () => ({
 
 // Mock de useAuth
 const mockLogin = jest.fn();
-jest.mock("../../utils/AuthContext", () => ({
+jest.mock("../../contexts/AuthContext", () => ({
   useAuth: () => ({
     login: mockLogin,
   }),

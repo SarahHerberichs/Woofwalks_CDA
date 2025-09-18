@@ -1,14 +1,15 @@
+import DOMPurify from "dompurify";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Navigate, useNavigate } from "react-router-dom";
-import '../../../style/PostAd.css';
-import { useAuth } from "../../../utils/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
+import { createLocation } from "../../../services/createLocation";
+import { postGenericAd } from "../../../services/postGenericAd";
+import { uploadPhoto } from "../../../services/uploadPhoto";
 import SelectLocationForm from "../../FormPartials/Locations/SelectLocationForm";
+import PhotoForm from "../../FormPartials/PhotoForm";
 import WalkLocationSection from "../../FormPartials/Walks/WalkLocationSection";
-import { createLocation } from "../../services/createLocation";
-import { postGenericAd } from "../../services/postGenericAd";
-import { uploadPhoto } from "../../services/uploadPhoto";
-import PhotoForm from "../PhotoForm";
+import './PostAd.css';
 
 const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
  
@@ -17,16 +18,20 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const {
-    //Pour enregistrer un champ et appliquer des règles de validations
+    //A son appel, surveille le champs via son nom pour savoir si il change, applique des regles de validations qu'on lui passe
     register,
-    //Fonction déclenchée onSubmit, s'assure des validations avant execution
+    //Attend en parametre la vraie fonction a executer
     handleSubmit,
+    //Object - gestionnaire d 'etat central - + puissant que register
+    // contient la logique interne du form
+    //Pour les champs qui sont pas enregistrés directement par register-> composant + complexe comme WalkLocationSection
     control,
     reset,
-    // Pour surveiller un champ en temps réel
+    //Surveille valeurs en temps réel
     watch,
     formState: { errors },
   } = useForm({
+    //Initialisation des values au debut
     defaultValues: {
       title: "",
       description: "",
@@ -44,68 +49,78 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       ...entitySpecificFields.initialValues,
     },
   });
-    //Fonction récupération de l'id de la loc crée
-    const getLocationId = async (data) => {
-      if (data.use_custom_location === "custom") {
-        const locationData = await createLocation(data.locationData);
-        return parseInt(locationData["@id"].split("/").pop());
-      } else if (data.use_custom_location === "park") {
-        return parseInt(data.park_location_id);
-      }
+ 
+  const getLocationId = async (data) => {
+    if (data.use_custom_location === "custom") {
+      const locationData = await createLocation(data.locationData);
+
+      return parseInt(locationData["@id"].split("/").pop());
+    } else if (data.use_custom_location === "park") {
+      return parseInt(data.park_location_id);
+    }
     return null;
   };
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-
-  //Surveille et MAJ la variable à chaque modif du champ "use_custom_location"
+  //Pour la partie Walk, surveille si le btn de choix de location(parc ou custom)change
   const locationType = watch("use_custom_location");
 
-  // Gestion spécifique du fichier photo
   const handleFileChange = (e) => {
     setPhoto(e.target.files[0]);
   };
 
-  //Début du traitement de la soumission du formulaire
   const onSubmit = async (data) => {
-
+    
     if (!photo) {
       alert("Veuillez sélectionner une photo !");
       return;
     }
     setIsSubmitting(true);
 
-    const locationId = await getLocationId(data);
+    // SANITIZATION
+    const sanitizedData = {
+      ...data,
+      title: DOMPurify.sanitize(data.title),
+      description: DOMPurify.sanitize(data.description),
+    };
+  // Vérif que locationData existe avant de Sanitize
+  if (data.locationData) {
+    sanitizedData.locationData = {
+      city: DOMPurify.sanitize(data.locationData.city),
+      street: DOMPurify.sanitize(data.locationData.street),
+      name: DOMPurify.sanitize(data.locationData.name),
+      latitude: data.locationData.latitude,
+      longitude: data.locationData.longitude,
+    };
+  }
 
-     if (!locationId) {
-        alert("La location doit être spécifiée.");
-        setIsSubmitting(false);
-        return;
+    const locationId = await getLocationId(sanitizedData);
+
+    if (!locationId) {
+      alert("La location doit être spécifiée.");
+      setIsSubmitting(false);
+      return;
     }
     try {
-      // 1. Upload de la photo
       const photoFormData = new FormData();
       photoFormData.append("file", photo);
-      //Méthode d'upload avec vérification du token via api.js
       const photoData = await uploadPhoto(photoFormData);
       const photoId = photoData.id;
 
-      // Préparation des données à envoyer
-      const formattedDateTime = new Date(data.datetime).toISOString();
+      const formattedDateTime = new Date(sanitizedData.datetime).toISOString();
 
       const entityData = {
-        ...data,
+        ...sanitizedData,
         date: formattedDateTime,
         photo: photoId,
         location: locationId,
-        is_custom_location:
-        data.use_custom_location === "custom" ? true : false,
+        is_custom_location: sanitizedData.use_custom_location === "custom",
       };
-      // 4. Envoi des données via controlleur symfony
-      const postAd = await postGenericAd(entityData, entityType);
 
-      // Reset formulaire + photo
+      await postGenericAd(entityData, entityType);
+
       reset({
         title: "",
         description: "",
@@ -121,13 +136,13 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
     }
   };
 
- 
   return (
     <form className="post-ad-form" onSubmit={handleSubmit(onSubmit)}>
       {/* titre */}
       <div className="form-group">
         <label>Titre:</label>
         <input
+        //Déclare ce champ comme à suivre, avec des messages si pas rempli
           {...register("title", { required: "Le titre est requis" })}
           type="text"
           name="title"
@@ -178,10 +193,11 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
           )}
         </div>
       ))}
-      {/* Pour Walks, choix entre parc et loc custom pour les locations */}
+      {/* Pour Walks, choix entre parc et loc custom pour les locations + passage des fonctions du  useForm*/}
       {entityType === "walks" ? (
         <WalkLocationSection
           locationType={locationType}
+           //Permet de donner le control sur le form au composant enfant
           control={control}
           register={register}
           errors={errors}
@@ -217,6 +233,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
 
     );
   }
+
 
 
 export default GenericPostAdForm;

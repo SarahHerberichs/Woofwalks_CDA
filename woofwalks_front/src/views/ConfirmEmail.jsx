@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "../style/ConfirmEmail.css";
+import "./ConfirmEmail.css";
 
 const ConfirmEmail = () => {
   const [message, setMessage] = useState(
@@ -61,7 +61,6 @@ const ConfirmEmail = () => {
         setStatus("error");
       }
     };
-
     // Appeler la fonction asynchrone
     confirmAccount();
   }, [token, navigate]);

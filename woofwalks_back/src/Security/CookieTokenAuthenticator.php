@@ -39,6 +39,7 @@ class CookieTokenAuthenticator extends AbstractAuthenticator
         // Routes publiques ou l'authentification n'est pas requise.
         $publicPaths = [
             '^/api/confirm-email/',
+            '^/api/logout/',
             '^/api/users(\.json)?$',
             '^/api/token/refresh',
             '^/api/walks/?$',
@@ -51,7 +52,7 @@ class CookieTokenAuthenticator extends AbstractAuthenticator
         $path = $request->getPathInfo();
         foreach ($publicPaths as $pattern) {
             if (preg_match("#$pattern#", $path)) {
-                error_log("⛔ CookieTokenAuthenticator ignoré, route publique : $path");
+                // error_log("⛔ CookieTokenAuthenticator ignoré, route publique : $path");
                 return false;
             }
         }

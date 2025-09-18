@@ -1,19 +1,42 @@
+# =========================
+# Étape 1 : installer les dépendances avec Composer
+# =========================
+FROM composer:2.4 AS builder
 
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
 
-# FROM php:8.1-fpm AS php-fpm
+# =========================
+# Étape 2 : image finale avec PHP-FPM + Nginx
+# =========================
+FROM php:8.2-fpm-alpine
 
-# EXPOSE 9000
+WORKDIR /var/www/html
 
-# FROM nginx:stable-alpine
+# Installer dépendances système et extensions PHP + Nginx
+RUN apk add --no-cache bash git shadow icu-dev nginx \
+    && docker-php-ext-install pdo pdo_mysql intl
 
-# COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+# Copier vendor et code
+COPY --from=builder /app/vendor /var/www/html/vendor
+COPY . /var/www/html
+COPY php.ini /usr/local/etc/php/
 
-# COPY --from=php-fpm /var/www/html /var/www/html
+# Copier migrations et .env
+COPY migrations /var/www/html/migrations
+# COPY .env.railway /var/www/html/.env
 
-# COPY start.sh /usr/local/bin/start.sh
+# Permissions
+RUN mkdir -p var/cache var/cache/lock var/log var/sessions public \
+    && chown -R www-data:www-data var
 
-# RUN chmod +x /usr/local/bin/start.sh
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# ENTRYPOINT ["/usr/local/bin/start.sh"]
+# Entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# EXPOSE 80
+EXPOSE 80
+
+CMD ["/usr/local/bin/docker-entrypoint.sh"]

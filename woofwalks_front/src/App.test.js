@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
-import { AuthProvider } from './utils/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
 
 test('App se rend correctement', () => {
   render(

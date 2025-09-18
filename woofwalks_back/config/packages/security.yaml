@@ -21,10 +21,12 @@ security:
             stateless: true
             #Provider utilisé pour charger user depuis la bdd via loadUserByIdentifier
             provider: app_user_provider
+            user_checker: App\Security\UserChecker
             json_login:
                 check_path: /api/login_check
                 username_path: email
                 password_path: password
+                
                 #Services fournis par Lexik implémenté par AuthenticationSuccessHandler
                 #ce success handler recupere User , crée le jwt, construit 
                 #la data contenant le token,crée et dispatch un AuthenticationSuccessEvent

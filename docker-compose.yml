@@ -3,9 +3,10 @@ services:
   php-fpm:
     build:
       context: ./woofwalks_back
-      dockerfile: Dockerfile.php-fpm
+      dockerfile: Dockerfile.php-fpm.dev
     container_name: woofwalks_php-fpm
     volumes:
+      - ./logs:/var/www/html/var/log
       - ./woofwalks_back:/var/www/html
     networks:
       - woofwalks-network
@@ -34,6 +35,7 @@ services:
   frontend:
     build:
       context: ./woofwalks_front
+      dockerfile: Dockerfile.dev
     container_name: woofwalks_front
     volumes:
       - ./woofwalks_front:/app
@@ -50,8 +52,8 @@ services:
       - SSL_KEY_FILE=/app/certs/frontend_key.key
     stdin_open: true
     tty: true
-    depends_on:
-      - nginx
+    # depends_on:
+    #   - nginx
 
   db:
     image: mysql:5.7
