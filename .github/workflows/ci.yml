@@ -14,6 +14,7 @@ jobs:
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
       JWT_PASSPHRASE: ${{ secrets.JWT_PASSPHRASE }}
+      LOCK_DSN: "flock"
       
     services:
       mysql:
@@ -43,6 +44,7 @@ jobs:
         run: |
           echo 'APP_SECRET=a_secure_secret' > .env
           echo 'APP_ENV=test' >> .env
+          echo 'LOCK_DSN=flock' >> .env
         working-directory: woofwalks_back
 
       - name: Install Composer Dependencies
