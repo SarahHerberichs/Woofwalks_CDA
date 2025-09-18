@@ -1,6 +1,0 @@
-[16-Sep-2025 10:21:51 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in /var/www/html/src/EventListener/JwtCookieListener.php on line 73
-[16-Sep-2025 10:23:09 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in /var/www/html/src/EventListener/JwtCookieListener.php on line 73
-[16-Sep-2025 10:25:07 UTC] 2025-09-16T10:25:07+00:00 [critical] Uncaught Error: syntax error, unexpected token "<", expecting end of file
-[16-Sep-2025 10:25:21 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in /var/www/html/src/EventListener/JwtCookieListener.php on line 4
-[16-Sep-2025 10:26:58 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in /var/www/html/src/EventListener/JwtCookieListener.php on line 4
-[16-Sep-2025 10:27:10 UTC] PHP Fatal error:  Namespace declaration statement has to be the very first statement or after any declare call in the script in /var/www/html/src/EventListener/JwtCookieListener.php on line 4
