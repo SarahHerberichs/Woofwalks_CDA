@@ -85,7 +85,7 @@ const WalkDetailsPage = () => {
     }
     try {
         const response = await api.post(
-        `/walks/${id}/participate`,
+        `api/walks/${id}/participate`,
         {}, // corps vide
         { headers: { "Content-Type": "application/json" } }
         );

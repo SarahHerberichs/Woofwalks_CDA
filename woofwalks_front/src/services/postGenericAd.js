@@ -3,7 +3,7 @@ import api from "./api";
 
 export const postGenericAd = async (data, entityType) => {
   try {
-    const response = await api.post(`${entityType}custom`, data);
+    const response = await api.post(`api/${entityType}custom`, data);
     const result = response.data;
 
     toast.success(
