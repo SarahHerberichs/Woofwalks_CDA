@@ -15,4 +15,4 @@ backups/
 
 logs/
 
-docker/mysql-init
+docker/mysql-init/
