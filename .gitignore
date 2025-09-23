@@ -4,11 +4,17 @@ woofwalks_back/.env.test
 
 woofwalks_front/.env
 
+woofwalks_front/certs/
+woofwalks_back/public/test_smtp.php
+woofwalks_init.sql
+
 .env.docker
 
 certs/
 
 backups/
+
+backup_db.sh
 
 logs/
 
