@@ -14,23 +14,23 @@ const BtnPostAd = ({
 
   const handleClick = () => {
     if (!isAuthenticated) {
-      navigate("/login", { replace: true }); 
-      return; 
+      navigate("/login", { replace: true });
+      return;
     }
     setShowForm(true);
   };
 
- return (
+  return (
     <>
       {showForm ? (
-        <GenericPostAdForm 
+        <GenericPostAdForm
           entityType={formContext}
           entitySpecificFields={entitySpecificFields}
         />
       ) : (
         <button
           onClick={handleClick}
-          className="button-green btn-success btn-lg shadow-lg rounded-pill px-3 py-1"
+          className="btn btn-primary btn-lg me-md-2"
         >
           Postez votre annonce
         </button>

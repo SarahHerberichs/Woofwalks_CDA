@@ -100,8 +100,7 @@ export const AuthProvider = ({ children }) => {
       const updateUser = (userData) => {
         setUser(userData);
     };
-    // Le fournisseur de contexte rend l'état et les fonctions d'authentification
-    // disponibles pour tous les composants enfants.
+
     return (
         <AuthContext.Provider
             value={{ isAuthenticated, isLoading, user, updateUser, login, logout }}
