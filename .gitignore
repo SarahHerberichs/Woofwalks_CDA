@@ -1,7 +1,7 @@
 woofwalks_back/.env
 woofwalks_back/.env.dev
 woofwalks_back/.env.test
-
+woofwalks_back/config/jwt/*.pem
 woofwalks_front/.env
 
 woofwalks_front/certs/
@@ -28,3 +28,4 @@ private_unencrypted.pem
 *.crt
 *.p12
 *.pfx
+
