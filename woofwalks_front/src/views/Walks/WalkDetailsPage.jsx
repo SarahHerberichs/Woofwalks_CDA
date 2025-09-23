@@ -122,8 +122,9 @@ const WalkDetailsPage = () => {
   return (
     <div>
       {message && <p className="message">{message}</p>}
-      <h1>Titre : {walk.title}</h1>
-      <p>Lieu : {walk.location?.name}</p>
+      <h1>{walk.title}</h1>
+      <p>{walk.description}</p>
+      <p>Lieu du RDV : {walk.location?.name}</p>
       <p>Date : {new Date(walk.date).toLocaleString("fr-FR")}</p>
       <p>Participants : {walk.participants ? walk.participants.length : 0}</p>
       <div className="d-flex justify-content-center">

@@ -5,14 +5,14 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import { createLocation } from "../../../services/createLocation";
 import { postGenericAd } from "../../../services/postGenericAd";
-import { uploadPhoto } from "../../../services/uploadPhoto";
+import { uploadMainPhoto } from "../../../services/uploadPhoto";
 import SelectLocationForm from "../../FormPartials/Locations/SelectLocationForm";
 import PhotoForm from "../../FormPartials/PhotoForm";
 import WalkLocationSection from "../../FormPartials/Walks/WalkLocationSection";
 import './PostAd.css';
 
 const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
- 
+
   const [photo, setPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
@@ -49,11 +49,10 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       ...entitySpecificFields.initialValues,
     },
   });
- 
+
   const getLocationId = async (data) => {
     if (data.use_custom_location === "custom") {
       const locationData = await createLocation(data.locationData);
-
       return parseInt(locationData["@id"].split("/").pop());
     } else if (data.use_custom_location === "park") {
       return parseInt(data.park_location_id);
@@ -72,7 +71,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
   };
 
   const onSubmit = async (data) => {
-    
+
     if (!photo) {
       alert("Veuillez sélectionner une photo !");
       return;
@@ -85,19 +84,18 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       title: DOMPurify.sanitize(data.title),
       description: DOMPurify.sanitize(data.description),
     };
-  // Vérif que locationData existe avant de Sanitize
-  if (data.locationData) {
-    sanitizedData.locationData = {
-      city: DOMPurify.sanitize(data.locationData.city),
-      street: DOMPurify.sanitize(data.locationData.street),
-      name: DOMPurify.sanitize(data.locationData.name),
-      latitude: data.locationData.latitude,
-      longitude: data.locationData.longitude,
-    };
-  }
-
+    // Vérif que locationData existe avant de Sanitize
+    if (data.locationData) {
+      sanitizedData.locationData = {
+        city: DOMPurify.sanitize(data.locationData.city),
+        street: DOMPurify.sanitize(data.locationData.street),
+        name: DOMPurify.sanitize(data.locationData.name),
+        latitude: data.locationData.latitude,
+        longitude: data.locationData.longitude,
+      };
+    }
+    //récupération Id de la localisation
     const locationId = await getLocationId(sanitizedData);
-
     if (!locationId) {
       alert("La location doit être spécifiée.");
       setIsSubmitting(false);
@@ -106,7 +104,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
     try {
       const photoFormData = new FormData();
       photoFormData.append("file", photo);
-      const photoData = await uploadPhoto(photoFormData);
+      const photoData = await uploadMainPhoto(photoFormData);
       const photoId = photoData.id;
 
       const formattedDateTime = new Date(sanitizedData.datetime).toISOString();
@@ -142,7 +140,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       <div className="form-group">
         <label>Titre:</label>
         <input
-        //Déclare ce champ comme à suivre, avec des messages si pas rempli
+          //Déclare ce champ comme à suivre, avec des messages si pas rempli
           {...register("title", { required: "Le titre est requis" })}
           type="text"
           name="title"
@@ -151,7 +149,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
           <p className="error-message">{errors.title.message}</p>
         )}
       </div>
-        {/* description */}
+      {/* description */}
       <div className="form-group">
         <label>Description:</label>
         <textarea
@@ -197,7 +195,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       {entityType === "walks" ? (
         <WalkLocationSection
           locationType={locationType}
-           //Permet de donner le control sur le form au composant enfant
+          //Permet de donner le control sur le form au composant enfant
           control={control}
           register={register}
           errors={errors}
@@ -224,15 +222,15 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
       )}
 
       <PhotoForm photo={photo} onFileChange={handleFileChange} />
-      
+
       <button type="submit" className='button-green' disabled={isSubmitting}>
         {isSubmitting ? "En cours..." : `Créer ${entityType}`}
       </button>
-    
+
     </form>
 
-    );
-  }
+  );
+}
 
 
 

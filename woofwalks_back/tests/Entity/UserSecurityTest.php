@@ -78,7 +78,6 @@ class UserSecurityTest extends WebTestCase {
 
          $jwtManager = self::getContainer()->get('lexik_jwt_authentication.jwt_manager');
 
-        // Génère le token pour l'utilisateur
         $token = $jwtManager->create($user);
 
         $this->client->request(
@@ -104,7 +103,6 @@ class UserSecurityTest extends WebTestCase {
 
         $jwtManager = self::getContainer()->get('lexik_jwt_authentication.jwt_manager');
 
-        // Génère le token pour l'utilisateur
         $token = $jwtManager->create($user1);
 
         $this->client->request(

@@ -52,7 +52,7 @@ export const useUserRegistration = () => {
     if (!cgv) {
       validationErrors.cgv = "Vous devez accepter les conditions générales.";
     }
-
+    //Set des erreurs et focus sur premier champ concerné
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setLoading(false);
@@ -62,6 +62,7 @@ export const useUserRegistration = () => {
     }
 
     try {
+      //Envoi en BDD
       await registerUser({
         email: safeEmail,
         username: safeUsername,

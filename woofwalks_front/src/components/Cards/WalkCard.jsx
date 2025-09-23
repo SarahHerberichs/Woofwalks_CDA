@@ -20,20 +20,21 @@ const WalkCard = ({ walk }) => {
     navigate(`/walks/${walk.id}`);
   };
 
- return (
+  return (
     // <div className="card" onClick={consultDetails}>
-      <div
-        className="card"
-        onClick={consultDetails}
-        tabIndex={0} 
-        onKeyPress={(e) => e.key === "Enter" && consultDetails()} 
-        aria-label={`Walk: ${walk.title} le ${formattedDate} à ${formattedTime}`}
-      >
+    <div
+      className="card"
+      onClick={consultDetails}
+      tabIndex={0}
+      onKeyPress={(e) => e.key === "Enter" && consultDetails()}
+      aria-label={`Walk: ${walk.title} le ${formattedDate} à ${formattedTime}`}
+    >
       <div className="position-relative">
+        <p> </p>
         <img
           src={`${process.env.REACT_APP_API_URL}/media/${walk.mainPhoto.filePath}`}
           className="card-img-top"
-          alt={walk.title || "Walk"} 
+          alt={walk.title || "Walk"}
         />
 
         <div className="position-absolute top-0 start-0 m-2">
