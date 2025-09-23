@@ -16,7 +16,7 @@ services:
       - APP_ENV=dev
     depends_on:
       - db
-
+  #
   nginx:
     image: nginx:stable-alpine
     container_name: woofwalks_nginx
