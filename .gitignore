@@ -15,3 +15,10 @@ logs/
 Makefile
 
 docker/mysql-init/
+
+private_unencrypted.pem
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
