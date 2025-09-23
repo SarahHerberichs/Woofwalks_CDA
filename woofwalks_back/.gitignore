@@ -1,23 +1,21 @@
-###> symfony/framework-bundle ###
+
 .env.local
 .env.local.php
 .env.test
 .env.prod
 .env.railway
 .env.*.local
-
-
-
-/config/secrets/prod/prod.decrypt.private.php
+#
 /public/bundles/
+/public/test_smtp.php
 /var/
 /vendor/
 /var/cache/
 /var/log/
 
-###> phpunit/phpunit ###
+
 /phpunit.xml
 /.phpunit.cache/
-###< phpunit/phpunit ###
+
 config/jwt/*.pem
-config/jwt/*.pem
+

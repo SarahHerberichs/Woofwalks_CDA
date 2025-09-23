@@ -1,6 +1,26 @@
 .App {
   text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
+/* Contenu principal avec marge pour le footer fixe */
+.main-content {
+  flex: 1;
+  margin-bottom: 250px;;
+}
+
+/* Footer fixé en bas */
+.footer-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
 
 .App-logo {
   height: 40vmin;

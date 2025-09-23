@@ -23,13 +23,13 @@ class Location
     #[ORM\Column(type:'float')]
     #[Assert\NotBlank]
     #[Assert\Range(min: -90, max: 90)]
-    #[Groups(['location:write'])]
+    #[Groups(['location:write', 'location:write', 'walk:read'])]
     private ?float $latitude = null;
 
     #[ORM\Column(type:'float')]
     #[Assert\NotBlank]
     #[Assert\Range(min: -180, max: 180)]
-    #[Groups(['location:write'])]
+    #[Groups(['location:write', 'location:write', 'walk:read'])]
     private ?float $longitude = null;
 
     #[ORM\Column(type:'string', length: 255, nullable: true)]
@@ -40,7 +40,7 @@ class Location
     #[ORM\Column(type:'string', length:255)]
     #[Assert\NotBlank]
     #[Assert\Length(max:255)]
-    #[Groups(['location:write'])]
+    #[Groups(['location:write', 'location:write', 'walk:read'])]
     private ?string $city = null;
 
     #[ORM\Column(type:'string', length: 255, nullable: true)] 
@@ -58,7 +58,7 @@ class Location
         return $this->latitude;
     }
 
-    public function setLatitude(float $latitude): self
+    public function setLatitude(?float $latitude): self
     {
         $this->latitude = $latitude;
         return $this;
@@ -69,7 +69,7 @@ class Location
         return $this->longitude;
     }
 
-    public function setLongitude(float $longitude): self
+    public function setLongitude(?float $longitude): self
     {
         $this->longitude = $longitude;
         return $this;

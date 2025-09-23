@@ -5,6 +5,7 @@ import "./App.css";
 import Footer from "./components/Partials/Footer";
 import Header from "./components/Partials/Header";
 import PrivateRoute from "./utils/PrivateRoute";
+import AccountPage from "./views/Account/AccountPage";
 import ConfirmEmail from "./views/ConfirmEmail";
 import Home from "./views/Home";
 import LoginPage from "./views/LoginPage";
@@ -17,18 +18,21 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Header />
-        <div className="container">
-          <Routes>
-            <Route path="/walks" element={<WalksPage />} />
-            <Route path="/newaccount" element={<RegisterPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/confirm-email" element={<ConfirmEmail />} />
-            <Route path="/" element={<Home />} />
-            <Route path="*" element={<Home />} />
-            <Route element={<PrivateRoute />}>
-              <Route path="/walks/:id" element={<WalkDetailsPage />} />
-            </Route>
-          </Routes>
+           <div className="main-content">
+          <div className="container">
+            <Routes>
+              <Route path="/walks" element={<WalksPage />} />
+              <Route path="/newaccount" element={<RegisterPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/confirm-email" element={<ConfirmEmail />} />
+              <Route path="/" element={<Home />} />
+              <Route path="*" element={<Home />} />
+              <Route element={<PrivateRoute />}>
+                <Route path="/walks/:id" element={<WalkDetailsPage />} />
+                <Route path="/account" element={<AccountPage />} />
+              </Route>
+            </Routes>
+          </div>
         </div>
         <Footer />
         <ToastContainer />

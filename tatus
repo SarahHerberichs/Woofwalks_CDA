@@ -1,0 +1,11 @@
+[33ma05597c[m[33m ([m[1;36mHEAD -> [m[1;32mfeat/cicd-settings[m[33m, [m[1;31morigin/feat/cicd-settings[m[33m)[m security: update gitignore
+[33m0100e79[m Sécurité: Ignorer les clés JWT et arrêter de les suivre
+[33m1cd8c8b[m Sécurité: Ignorer les clés JWT et arrêter de les suivre
+[33m5402853[m Sécurité: Suppression fichiers sensibles et mise à jour .gitignore
+[33m17243fb[m security: update .gitignore
+[33m047de1a[m security: update .gitignore
+[33mc7bbf38[m security: update .gitignore
+[33m22e96ce[m security: update .gitignor
+[33mfba7e60[m security: test removed files - gitignore
+[33m8c08843[m Sécurity: Suppression fichiers sensibles et mise à jour .gitignore
+[33me3f0356[m Sécurity: Suppression fichiers sensibles et mise à jour .gitignore

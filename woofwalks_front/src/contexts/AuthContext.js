@@ -8,20 +8,23 @@ export const AuthProvider = ({ children }) => {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState(null);
 
     const checkAuth = useCallback(async () => {
         try {
             // Tente de vérifier si l'utilisateur est authentifié en appelant l'API.
             // En cas d'erreur 401, l'intercepteur Axios tentera de rafraîchir le token.
-            await axios.get(`${process.env.REACT_APP_API_URL}/api/me`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/me`, {
                 withCredentials: true
             });
+            setUser(response.data);
             // Si la requête réussit, l'utilisateur est authentifié.
             setIsAuthenticated(true);
         } catch (err) {
             // Si la requête échoue même après les tentatives de rafraîchissement
             // gérées par l'intercepteur, l'utilisateur n'est pas authentifié.
             console.error('Initial authentication check failed after all retries:', err.response?.status, err.response?.data);
+            setUser(null);
             setIsAuthenticated(false);
         } finally {
             setIsLoading(false);
@@ -34,6 +37,10 @@ export const AuthProvider = ({ children }) => {
             { email, password },
             { withCredentials: true }
         );
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/me`, {
+            withCredentials: true
+        });
+        setUser(response.data);
         setIsAuthenticated(true);
     };
 
@@ -42,6 +49,7 @@ export const AuthProvider = ({ children }) => {
         try {
             await axios.post(`${process.env.REACT_APP_API_URL}/api/logout`, {}, { withCredentials: true });
         } finally {
+            setUser(null);
             setIsAuthenticated(false);
         }
     };
@@ -69,6 +77,7 @@ export const AuthProvider = ({ children }) => {
                         console.error('Refresh token failed:', refreshErr);
                         isRefreshing = false;
                         // Si le rafraîchissement échoue, on déconnecte et rejette la promesse.
+                        setUser(null);
                         setIsAuthenticated(false);
                         return Promise.reject(err);
                     }
@@ -87,11 +96,16 @@ export const AuthProvider = ({ children }) => {
             axios.interceptors.response.eject(responseInterceptor);
         };
     }, [checkAuth]);
-    
+
+      const updateUser = (userData) => {
+        setUser(userData);
+    };
     // Le fournisseur de contexte rend l'état et les fonctions d'authentification
     // disponibles pour tous les composants enfants.
     return (
-        <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout }}>
+        <AuthContext.Provider
+            value={{ isAuthenticated, isLoading, user, updateUser, login, logout }}
+        >
             {isLoading ? <div>Chargement...</div> : children}
         </AuthContext.Provider>
     );

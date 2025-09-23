@@ -1,9 +1,8 @@
-import React from "react";
-import { Col, Container, Navbar, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 
 const Footer = () => {
   return (
-    <Navbar bg="dark" variant="dark" className="mt-5">
+    <div className="footer-fixed bg-dark text-light py-3">
       <Container>
         <Row className="w-100">
           <Col md={4} className="text-center text-md-left mb-3 mb-md-0">
@@ -55,7 +54,7 @@ const Footer = () => {
           </Col>
         </Row>
       </Container>
-    </Navbar>
+    </div>
   );
 };
 
