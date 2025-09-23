@@ -6,6 +6,7 @@
 .env.railway
 .env.*.local
 
+/public/test_smtp.php
 
 
 /config/secrets/prod/prod.decrypt.private.php
