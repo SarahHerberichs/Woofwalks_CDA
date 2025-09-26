@@ -16,8 +16,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class TokenRefreshController extends AbstractController
-{
+class TokenRefreshController extends AbstractController {
     #[Route('/api/token/refresh', name: 'api_token_refresh', methods: ['POST'])]
     public function refresh(
         Request $request,

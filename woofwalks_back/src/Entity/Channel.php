@@ -9,8 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 
 #[ORM\Entity(repositoryClass: ChannelRepository::class)]
-class Channel
-{
+class Channel {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

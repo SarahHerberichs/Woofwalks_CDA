@@ -17,8 +17,7 @@ use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationExc
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\ChainTokenExtractor;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\LcobucciJWTEncoder;
 
-class CookieTokenAuthenticator extends AbstractAuthenticator
-{
+class CookieTokenAuthenticator extends AbstractAuthenticator {
     private ChainTokenExtractor $tokenExtractor;
     private LcobucciJWTEncoder $jwtEncoder;
     private UserProviderInterface $userProvider;
@@ -34,12 +33,11 @@ class CookieTokenAuthenticator extends AbstractAuthenticator
     }
 
     // Détermine si l'authenticator doit être exécuté.
-    public function supports(Request $request): ?bool
-    {
+    public function supports(Request $request): ?bool {
         // Routes publiques ou l'authentification n'est pas requise.
         $publicPaths = [
             '^/api/confirm-email/',
-            '^/api/logout/',
+            '^/api/logout',
             '^/api/users(\.json)?$',
             '^/api/token/refresh',
             '^/api/walks/?$',
@@ -62,8 +60,7 @@ class CookieTokenAuthenticator extends AbstractAuthenticator
     }
 
     //Logique d'authentification pricnipale
-    public function authenticate(Request $request): Passport
-    {
+    public function authenticate(Request $request): Passport {
         //Utilisation de la chaîne d'extracteurs pour vérifier la présence d'un token.
         $token = $this->tokenExtractor->extract($request);
         

@@ -6,10 +6,8 @@ use App\Entity\MainPhoto;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class MainPhotoFixtures extends Fixture
-{
-    public function load(ObjectManager $manager): void
-    {
+class MainPhotoFixtures extends Fixture {
+    public function load(ObjectManager $manager): void {
         $photo = new MainPhoto();
         $photo->setFilePath('test_photo.jpg');
 

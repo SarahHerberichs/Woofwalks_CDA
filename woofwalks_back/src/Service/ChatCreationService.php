@@ -16,8 +16,7 @@ class ChatCreationService {
     public function createChatForWalk(Walk $walk): Chat{
         $chat = new Chat();
         $chat->setWalk($walk);
-        
-        // Établir la relation bidirectionnelle
+
         $walk->setChat($chat);
 
         $this->entityManager->persist($chat);

@@ -6,10 +6,8 @@ use App\Entity\Location;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class LocationFixtures extends Fixture
-{
-    public function load(ObjectManager $manager): void
-    {
+class LocationFixtures extends Fixture {
+    public function load(ObjectManager $manager): void {
         $location = new Location();
         $location->setLatitude(48.866667);
         $location->setLongitude(2.333333);

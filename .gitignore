@@ -12,9 +12,10 @@ woofwalks_init.sql
 
 certs/
 
-backups/
+woofwalks_back/backups/
 
-backup_db.sh
+woofwalks_back/backup_db.sh
+woofwalks_back/woofwalks-init.sql
 
 logs/
 

@@ -50,7 +50,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Post(
     // POUR POST /api/users : PUBLIC POUR L'INSCRIPTION
     security: "is_granted('PUBLIC_ACCESS')",
-    securityMessage: "Accès refusé. L'accès public est requis pour la création d'utilisateurs.",
+    securityMessage: "",
     processor: \App\DataPersister\UserDataPersister::class,
 )]
 #[Get(
@@ -61,8 +61,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 
-class User implements UserInterface, PasswordAuthenticatedUserInterface
-{
+class User implements UserInterface, PasswordAuthenticatedUserInterface {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -129,6 +128,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $confirmationRequestedAt = null;
+
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['user:read', 'user:write', 'user:me'])]
+    private bool $acceptNotifications = true;
+
 
     public function __construct()
     {
@@ -361,6 +365,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $channel->removeUser($this);
         }
 
+        return $this;
+    }
+    
+    public function getAcceptNotifications(): bool
+    {
+        return $this->acceptNotifications;
+    }
+
+    public function setAcceptNotifications(bool $acceptNotifications): self
+    {
+        $this->acceptNotifications = $acceptNotifications;
         return $this;
     }
 

@@ -40,7 +40,7 @@ export const setupInterceptors = (axiosInstance) => {
         progress: undefined,
       });
 
-      // Relancer l'erreur pour que les fonctions appelantes puissent l'intercepter
+      // Relance l'erreur pour que les fonctions appelantes puissent l'intercepter
       return Promise.reject(error);
     }
   );

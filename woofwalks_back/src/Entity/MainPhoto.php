@@ -52,8 +52,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
         )
     ]
 )]
-class MainPhoto
-{
+class MainPhoto {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]

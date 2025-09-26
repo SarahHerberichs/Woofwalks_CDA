@@ -22,11 +22,13 @@
 }
 
 .btn-primary,
+.btn-outline-primary,
 .btn-primary:not(:disabled):not(.disabled):active,
 .btn-primary:not(:disabled):not(.disabled).active,
 .show > .btn-primary.dropdown-toggle {
   background-color: #1b5e20 !important;
   border-color: #1b5e20 !important;
+  color: rgb(255, 255, 255)
 }
 
 

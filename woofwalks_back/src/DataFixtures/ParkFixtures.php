@@ -8,10 +8,8 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
-class ParkFixtures extends Fixture
-{
-    public function load(ObjectManager $manager): void
-    {
+class ParkFixtures extends Fixture {
+    public function load(ObjectManager $manager): void {
         // Initialiser Faker pour générer des données réalistes
         $faker = Factory::create('fr_FR');
 

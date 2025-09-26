@@ -1,72 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import PasswordChangeForm from "../../components/Forms/PasswordChangeForm";
 import { useAuth } from "../../contexts/AuthContext";
+import { updateProfile } from "../../services/updateProfile";
 
 const AccountPage = () => {
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, user, updateUser, logout } = useAuth();
   const [message, setMessage] = useState("");
-
-  // États pour le formulaire
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     acceptNotifications: true,
   });
 
-  // États pour les chiens
-  const [dogs, setDogs] = useState([
-    { id: 1, name: "Rex", breed: "Berger Allemand", age: 3 },
-  ]);
-
-  const [showAddDog, setShowAddDog] = useState(false);
-  const [newDog, setNewDog] = useState({
-    name: "",
-    breed: "",
-    age: "",
-  });
+  //Quand user est dispo
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        username: user.username || "",
+        email: user.email || "",
+        acceptNotifications: user.acceptNotifications || 0
+      });
+    }
+  }, [user]);
 
   // Sauvegarde du profil
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    setMessage("Profil sauvegardé avec succès !");
-    setTimeout(() => setMessage(""), 3000);
-  };
-
-  // Ajout d'un chien
-  const handleAddDog = (e) => {
-    e.preventDefault();
-    if (newDog.name && newDog.breed && newDog.age) {
-      const dog = {
-        id: Date.now(),
-        name: newDog.name,
-        breed: newDog.breed,
-        age: parseInt(newDog.age),
-      };
-      setDogs([...dogs, dog]);
-      setNewDog({ name: "", breed: "", age: "" });
-      setShowAddDog(false);
-      setMessage("Chien ajouté avec succès !");
+    try {
+      const newProfile = await updateProfile(formData);
+      if (newProfile.emailChanged || newProfile.requiresLogout) {
+        setMessage("Profil modifié. Vous allez être déconnecté pour des raisons de sécurité.");
+        setTimeout(() => {
+          logout();
+        }, 2000);
+      } else {
+        // Mise à jour normale
+        updateUser(newProfile);
+        setMessage("Profil sauvegardé avec succès !");
+      }
       setTimeout(() => setMessage(""), 3000);
-    }
-  };
+    } catch (error) {
+      console.error(error);
+    };
+  }
 
-  // Suppression d'un chien
-  const handleRemoveDog = (dogId) => {
-    setDogs(dogs.filter((dog) => dog.id !== dogId));
-    setMessage("Chien supprimé !");
+  // Callback pour le succès du changement de mot de passe
+  const handlePasswordSuccess = () => {
+    setMessage("Mot de passe modifié avec succès !");
     setTimeout(() => setMessage(""), 3000);
   };
 
-  if (authLoading) {
-    return (
-      <div className="container mt-4">
-        <div className="text-center">
-          <div className="spinner-border" role="status">
-            <span className="visually-hidden">Chargement...</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Callback pour les erreurs du changement de mot de passe
+  const handlePasswordError = (error) => {
+    const errorMessage = error.response?.data?.error || "Erreur lors du changement de mot de passe";
+    setMessage(errorMessage);
+  };
 
   if (!isAuthenticated) {
     return (
@@ -111,9 +99,9 @@ const AccountPage = () => {
                       type="text"
                       className="form-control"
                       id="name"
-                      value={formData.name}
+                      value={formData.username}
                       onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
+                        setFormData({ ...formData, username: e.target.value })
                       }
                       placeholder="Votre nom complet"
                     />
@@ -155,126 +143,20 @@ const AccountPage = () => {
               </div>
             </div>
 
-            {/* Mes chiens */}
-            <div className="card mb-4">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <h5 className="mb-0">Mes chiens</h5>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-sm"
-                  onClick={() => setShowAddDog(!showAddDog)}
-                >
-                  + Ajouter un chien
-                </button>
-              </div>
-              <div className="card-body">
-                {/* Formulaire d'ajout de chien */}
-                {showAddDog && (
-                  <div className="mb-3 p-3 bg-light rounded">
-                    <h6>Nouveau chien</h6>
-                    <form onSubmit={handleAddDog}>
-                      <div className="row">
-                        <div className="col-md-4 mb-2">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Nom"
-                            value={newDog.name}
-                            onChange={(e) =>
-                              setNewDog({ ...newDog, name: e.target.value })
-                            }
-                            required
-                          />
-                        </div>
-                        <div className="col-md-4 mb-2">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Race"
-                            value={newDog.breed}
-                            onChange={(e) =>
-                              setNewDog({ ...newDog, breed: e.target.value })
-                            }
-                            required
-                          />
-                        </div>
-                        <div className="col-md-4 mb-2">
-                          <input
-                            type="number"
-                            className="form-control"
-                            placeholder="Âge"
-                            value={newDog.age}
-                            onChange={(e) =>
-                              setNewDog({ ...newDog, age: e.target.value })
-                            }
-                            min="0"
-                            max="20"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className="mt-2">
-                        <button type="submit" className="btn btn-success btn-sm me-2">
-                          Ajouter
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => {
-                            setShowAddDog(false);
-                            setNewDog({ name: "", breed: "", age: "" });
-                          }}
-                        >
-                          Annuler
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                )}
-
-                {/* Liste des chiens */}
-                <div className="row">
-                  {dogs.map((dog) => (
-                    <div key={dog.id} className="col-md-6 mb-3">
-                      <div className="card">
-                        <div className="card-body">
-                          <div className="d-flex justify-content-between align-items-start">
-                            <div>
-                              <h6 className="card-title">🐕 {dog.name}</h6>
-                              <p className="card-text mb-0">
-                                <strong>Race:</strong> {dog.breed}
-                                <br />
-                                <strong>Âge:</strong> {dog.age} ans
-                              </p>
-                            </div>
-                            <button
-                              className="btn btn-outline-danger btn-sm"
-                              onClick={() => handleRemoveDog(dog.id)}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {dogs.length === 0 && (
-                  <div className="text-center text-muted py-3">
-                    <p>Aucun chien ajouté pour le moment.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-
             <div className="text-center">
               <button type="submit" className="btn btn-primary">
                 Sauvegarder
               </button>
             </div>
           </form>
+
+          {/* Utilisation du composant PasswordChangeForm */}
+          <div className="mt-4">
+            <PasswordChangeForm
+              onSuccess={handlePasswordSuccess}
+              onError={handlePasswordError}
+            />
+          </div>
         </div>
       </div>
     </div>

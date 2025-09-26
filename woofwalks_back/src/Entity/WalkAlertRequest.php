@@ -12,8 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     denormalizationContext: ['groups' => ['walk_alert_request:write']]
 )]
 
-class WalkAlertRequest
-{
+class WalkAlertRequest {
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 

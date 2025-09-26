@@ -7,8 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PhotoRepository::class)]
 #[ORM\Table(name: 'photos')]
-class Photo
-{
+class Photo {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,7 +23,7 @@ class Photo
     private ?int $entityId = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $photoType = null; // 'main', 'gallery', 'avatar', 'thumbnail', etc.
+    private ?string $photoType = null; 
 
     #[ORM\Column]
     private ?\DateTime $uploadedAt = null;

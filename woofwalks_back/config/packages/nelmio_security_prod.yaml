@@ -1,7 +1,7 @@
 nelmio_security:
-  #Désactivation pour le dev
+  #Activation en prod
   csp:
-    enabled: false 
+    enabled: true 
   clickjacking:
     paths:
       '^/': { header: DENY }

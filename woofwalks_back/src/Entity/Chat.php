@@ -17,8 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 
 #[ORM\Entity(repositoryClass: ChatRepository::class)]
-class Chat
-{
+class Chat {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

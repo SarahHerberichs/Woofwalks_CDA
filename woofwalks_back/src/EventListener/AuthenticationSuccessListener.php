@@ -11,8 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 
-class AuthenticationSuccessListener
-{
+class AuthenticationSuccessListener {
      private EntityManagerInterface $em;
     private int $refreshTokenTtl; 
 

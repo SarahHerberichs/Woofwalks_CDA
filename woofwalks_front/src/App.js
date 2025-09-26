@@ -18,7 +18,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Header />
-           <div className="main-content">
+           <div className="main-content m-auto">
           <div className="container">
             <Routes>
               <Route path="/walks" element={<WalksPage />} />

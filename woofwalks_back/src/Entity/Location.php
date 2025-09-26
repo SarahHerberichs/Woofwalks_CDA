@@ -12,8 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     denormalizationContext: ['groups' => ['location:write']],
 )]
 #[ORM\Entity(repositoryClass: LocationRepository::class)]
-class Location
-{
+class Location {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

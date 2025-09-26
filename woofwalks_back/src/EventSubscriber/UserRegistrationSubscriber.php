@@ -11,17 +11,18 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class UserRegistrationSubscriber implements EventSubscriberInterface
-{
+class UserRegistrationSubscriber implements EventSubscriberInterface {
     private UserRepository $userRepository;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager
+        ) {
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
-    }
-// va se déclencher apres désérialisation mais avant valiation et persistance
+        }
+    // va se déclencher apres désérialisation mais avant valiation et persistance
     public static function getSubscribedEvents(): array {
         return [
             KernelEvents::VIEW => ['onPreRegisterUser', 200],                       
@@ -32,7 +33,7 @@ class UserRegistrationSubscriber implements EventSubscriberInterface
         $user = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
 
-        // On s'intéresse uniquement aux requêtes POST sur l'entité User (pour l'inscription)
+        // On cible uniquement aux requêtes POST sur l'entité User (pour l'inscription)
         if (!$user instanceof User || $method !== 'POST') {
             return;
         }

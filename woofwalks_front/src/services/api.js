@@ -14,8 +14,5 @@ const api = axios.create({
 //intercepteur qui affiche toast si erreur
 setupInterceptors(api); 
 
-// api.interceptors.request.use((config) => {
-//   return config;
-// });
 
 export default api;

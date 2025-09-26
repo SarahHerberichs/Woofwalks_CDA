@@ -8,8 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class EmailConfirmationController extends AbstractController
-{
+class EmailConfirmationController extends AbstractController {
     #[Route('/api/confirm-email/{token}', name: 'email_confirmation', methods: ['GET'])]
     public function confirmEmail(
         string $token,

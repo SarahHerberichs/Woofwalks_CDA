@@ -12,7 +12,7 @@ const Home = () => {
     <div className="container mt-4">
       {/* Hero Section optimisée pour le SEO */}
       <section className="hero-section text-center py-5 mb-5">
-        <h1 className="display-4 fw-bold text-primary mb-4">
+        <h1 className="display-4 fw-bold mb-4">
           Balades Canines et Parcs pour Chiens en France
         </h1>
         <p className="lead mb-4">

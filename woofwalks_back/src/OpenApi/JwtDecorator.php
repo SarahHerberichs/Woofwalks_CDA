@@ -6,17 +6,16 @@ use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\OpenApi;
 use ApiPlatform\OpenApi\Model\SecurityScheme;
 
-class JwtDecorator implements OpenApiFactoryInterface
-{
+class JwtDecorator implements OpenApiFactoryInterface {
+
     private OpenApiFactoryInterface $decorated;
 
-    public function __construct(OpenApiFactoryInterface $decorated)
-    {
+    public function __construct(OpenApiFactoryInterface $decorated) {
         $this->decorated = $decorated;
     }
 
-    public function __invoke(array $context = []): OpenApi
-    {
+    public function __invoke(array $context = []): OpenApi {
+        
         $openApi = ($this->decorated)($context);
 
         //Récupération composants

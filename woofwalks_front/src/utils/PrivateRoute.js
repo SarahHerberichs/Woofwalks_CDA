@@ -1,10 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 const PrivateRoute = () => {
-    const { isAuthenticated, isLoading } = useAuth();  //Authtoken est bien trouvé
+    const { isAuthenticated, isLoading } = useAuth(); 
  
     if (isLoading) {
-        return <div>Vérification de l'authentification...</div>; // Ou un loader
+        return <div>Vérification de l'authentification...</div>; 
     }
 
 

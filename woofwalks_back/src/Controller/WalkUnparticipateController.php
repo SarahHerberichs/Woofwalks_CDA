@@ -8,8 +8,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Security\Core\Security;
 
 #[AsController]
-class WalkUnparticipateController extends AbstractController
-{
+class WalkUnparticipateController extends AbstractController {
     public function __construct(
         private EntityManagerInterface $em,
         private Security $security

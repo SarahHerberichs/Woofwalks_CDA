@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
 
 const WalkDetailsPage = () => {
@@ -10,7 +11,7 @@ const WalkDetailsPage = () => {
   const [isFull, setIsFull] = useState(false);
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState('');
-
+  const { isAuthenticated } = useAuth();
   useEffect(() => {
     const fetchWalkAndUser = async () => {
       try {
@@ -59,7 +60,7 @@ const WalkDetailsPage = () => {
   }, [id]);
 
   const handleAlertRequest = async () => {
-    if (!user || !user['@id']) {
+    if (!isAuthenticated) {
       setMessage("Vous devez être connecté pour demander une alerte.");
       return;
     }
@@ -79,8 +80,8 @@ const WalkDetailsPage = () => {
   };
 
   const handleParticipate = async () => {
-    if (!user) {
-      setMessage("Vous devez être connecté pour participer à une balade.");
+    if (!isAuthenticated) {
+      setMessage("Vous devez être connecté pour demander une alerte.");
       return;
     }
     try {
@@ -99,10 +100,14 @@ const WalkDetailsPage = () => {
   };
 
   const handleUnparticipate = async () => {
+    if (!isAuthenticated) {
+      setMessage("Vous devez être connecté pour demander une alerte.");
+      return;
+    }
     try {
       const response = await api.post(
         `api/walks/${id}/unparticipate`,
-        {}, // corps vide
+        {},
         { headers: { "Content-Type": "application/json" } }
       );
       setWalk(response.data);
@@ -113,8 +118,6 @@ const WalkDetailsPage = () => {
       setError("Erreur lors de la désinscription.");
     }
   };
-
-
 
   if (error) return <p className="error">{error}</p>;
   if (!walk) return <p>Chargement de la balade...</p>;

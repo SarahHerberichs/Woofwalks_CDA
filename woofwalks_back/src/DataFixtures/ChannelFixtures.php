@@ -6,10 +6,9 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Channel;
 
-class ChannelFixtures extends Fixture
-{
-    public function load(ObjectManager $manager): void
-    {
+class ChannelFixtures extends Fixture {
+    
+    public function load(ObjectManager $manager): void {
         $channels = ['email', 'sms'];
 
         foreach ($channels as $channelLabel) {
