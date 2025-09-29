@@ -8,6 +8,8 @@ export const useUserRegistration = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [cgv, setCgv] = useState(false);
+  const [notificationsAccepted, setNotificationsAccepted] = useState(false);
+  const [geolocationAccepted, setGeolocationAccepted] = useState(false);
   const [errors, setErrors] = useState({});
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -52,6 +54,8 @@ export const useUserRegistration = () => {
     if (!cgv) {
       validationErrors.cgv = "Vous devez accepter les conditions générales.";
     }
+
+
     //Set des erreurs et focus sur premier champ concerné
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -68,6 +72,8 @@ export const useUserRegistration = () => {
         username: safeUsername,
         plainPassword: password,
         cgvAccepted: cgv,
+        notificationsAccepted,
+        geolocationAccepted
       });
       setUsername("");
       setEmail("");
@@ -123,6 +129,10 @@ export const useUserRegistration = () => {
     setConfirmPassword,
     cgv,
     setCgv,
+    geolocationAccepted,
+    setGeolocationAccepted,
+    notificationsAccepted,
+    setNotificationsAccepted,
     errors,
     registrationSuccess,
     loading,

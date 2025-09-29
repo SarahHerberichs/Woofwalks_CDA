@@ -117,6 +117,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     #[Assert\IsTrue(message: 'Vous devez accepter les CGV')]
     private ?bool $cgvAccepted = null;
 
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['user:write'])]
+    private ?bool $notificationsAccepted = null;
+
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['user:write'])]
+    private ?bool $geolocationAccepted = null;
+
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: WalkAlertRequest::class, cascade: ['persist', 'remove'])]
     private Collection $walkAlertRequests;
 
@@ -129,59 +137,44 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $confirmationRequestedAt = null;
 
-    #[ORM\Column(type: 'boolean')]
-    #[Groups(['user:read', 'user:write', 'user:me'])]
-    private bool $acceptNotifications = true;
+    // #[ORM\Column(type: 'boolean')]
+    // #[Groups(['user:read', 'user:write', 'user:me'])]
+    // private bool $acceptNotifications = true;
 
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->createdWalks = new ArrayCollection();
         $this->participatedWalks = new ArrayCollection();
         $this->walkAlertRequests = new ArrayCollection();
-         $this->channels = new ArrayCollection();
+        $this->channels = new ArrayCollection();
         $this->notifications = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getEmail(): ?string
-    {
+    public function getEmail(): ?string {
         return $this->email;
     }
 
-    public function setEmail(string $email): self
-    {
+    public function setEmail(string $email): self {
         $this->email = $email;
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user instance.
-     *
-     * @see UserInterface
-     */
-    public function getUserIdentifier(): string
-    {
+    public function getUserIdentifier(): string {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function getRoles(): array
-    {
+    public function getRoles(): array {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): self
-    {
+    public function setRoles(array $roles): self {
         $this->roles = $roles;
         return $this;
     }
@@ -189,44 +182,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): ?string
-    {
+    public function getPassword(): ?string {
         return $this->password;
     }
 
-    public function setPassword(string $password): self
-    {
+    public function setPassword(string $password): self {
         $this->password = $password;
         return $this;
     }
-    public function getPlainPassword(): ?string
-    {
+    public function getPlainPassword(): ?string {
         return $this->plainPassword;
     }
     
-    public function setPlainPassword(?string $plainPassword): self
-    {
+    public function setPlainPassword(?string $plainPassword): self {
         $this->plainPassword = $plainPassword;
         return $this;
     }
     /**
      * @see UserInterface
      */
-    public function eraseCredentials(): void
-    {
+    public function eraseCredentials(): void {
 
     }
 
     /**
      * @return Collection<int, Walk>
      */
-    public function getCreatedWalks(): Collection
-    {
+    public function getCreatedWalks(): Collection {
         return $this->createdWalks;
     }
 
-    public function addCreatedWalk(Walk $createdWalk): self
-    {
+    public function addCreatedWalk(Walk $createdWalk): self {
         if (!$this->createdWalks->contains($createdWalk)) {
             $this->createdWalks[] = $createdWalk;
             $createdWalk->setCreator($this);
@@ -234,8 +220,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function removeCreatedWalk(Walk $createdWalk): self
-    {
+    public function removeCreatedWalk(Walk $createdWalk): self {
         if ($this->createdWalks->removeElement($createdWalk)) {
     
             if ($createdWalk->getCreator() === $this) {
@@ -245,16 +230,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    /**
-     * @return Collection<int, Walk>
-     */
-    public function getParticipatedWalks(): Collection
-    {
+
+    public function getParticipatedWalks(): Collection {
         return $this->participatedWalks;
     }
 
-    public function addParticipatedWalk(Walk $participatedWalk): self
-    {
+    public function addParticipatedWalk(Walk $participatedWalk): self {
         if (!$this->participatedWalks->contains($participatedWalk)) {
             $this->participatedWalks[] = $participatedWalk;
             $participatedWalk->addParticipant($this);
@@ -262,67 +243,74 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function removeParticipatedWalk(Walk $participatedWalk): self
-    {
+    public function removeParticipatedWalk(Walk $participatedWalk): self {
         if ($this->participatedWalks->removeElement($participatedWalk)) {
             $participatedWalk->removeParticipant($this);
         }
         return $this;
     }
 
-    public function getUsername(): ?string
-    {
+    public function getUsername(): ?string {
         return $this->username;
     }
 
-    public function setUsername(string $username): static
-    {
+    public function setUsername(string $username): static {
         $this->username = $username;
 
         return $this;
     }
 
-    public function getConfirmationToken(): ?string
-    {
+    public function getConfirmationToken(): ?string {
         return $this->confirmationToken;
     }
 
-    public function setConfirmationToken(?string $token): self
-    {
+    public function setConfirmationToken(?string $token): self {
         $this->confirmationToken = $token;
         return $this;
     }
 
-      public function isVerified(): bool
-    {
+      public function isVerified(): bool {
         return $this->isVerified;
     }
 
-    public function setIsVerified(bool $isVerified): static
-    {
+    public function setIsVerified(bool $isVerified): static {
         $this->isVerified = $isVerified;
 
         return $this;
     }
 
-        public function isCgvAccepted(): ?bool
-    {
+    public function isCgvAccepted(): ?bool {
         return $this->cgvAccepted;
     }
 
-    public function setCgvAccepted(?bool $cgvAccepted): self
-    {
+    public function setCgvAccepted(?bool $cgvAccepted): self {
         $this->cgvAccepted = $cgvAccepted;
         return $this;
     }
+    
+    public function getGeolocationAccepted(): ?bool {
+        return $this->geolocationAccepted;
+    }
 
-     public function getWalkAlertRequests(): Collection
-    {
+    public function setGeolocationAccepted(?bool $geolocationAccepted): self {
+        $this->geolocationAccepted = $geolocationAccepted;
+        return $this;
+    }
+
+     public function getNotificationsAccepted(): ?bool {
+        return $this->notificationsAccepted;
+    }
+
+    public function setNotificationsAccepted(?bool $notificationsAccepted): self {
+        $this->notificationsAccepted= $notificationsAccepted;
+        return $this;
+    }
+
+     public function getWalkAlertRequests(): Collection {
         return $this->walkAlertRequests;
     }
 
-    public function addWalkAlertRequest(WalkAlertRequest $request): self
-    {
+    public function addWalkAlertRequest(WalkAlertRequest $request): self {
         if (!$this->walkAlertRequests->contains($request)) {
             $this->walkAlertRequests[] = $request;
             $request->setUser($this);
@@ -331,8 +319,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function removeWalkAlertRequest(WalkAlertRequest $request): self
-    {
+    public function removeWalkAlertRequest(WalkAlertRequest $request): self {
         if ($this->walkAlertRequests->removeElement($request)) {
             if ($request->getUser() === $this) {
                 $request->setUser(null);
@@ -341,16 +328,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
 
         return $this;
     }
-     /**
-     * @return Collection<int, Channel>
-     */
-    public function getChannels(): Collection
-    {
+
+
+    public function getChannels(): Collection {
         return $this->channels;
     }
 
-    public function addChannel(Channel $channel): static
-    {
+    public function addChannel(Channel $channel): static {
         if (!$this->channels->contains($channel)) {
             $this->channels->add($channel);
             $channel->addUser($this);
@@ -359,8 +343,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function removeChannel(Channel $channel): static
-    {
+    public function removeChannel(Channel $channel): static {
         if ($this->channels->removeElement($channel)) {
             $channel->removeUser($this);
         }
@@ -368,27 +351,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         return $this;
     }
     
-    public function getAcceptNotifications(): bool
-    {
-        return $this->acceptNotifications;
-    }
-
-    public function setAcceptNotifications(bool $acceptNotifications): self
-    {
-        $this->acceptNotifications = $acceptNotifications;
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Notification>
-     */
-    public function getNotifications(): Collection
-    {
+    public function getNotifications(): Collection {
         return $this->notifications;
     }
 
-    public function addNotification(Notification $notification): static
-    {
+    public function addNotification(Notification $notification): static {
         if (!$this->notifications->contains($notification)) {
             $this->notifications->add($notification);
             $notification->setUser($this);
@@ -397,8 +364,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function removeNotification(Notification $notification): static
-    {
+    public function removeNotification(Notification $notification): static {
         if ($this->notifications->removeElement($notification)) {
             if ($notification->getUser() === $this) {
                 $notification->setUser(null);
@@ -408,13 +374,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function getConfirmationRequestedAt(): ?\DateTimeImmutable
-    {
+    public function getConfirmationRequestedAt(): ?\DateTimeImmutable {
         return $this->confirmationRequestedAt;
     }
 
-    public function setConfirmationRequestedAt(?\DateTimeImmutable $confirmationRequestedAt): self
-    {
+    public function setConfirmationRequestedAt(?\DateTimeImmutable $confirmationRequestedAt): self {
         $this->confirmationRequestedAt = $confirmationRequestedAt;
 
         return $this;

@@ -19,7 +19,7 @@ class CsrfRequestListener {
             return;
         }
         $path = $request->getPathInfo();
-        $publicRoutes = ['/api/walks', '/api/login_check', '/api/token/refresh', '/api/logout', '/api/me'];
+        $publicRoutes = ['/api/walks', '/api/login_check', '/api/token/refresh', '/api/logout', '/api/me', '/api/users', '/api/confirm-email'];
         //Si route publique, stop execution
         if (in_array($path, $publicRoutes)) {
             return;

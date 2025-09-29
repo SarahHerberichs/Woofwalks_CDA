@@ -15,6 +15,10 @@ const UserRegistrationForm = () => {
     setConfirmPassword,
     cgv,
     setCgv,
+    notificationsAccepted,
+    setNotificationsAccepted,
+    geolocationAccepted,
+    setGeolocationAccepted,
     errors,
     registrationSuccess,
     loading,
@@ -81,6 +85,32 @@ const UserRegistrationForm = () => {
           <p className="error-message">{errors.confirmPassword}</p>
         )}
       </div>
+
+      <div className="form-group">
+        <label>
+          <input
+            type="checkbox"
+            id="geolocation"
+            checked={geolocationAccepted}
+            onChange={(e) => setGeolocationAccepted(e.target.checked)}
+          />
+          J'accepte d' être localisé
+        </label>
+      </div>
+
+
+      <div className="form-group">
+        <label>
+          <input
+            type="checkbox"
+            id="notifications"
+            checked={notificationsAccepted}
+            onChange={(e) => setNotificationsAccepted(e.target.checked)}
+          />
+          J'accepte les notifications
+        </label>
+      </div>
+
 
       <div className="form-group">
         <label>

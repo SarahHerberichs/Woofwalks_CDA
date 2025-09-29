@@ -1,27 +1,10 @@
-// import BtnPostAd from "../../components/Buttons/BtnPostAd";
-// import walkSpecificFields from "../../components/FormSpecificFields/Walks/walkSpecificFields";
-// import WalkList from "../../components/Lists/WalkList";
 
-// const WalksPage = () => {
-//   //Passage du context présent
-//   const formContext = "walks";
-//   return (
-//     <>
-//       <BtnPostAd
-//         formContext={formContext}
-//         entitySpecificFields={walkSpecificFields}
-//       />
-//       <WalkList />
-//     </>
-//   );
-// };
-
-// export default WalksPage;
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import BtnPostAd from "../../components/Buttons/BtnPostAd";
 import walkSpecificFields from "../../components/FormSpecificFields/Walks/walkSpecificFields";
 import WalkList from "../../components/Lists/WalkList";
+import LocationDisplay from "../../components/Location/LocationDisplay";
 import CarteLeaflet from "../../components/Maps/CarteLeaflet";
 
 const WalksPage = () => {
@@ -30,7 +13,6 @@ const WalksPage = () => {
   const [error, setError] = useState(null);
   const formContext = "walks";
 
-  // Récupérer les walks (même logique que WalkList)
   useEffect(() => {
     const fetchWalks = async () => {
       try {
@@ -59,10 +41,13 @@ const WalksPage = () => {
 
   return (
     <>
-      <BtnPostAd
-        formContext={formContext}
-        entitySpecificFields={walkSpecificFields}
-      />
+      <div className="d-flex align-items-center justify-content-between mb-3">
+        <BtnPostAd
+          formContext={formContext}
+          entitySpecificFields={walkSpecificFields}
+        />
+        <LocationDisplay />
+      </div>
       <WalkList />
 
       {/* Ajouter la carte en bas */}

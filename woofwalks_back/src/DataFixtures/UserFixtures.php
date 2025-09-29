@@ -20,6 +20,8 @@ class UserFixtures extends Fixture {
         $user->setEmail('test@example.com');
         $user->setRoles(['ROLE_USER']);
         $user->setCgvAccepted(true);
+        $user->setNotificationsAccepted(false);
+        $user->setGeolocationAccepted(false);
         $user->setIsVerified(true);
         $user->setPassword($this->passwordHasher->hashPassword($user, 'password'));
         $manager->persist($user);
@@ -30,6 +32,8 @@ class UserFixtures extends Fixture {
         $admin->setEmail('admin@example.com');
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setCgvAccepted(true);
+        $admin->setNotificationsAccepted(false);
+        $admin->setGeolocationAccepted(false);
         $admin->setIsVerified(true);
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'adminpass'));
         $manager->persist($admin);

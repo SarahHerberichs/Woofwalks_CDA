@@ -9,7 +9,8 @@ const AccountPage = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-    acceptNotifications: true,
+    notificationsAccepted: false,
+    geolocationAccepted: false,
   });
 
   //Quand user est dispo
@@ -18,7 +19,8 @@ const AccountPage = () => {
       setFormData({
         username: user.username || "",
         email: user.email || "",
-        acceptNotifications: user.acceptNotifications || 0
+        notificationsAccepted: user.notificationsAccepted || 0,
+        geolocationAccepted: user.geolocationAccepted || 0
       });
     }
   }, [user]);
@@ -127,17 +129,20 @@ const AccountPage = () => {
                   <input
                     className="form-check-input"
                     type="checkbox"
-                    id="acceptNotifications"
-                    checked={formData.acceptNotifications}
+                    id="notificationsAccepted"
+                    checked={formData.notificationsAccepted}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        acceptNotifications: e.target.checked,
+                        notificationsAccepted: e.target.checked,
                       })
                     }
                   />
-                  <label className="form-check-label" htmlFor="acceptNotifications">
+                  <label className="form-check-label" htmlFor="notificationsAccepted">
                     Accepter les notifications
+                  </label>
+                  <label className="form-check-label" htmlFor="geolocationAccepted">
+                    Accepter la geolocalisation
                   </label>
                 </div>
               </div>

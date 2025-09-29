@@ -40,8 +40,11 @@ class UserController extends AbstractController {
                 $emailChanged = true;
                 $requiresLogout = true;
             }
-            if (isset($data['acceptNotifications']) && $user->getAcceptNotifications() !== $data['acceptNotifications']) {
-                $user->setAcceptNotifications((bool) $data['acceptNotifications']); 
+            if (isset($data['notificationsAccepted']) && $user->getNotificationsAccepted() !== $data['notificationsAccepted']) {
+                $user->setNotificationsAccepted((bool) $data['notificationsAccepted']); 
+            }
+             if (isset($data['geolocationAccepted']) && $user->getGeolocationAccepted() !== $data['geolocationAccepted']) {
+                $user->setGeolocationAccepted((bool) $data['geolocationAccepted']); 
             }
             $entityManager->persist($user);
             $entityManager->flush();
@@ -51,65 +54,66 @@ class UserController extends AbstractController {
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'username' => $user->getUsername(),
-            'acceptNotifications' => $user->getAcceptNotifications(),
+            'notificationsAccepted' => $user->getNotificationsAccepted(),
+            'geolocationAccepted' => $user->getGeolocationAccepted(),
             'emailChanged' => $emailChanged,  
             'requiresLogout' => $emailChanged  
         ]);
     }
 
-#[Route('/api/change-password', name: 'api_change_password', methods: ['POST'])]
-public function changePassword(
-    Request $request, 
-    Security $security, 
-    EntityManagerInterface $entityManager,
-    UserPasswordHasherInterface $passwordHasher,
-    ValidatorInterface $validator
-): JsonResponse {
-    $user = $security->getUser();
-    
-    if (!$user) {
-        return new JsonResponse(['error' => 'Non authentifié'], 401);
-    }
-
-    $data = json_decode($request->getContent(), true);
-    
-    if (!isset($data['currentPassword']) || !isset($data['newPassword'])) {
-        return new JsonResponse(['error' => 'Mot de passe actuel et nouveau mot de passe requis'], 400);
-    }
-
-    if (!$passwordHasher->isPasswordValid($user, $data['currentPassword'])) {
-        return new JsonResponse(['error' => 'Mot de passe actuel incorrect'], 400);
-    }
-
-    // Validation simple côté serveur
-    if (strlen($data['newPassword']) < 6) {
-        return new JsonResponse(['error' => 'Le mot de passe doit contenir au moins 6 caractères'], 400);
-    }
-
-    // Définir le mot de passe en clair pour la validation
-    $user->setPlainPassword($data['newPassword']);
-    
-    // Valider le mot de passe avec les mêmes règles que la création de compte
-    $errors = $validator->validate($user, null, ['user:write']);
-    
-    if (count($errors) > 0) {
-        $errorMessages = [];
-        foreach ($errors as $error) {
-            $errorMessages[] = $error->getMessage();
-        }
+    #[Route('/api/change-password', name: 'api_change_password', methods: ['POST'])]
+    public function changePassword(
+        Request $request, 
+        Security $security, 
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher,
+        ValidatorInterface $validator
+    ): JsonResponse {
+        $user = $security->getUser();
         
-        // Retourner la première erreur directement
-        return new JsonResponse(['error' => $errorMessages[0]], 400);
+        if (!$user) {
+            return new JsonResponse(['error' => 'Non authentifié'], 401);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        
+        if (!isset($data['currentPassword']) || !isset($data['newPassword'])) {
+            return new JsonResponse(['error' => 'Mot de passe actuel et nouveau mot de passe requis'], 400);
+        }
+
+        if (!$passwordHasher->isPasswordValid($user, $data['currentPassword'])) {
+            return new JsonResponse(['error' => 'Mot de passe actuel incorrect'], 400);
+        }
+
+        // Validation simple côté serveur
+        if (strlen($data['newPassword']) < 6) {
+            return new JsonResponse(['error' => 'Le mot de passe doit contenir au moins 6 caractères'], 400);
+        }
+
+        // Définition du mot de passe en clair pour la validation
+        $user->setPlainPassword($data['newPassword']);
+        
+        // Validation du mot de passe avec les mêmes règles que la création de compte
+        $errors = $validator->validate($user, null, ['user:write']);
+        
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[] = $error->getMessage();
+            }
+            
+            // Retourner la première erreur directement
+            return new JsonResponse(['error' => $errorMessages[0]], 400);
+        }
+
+        // Si validation OK, hasher et sauvegarder
+        $hashedPassword = $passwordHasher->hashPassword($user, $data['newPassword']);
+        $user->setPassword($hashedPassword);
+        $user->setPlainPassword(null);
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return new JsonResponse(['message' => 'Mot de passe modifié avec succès']);
     }
-
-    // Si validation OK, hasher et sauvegarder
-    $hashedPassword = $passwordHasher->hashPassword($user, $data['newPassword']);
-    $user->setPassword($hashedPassword);
-    $user->setPlainPassword(null);
-
-    $entityManager->persist($user);
-    $entityManager->flush();
-
-    return new JsonResponse(['message' => 'Mot de passe modifié avec succès']);
-}
 }

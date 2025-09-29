@@ -14,14 +14,37 @@ const WalkCard = ({ walk }) => {
   const nbParticipants = walk.participants.length
   const maxParticipants = walk.maxParticipants;
   const isFull = nbParticipants === maxParticipants;
-  const timeRemaining = getTimeRemaining(walk.date);
+
+  const getTimeData = () => {
+    const now = new Date();
+    const walkDate = new Date(walk.date);
+
+    const timeDiff = walkDate.getTime() - now.getTime();
+
+    // Vérification que dans les 24h
+    const within24Hours = timeDiff > 0 && timeDiff <= (24 * 60 * 60 * 1000);
+
+    if (within24Hours) {
+      return {
+        within24Hours: true,
+        timeRemaining: getTimeRemaining(walk.date)
+      };
+    }
+
+    return {
+      within24Hours: false,
+      timeRemaining: null
+    };
+  };
+
+  const timeData = getTimeData();
 
   const consultDetails = () => {
     navigate(`/walks/${walk.id}`);
   };
 
   return (
-    // <div className="card" onClick={consultDetails}>
+
     <div
       className="card"
       onClick={consultDetails}
@@ -55,15 +78,17 @@ const WalkCard = ({ walk }) => {
           <p className="counter-text">Max: {maxParticipants}</p>
         </div>
 
-        <div className="bottom-left-timer">
-          <img
-            src={`${process.env.PUBLIC_URL}/images/sablier.png`}
-            alt="Sablier"
-            width="50"
-            height="50"
-          />
-          <p className="counter-text">{timeRemaining}</p>
-        </div>
+        {timeData.within24Hours && (
+          <div className="bottom-left-timer">
+            <img
+              src={`${process.env.PUBLIC_URL}/images/sablier.png`}
+              alt="Sablier"
+              width="50"
+              height="50"
+            />
+            <p className="counter-text">{timeData.timeRemaining}</p>
+          </div>
+        )}
       </div>
 
       <div className="card-body">
