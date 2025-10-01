@@ -11,15 +11,20 @@ const WalksPage = () => {
   const [walks, setWalks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
   const formContext = "walks";
 
   useEffect(() => {
     const fetchWalks = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/walks`, {
-          headers: { Accept: "application/json" },
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/walks`,
+          {
+            headers: { Accept: "application/json" },
+            withCredentials: true,
+          }
+        );
 
         // Validate that the data is an array before setting the state
         if (Array.isArray(response.data)) {
@@ -45,8 +50,11 @@ const WalksPage = () => {
         <BtnPostAd
           formContext={formContext}
           entitySpecificFields={walkSpecificFields}
+          onFormToggle={setIsFormOpen}
         />
-        <LocationDisplay />
+        {/* Masquer LocationCompact quand le formulaire est ouvert */}
+        {!isFormOpen && <LocationDisplay />}
+
       </div>
       <WalkList />
 

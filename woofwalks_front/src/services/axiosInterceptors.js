@@ -1,4 +1,3 @@
-//Intercepte erreur et affiche un toast 
 import { toast } from 'react-toastify';
 
 export const setupInterceptors = (axiosInstance) => { 

@@ -11,7 +11,7 @@ import PhotoForm from "../../FormPartials/PhotoForm";
 import WalkLocationSection from "../../FormPartials/Walks/WalkLocationSection";
 import './PostAd.css';
 
-const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
+const GenericPostAdForm = ({ entityType, entitySpecificFields, onClose }) => {
 
   const [photo, setPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -223,9 +223,22 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields }) => {
 
       <PhotoForm photo={photo} onFileChange={handleFileChange} />
 
-      <button type="submit" className='button-green' disabled={isSubmitting}>
-        {isSubmitting ? "En cours..." : `Créer ${entityType}`}
-      </button>
+      <div className="form-actions">
+        <button type="submit" className="button-green" disabled={isSubmitting}>
+          {isSubmitting ? "En cours..." : `Créer ${entityType}`}
+        </button>
+
+        {onClose && (
+          <button
+            type="button"
+            className="btn btn-secondary ms-2"
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
+            Annuler
+          </button>
+        )}
+      </div>
 
     </form>
 

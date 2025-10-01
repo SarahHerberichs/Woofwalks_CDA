@@ -6,6 +6,7 @@ const BtnPostAd = ({
   formContext,
   //Par exemple champs spécifiques à walks
   entitySpecificFields,
+  onFormToggle
 }) => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const BtnPostAd = ({
       return;
     }
     setShowForm(true);
+    if (onFormToggle) onFormToggle(true);
   };
 
   return (
@@ -26,6 +28,11 @@ const BtnPostAd = ({
         <GenericPostAdForm
           entityType={formContext}
           entitySpecificFields={entitySpecificFields}
+          onClose={() => {
+            setShowForm(false);
+            // Notifie le parent que le formulaire est fermé
+            if (onFormToggle) onFormToggle(false);
+          }}
         />
       ) : (
         <button

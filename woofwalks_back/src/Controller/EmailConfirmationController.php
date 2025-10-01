@@ -23,7 +23,7 @@ class EmailConfirmationController extends AbstractController {
             return new JsonResponse([
                 'status' => 'error',
                 'message' => 'Lien de confirmation invalide ou déjà utilisé.'
-            ], 400); // Bad Request car le token n'est pas valide ou est expiré
+            ], 400); 
         }
 
         //Vérifie si $user, trouvé est DEJA marqué comme vérifié.(Si probleme incohérence donnees)

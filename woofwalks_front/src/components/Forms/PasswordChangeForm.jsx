@@ -31,12 +31,10 @@ const PasswordChangeForm = ({ onSuccess, onError }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         // Reset des erreurs
         setErrors({});
         setServerError('');
 
-        // Validation côté client
         const newErrors = {};
 
         if (formData.newPassword !== formData.confirmPassword) {
@@ -65,7 +63,7 @@ const PasswordChangeForm = ({ onSuccess, onError }) => {
                 newPassword: '',
                 confirmPassword: ''
             });
-
+            //Fonction passée en props pour envoi message confirmation
             if (onSuccess) onSuccess();
         } catch (error) {
             console.error('Erreur lors du changement de mot de passe:', error);

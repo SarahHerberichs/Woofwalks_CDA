@@ -5,18 +5,18 @@ import BtnLogout from "../Buttons/BtnLogout";
 import './Header.css';
 
 function Header() {
- const { isAuthenticated, isLoading } = useAuth();
- 
-    if (isLoading) {
-        // Optionnel: Afficher un loader pendant que l'authentification est vérifiée
-        return <Navbar bg="light" expand="lg" className="shadow-sm"><Container><Navbar.Brand>Chargement...</Navbar.Brand></Container></Navbar>;
-    }
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    // Optionnel: Afficher un loader pendant que l'authentification est vérifiée
+    return <Navbar bg="light" expand="lg" className="shadow-sm"><Container><Navbar.Brand>Chargement...</Navbar.Brand></Container></Navbar>;
+  }
 
   return (
     <Navbar expand="lg" className="shadow-sm navbar">
       <Container>
         <Navbar.Brand><img src={logo} className='logo-woofwalks' alt="Woofwalks Logo" /></Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" className="btn"/>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" className="btn" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
             <Nav.Link href="/">Accueil</Nav.Link>
@@ -28,7 +28,7 @@ function Header() {
             {!isAuthenticated && (
               <>
                 <Nav.Link href="/newaccount">Créer un compte</Nav.Link>
-                <Nav.Link href="/Login">Login</Nav.Link>
+                <Nav.Link href="/login">Login</Nav.Link>
               </>
             )}
             {isAuthenticated && (

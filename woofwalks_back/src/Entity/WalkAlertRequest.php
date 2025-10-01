@@ -5,11 +5,17 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 
 #[ORM\Entity]
 #[ApiResource(
     normalizationContext: ['groups' => ['walk_alert_request:read']],
-    denormalizationContext: ['groups' => ['walk_alert_request:write']]
+    denormalizationContext: ['groups' => ['walk_alert_request:write']],
+    operations: [
+        new Get(),
+        new GetCollection(),
+    ]
 )]
 
 class WalkAlertRequest {

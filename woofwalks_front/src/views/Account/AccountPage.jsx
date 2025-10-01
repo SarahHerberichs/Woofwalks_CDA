@@ -141,10 +141,26 @@ const AccountPage = () => {
                   <label className="form-check-label" htmlFor="notificationsAccepted">
                     Accepter les notifications
                   </label>
+                </div>
+
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="geolocationAccepted"
+                    checked={formData.geolocationAccepted}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        geolocationAccepted: e.target.checked,
+                      })
+                    }
+                  />
                   <label className="form-check-label" htmlFor="geolocationAccepted">
                     Accepter la geolocalisation
                   </label>
                 </div>
+
               </div>
             </div>
 
