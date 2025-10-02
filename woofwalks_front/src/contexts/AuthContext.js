@@ -10,27 +10,7 @@ export const AuthProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
 
-    const checkAuth = useCallback(async () => {
-        try {
-            // Tente de vérifier si l'utilisateur est authentifié en appelant l'API.
-            // En cas d'erreur 401, l'intercepteur Axios tentera de rafraîchir le token.
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/me`, {
-                withCredentials: true
-            });
-            setUser(response.data);
-            // Si la requête réussit, l'utilisateur est authentifié.
-            setIsAuthenticated(true);
-        } catch (err) {
-            // Si la requête échoue même après les tentatives de rafraîchissement
-            // gérées par l'intercepteur, l'utilisateur n'est pas authentifié.
-            console.error('Initial authentication check failed after all retries:', err.response?.status, err.response?.data);
-            setUser(null);
-            setIsAuthenticated(false);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
+    
     const login = async (email, password) => {
         await axios.post(
             `${process.env.REACT_APP_API_URL}/api/login_check`,
@@ -53,6 +33,27 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(false);
         }
     };
+    
+    const checkAuth = useCallback(async () => {
+        try {
+            // Tente de vérifier si l'utilisateur est authentifié en appelant l'API.
+            // En cas d'erreur 401, l'intercepteur Axios tentera de rafraîchir le token.
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/me`, {
+                withCredentials: true
+            });
+            setUser(response.data);
+            // Si la requête réussit, l'utilisateur est authentifié.
+            setIsAuthenticated(true);
+        } catch (err) {
+            // Si la requête échoue même après les tentatives de rafraîchissement
+            // gérées par l'intercepteur, l'utilisateur n'est pas authentifié.
+            console.error('Initial authentication check failed after all retries:', err.response?.status, err.response?.data);
+            setUser(null);
+            setIsAuthenticated(false);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
     // Configuration de l'intercepteur Axios et de la vérification initiale de l'authentification.--gère les 401
     useEffect(() => {
@@ -100,6 +101,7 @@ export const AuthProvider = ({ children }) => {
       const updateUser = (userData) => {
         setUser(userData);
     };
+    
 
     return (
         <AuthContext.Provider

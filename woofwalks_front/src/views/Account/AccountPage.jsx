@@ -171,7 +171,6 @@ const AccountPage = () => {
             </div>
           </form>
 
-          {/* Utilisation du composant PasswordChangeForm */}
           <div className="mt-4">
             <PasswordChangeForm
               onSuccess={handlePasswordSuccess}

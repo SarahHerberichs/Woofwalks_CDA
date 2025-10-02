@@ -19,14 +19,14 @@ class EmailConfirmationController extends AbstractController {
         $user = $userRepository->findOneBy(['confirmationToken' => $token]);
         // Utilisateur pas trouvé 
         if (!$user) {
-            // Si $user est null, le token est invalide (n'existe pas ou a déjà été utilisé).
+            // Si user est null, le token est invalide (n'existe pas ou a déjà été utilisé).
             return new JsonResponse([
                 'status' => 'error',
                 'message' => 'Lien de confirmation invalide ou déjà utilisé.'
             ], 400); 
         }
 
-        //Vérifie si $user, trouvé est DEJA marqué comme vérifié.(Si probleme incohérence donnees)
+        //Vérifie si User, trouvé est DEJA marqué comme vérifié.(Si probleme incohérence donnees)
         if ($user->isVerified()) {
             return new JsonResponse([
                 'status' => 'info',

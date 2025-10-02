@@ -12,11 +12,11 @@
 .badge-full,
 .badge-available {
   display: inline-block;
-  width: 30px;       /* Taille du badge */
+  width: 30px;       
   height: 30px;
-  border-radius: 50%; /* Cercle parfait */
-  z-index: 10;        /* Priorité d'affichage */
-  position: relative; /* Nécessaire pour que z-index fonctionne */
+  border-radius: 50%; 
+  z-index: 10;       
+  position: relative; 
 }
 
 /* Couleurs selon disponibilité */
@@ -62,7 +62,7 @@
 
 .card-text {
   margin-bottom: 5px;
-  color: #6c757d; /* text-muted */
+  color: #6c757d;
 }
 
 .card-location,
@@ -75,6 +75,6 @@
   padding: 0.25rem 0.5rem;
   background-color: rgba(255, 255, 255, 0.75);
   border-radius: 0.25rem;
-  font-size: 0.75rem; /* small */
-  color: #212529; /* text-dark */
+  font-size: 0.75rem;
+  color: #212529; 
 }

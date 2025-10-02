@@ -23,10 +23,10 @@ class ParkFixtures extends Fixture {
             $location->setLongitude($faker->longitude());
             $location->setName($faker->company());
 
-            // Persister la location avant le parc
+            // Persiste la location avant le parc
             $manager->persist($location);
 
-            // Créer une nouvelle entité Park
+            // Crée une nouvelle entité Park
             $park = new Park();
             $park->setDescription($faker->paragraph());
             $park->setLocation($location);

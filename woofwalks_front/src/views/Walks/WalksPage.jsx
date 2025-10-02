@@ -52,7 +52,7 @@ const WalksPage = () => {
           entitySpecificFields={walkSpecificFields}
           onFormToggle={setIsFormOpen}
         />
-        {/* Masquer LocationCompact quand le formulaire est ouvert */}
+        {/* Masquer quand le formulaire est ouvert */}
         {!isFormOpen && <LocationDisplay />}
 
       </div>

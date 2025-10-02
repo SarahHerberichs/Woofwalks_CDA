@@ -25,7 +25,6 @@ class TokenRefreshController extends AbstractController {
         Security $security
     ): JsonResponse {
         // Le RefreshTokenAuthenticator s'est déjà assuré que l'utilisateur est authentifié.
-
         $user = $security->getUser();
 
         if (!$user instanceof User) {
@@ -41,8 +40,8 @@ class TokenRefreshController extends AbstractController {
             throw new AuthenticationException('Refresh token cookie not found.');
         }
 
-        // On trouve l'entité RefreshToken en base de données.
-        // On s'assure que le token de rafraîchissement correspond bien à l'utilisateur.
+        // On trouve  RefreshToken en base de données.
+        // On s'assure que le token de rafraîchissement correspond bien à l'user
         $refreshTokenEntity = $em->getRepository(RefreshToken::class)->findOneBy([
             'refreshToken' => $refreshTokenValue,
             'username' => $user->getUserIdentifier()
@@ -52,14 +51,14 @@ class TokenRefreshController extends AbstractController {
             throw new AuthenticationException('Invalid or expired refresh token.');
         }
 
-        // 1. Générer un nouveau JWT (token d'accès)
+        // 1. Génére un nouveau JWT (token d'accès)
         $newJwt = $jwtManager->create($user);
 
-        // 2. Supprimer l'ancien refresh token
+        // 2. Supprime l'ancien refresh token
         $em->remove($refreshTokenEntity);
         $em->flush();
 
-        // 3. Émettre un nouveau refresh token
+        // 3. Émett un nouveau refresh token
         $newRefreshTokenEntity = new RefreshToken();
         $newRefreshTokenEntity->setRefreshToken(bin2hex(random_bytes(64)));
         $newRefreshTokenEntity->setUsername($user->getUserIdentifier());
@@ -68,10 +67,10 @@ class TokenRefreshController extends AbstractController {
         $em->persist($newRefreshTokenEntity);
         $em->flush();
 
-        // 4. Préparer la réponse
+        // 4. Prépare la réponse
         $response = $this->json(['message' => 'Token refreshed successfully']);
 
-        // 5. Configurer les cookies pour les nouveaux tokens
+        // 5. Configure les cookies pour les nouveaux tokens
         $refreshCookie = Cookie::create('REFRESH_TOKEN')
             ->withValue($newRefreshTokenEntity->getRefreshToken())
             ->withHttpOnly(true)

@@ -8,7 +8,7 @@ function Header() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    // Optionnel: Afficher un loader pendant que l'authentification est vérifiée
+    //Affiche un loader pendant que l'authentification est vérifiée
     return <Navbar bg="light" expand="lg" className="shadow-sm"><Container><Navbar.Brand>Chargement...</Navbar.Brand></Container></Navbar>;
   }
 

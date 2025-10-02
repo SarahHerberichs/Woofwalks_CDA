@@ -12,7 +12,7 @@
 }
 
 .confirm-email-message.loading {
-  color: #000; /* texte normal pour le chargement */
+  color: #000; 
 }
 
 .confirm-email-message.success {

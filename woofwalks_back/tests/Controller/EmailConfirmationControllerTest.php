@@ -67,7 +67,7 @@ class EmailConfirmationControllerTest extends TestCase {
     
         $user = $this->getMockBuilder(User::class)
             ->onlyMethods(['isVerified', 'setConfirmationToken', 'setIsVerified', 'getConfirmationRequestedAt'])
-            //Rendre le Mock utilisable 
+            //Rend le Mock utilisable 
             ->getMock();
         //Force l'user à Non Vérifié et simule une date de confirmation de compte
         $user->method('isVerified')->willReturn(false);
@@ -85,7 +85,7 @@ class EmailConfirmationControllerTest extends TestCase {
         $entityManager->expects($this->once())->method('flush');
 
         $controller = new EmailConfirmationController();
-        //Apres avoir associé l'utilisateur a un ustilisateur vérifié - on envoi ca au controlleur
+        //Apres avoir associé l'utilisateur est vérifié - envoi  au controlleur
         $response = $controller->confirmEmail('valid-token', $userRepository, $entityManager);
 
         $this->assertInstanceOf(JsonResponse::class, $response);

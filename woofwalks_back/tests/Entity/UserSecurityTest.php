@@ -32,15 +32,12 @@ class UserSecurityTest extends WebTestCase {
     }
 
     public function testAdminCanSeeAllUsers(): void {
-        // Création d'un admin et d'utilisateurs normaux
+
         $admin = $this->createUser('admin_'.uniqid().'@example.com', ['ROLE_ADMIN']);
         $user  = $this->createUser('user_'.uniqid().'@example.com');
         $user  = $this->createUser('user_'.uniqid().'@example.com');
 
-        // Forcer la connexion de l'admin
         $this->client->loginUser($admin);
-
-        // Faire la requête protégée en HTTPS
         $this->client->request(
             'GET',
             '/api/users',
@@ -48,7 +45,6 @@ class UserSecurityTest extends WebTestCase {
             [],
             ['HTTP_ACCEPT' => 'application/json', 'HTTPS' => true]
         );
-
         $this->assertResponseIsSuccessful();
         $this->assertJson($this->client->getResponse()->getContent());
     }
@@ -66,7 +62,6 @@ class UserSecurityTest extends WebTestCase {
         [],
         ['HTTP_ACCEPT' => 'application/json', 'HTTPS' => true]
     );
-        // Accès refusé pour un user normal
         $this->assertResponseStatusCodeSame(403); 
     }
 
@@ -76,8 +71,7 @@ class UserSecurityTest extends WebTestCase {
 
         $this->client->loginUser($user);
 
-         $jwtManager = self::getContainer()->get('lexik_jwt_authentication.jwt_manager');
-
+        $jwtManager = self::getContainer()->get('lexik_jwt_authentication.jwt_manager');
         $token = $jwtManager->create($user);
 
         $this->client->request(
@@ -91,7 +85,7 @@ class UserSecurityTest extends WebTestCase {
                 'HTTP_AUTHORIZATION' => 'Bearer ' . $token
             ]
         );
-            $this->assertResponseIsSuccessful();
+        $this->assertResponseIsSuccessful();
     }
 
     public function testUserCannotSeeOtherProfile(): void {

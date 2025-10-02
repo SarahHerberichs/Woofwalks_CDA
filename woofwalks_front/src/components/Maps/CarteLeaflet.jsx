@@ -1,8 +1,8 @@
-// src/components/Maps/CarteLeaflet.jsx
+
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef } from 'react';
-
+import './CarteLeaflet.css';
 // Corriger les icônes Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -55,12 +55,12 @@ const CarteLeaflet = ({ walks = [] }) => {
                     <p><strong>Adresse:</strong> ${walk.location.street}</p>
                     <p><strong>Date:</strong> ${new Date(walk.date).toLocaleDateString('fr-FR')}</p>
                     <p><strong>Participants:</strong> ${walk.participants?.length || 0}/${walk.maxParticipants}</p>
-                    <a href="/walks/${walk.id}" class="btn btn-sm btn-primary">Voir détails</a>
+                    <a href="/walks/${walk.id}" class="btn btn-sm btn-more-details"">Voir détails</a>
                 </div>
             `);
         });
 
-        // Ajuster la vue pour inclure tous les marqueurs (si il y en a)
+        // Ajustement de la vue pour inclure tous les marqueurs (si il y en a)
         if (walksWithCoordinates.length > 0) {
             const group = new L.featureGroup();
             walksWithCoordinates.forEach(walk => {

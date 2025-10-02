@@ -38,7 +38,7 @@ class WalkAlertRequestController extends AbstractController {
             return new JsonResponse(['error' => 'IRI de balade invalide'], 400);
         }
 
-        // Récupération de la balade
+        // Récupération de la Walk
         $walk = $this->entityManager->getRepository(Walk::class)->find($walkId);
         if (!$walk) {
             return new JsonResponse(['error' => 'Balade non trouvée'], 404);

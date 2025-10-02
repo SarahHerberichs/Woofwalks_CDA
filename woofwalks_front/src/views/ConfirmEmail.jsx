@@ -61,7 +61,6 @@ const ConfirmEmail = () => {
         setStatus("error");
       }
     };
-    // Appeler la fonction asynchrone
     confirmAccount();
   }, [token, navigate]);
 

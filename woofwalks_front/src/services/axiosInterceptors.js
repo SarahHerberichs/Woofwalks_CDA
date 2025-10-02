@@ -28,7 +28,7 @@ export const setupInterceptors = (axiosInstance) => {
         errorMessage = `Erreur de configuration: ${error.message}`;
       }
 
-      // Afficher le message d'erreur à l'utilisateur
+      // Affiche le message d'erreur 
       toast.error(errorMessage, {
         position: "top-right",
         autoClose: 5000,
