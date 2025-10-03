@@ -18,6 +18,19 @@ const WalkLocationSection = ({
           name="locationData"
           //Controlleur de valeur
           control={control}
+          rules={{
+            validate: (value) => {
+              // Vérifie si la ville, la rue et le nom sont renseignés
+              if (
+                !value ||
+                !value.city ||
+                !value.street
+              ) {
+                return "Localisation manquante";
+              }
+              return true;
+            },
+          }}
           defaultValue={{
             city: "",
             street: "",

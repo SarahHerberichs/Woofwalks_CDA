@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast } from 'react-toastify';
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
+
 
 const WalkDetailsPage = () => {
   const { id } = useParams();
@@ -12,6 +14,16 @@ const WalkDetailsPage = () => {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState('');
   const { isAuthenticated } = useAuth();
+
+  const toastConfig = {
+    position: "top-right",
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+  };
+
   useEffect(() => {
     const fetchWalkAndUser = async () => {
       try {
@@ -61,7 +73,10 @@ const WalkDetailsPage = () => {
 
   const handleAlertRequest = async () => {
     if (!isAuthenticated) {
-      setMessage("Vous devez être connecté pour demander une alerte.");
+      toast.error("Vous devez être connecté pour demander une alerte.", toastConfig);
+      return;
+    } if (!user.notificationsAccepted) {
+      toast.warning("Vous n'avez pas autorisé les notifications dans les paramètres de votre compte", toastConfig);
       return;
     }
     try {
@@ -80,17 +95,17 @@ const WalkDetailsPage = () => {
         console.log("Erreur CORS ignorée - email envoyé avec succès");
       }
 
-      // Toujours afficher le message de succès car l'email est envoyé
-      setMessage("Demande de notification enregistrée !");
+      toast.success("Demande de notification enregistrée !", toastConfig);
     } catch (error) {
       console.error("Erreur lors de la demande d'alerte :", error);
-      setMessage("Erreur lors de la demande d'alerte.");
+      toast.error("Erreur lors de la demande d'alerte.", toastConfig);
+
     }
   };
 
   const handleParticipate = async () => {
     if (!isAuthenticated) {
-      setMessage("Vous devez être connecté pour demander a participer.");
+      toast.error("Vous devez être connecté pour participer.", toastConfig);
       return;
     }
     try {
@@ -101,16 +116,17 @@ const WalkDetailsPage = () => {
       );
       setWalk(response.data);
       setIsParticipating(true);
-      setMessage("Vous participez maintenant à la balade !");
+      toast.success("Vous participez maintenant à la balade !", toastConfig);
+
     } catch (error) {
       console.error("Erreur lors de la participation :", error.response?.data || error);
-      setError("Erreur lors de la participation.");
+      toast.error("Erreur lors de la participation.", toastConfig);
     }
   };
 
   const handleUnparticipate = async () => {
     if (!isAuthenticated) {
-      setMessage("Vous devez être connecté pour demander une alerte.");
+      toast.error("Vous devez être connecté pour vous désinscrire.", toastConfig);
       return;
     }
     try {
@@ -121,10 +137,11 @@ const WalkDetailsPage = () => {
       );
       setWalk(response.data);
       setIsParticipating(false);
-      setMessage("Vous ne participez plus à la balade !");
+      toast.success("Vous ne participez plus à la balade !", toastConfig);
+
     } catch (error) {
       console.error("Erreur lors de la désinscription :", error.response?.data || error);
-      setError("Erreur lors de la désinscription.");
+      toast.error("Erreur lors de la désinscription.", toastConfig);
     }
   };
 
@@ -133,7 +150,6 @@ const WalkDetailsPage = () => {
 
   return (
     <div>
-      {message && <p className="message">{message}</p>}
       <h1>{walk.title}</h1>
       <p>{walk.description}</p>
       <p>Lieu du RDV : {walk.location?.name}</p>

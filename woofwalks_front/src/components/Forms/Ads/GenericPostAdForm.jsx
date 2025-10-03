@@ -11,7 +11,7 @@ import PhotoForm from "../../FormPartials/PhotoForm";
 import WalkLocationSection from "../../FormPartials/Walks/WalkLocationSection";
 import './PostAd.css';
 
-const GenericPostAdForm = ({ entityType, entitySpecificFields, onClose }) => {
+const GenericPostAdForm = ({ entityType, entitySpecificFields, onClose, onEntityCreated }) => {
 
   const [photo, setPhoto] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,7 +23,7 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields, onClose }) => {
     //Attend en parametre la vraie fonction a executer
     handleSubmit,
     //Object - gestionnaire d 'etat central - + puissant que register
-    // contient la logique interne du form
+    //Contient la logique interne du form
     //Pour les champs qui sont pas enregistrés directement par register-> composant + complexe comme WalkLocationSection
     control,
     reset,
@@ -118,6 +118,10 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields, onClose }) => {
       };
 
       await postGenericAd(entityData, entityType);
+      //apel de la fonction si onEntityCreated est recue et valide
+      if (onEntityCreated) {
+        onEntityCreated();
+      }
 
       reset({
         title: "",
@@ -205,6 +209,19 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields, onClose }) => {
         <Controller
           name="locationData"
           control={control}
+          rules={{
+            validate: (value) => {
+              // Vérifie si la ville, la rue renseignés
+              if (
+                !value ||
+                !value.city ||
+                !value.street
+              ) {
+                return "Localisation manquante";
+              }
+              return true;
+            },
+          }}
           defaultValue={{
             city: "",
             street: "",
@@ -220,7 +237,9 @@ const GenericPostAdForm = ({ entityType, entitySpecificFields, onClose }) => {
           )}
         />
       )}
-
+      {errors.locationData && (
+        <p className="error-message">{errors.locationData.message}</p>
+      )}
       <PhotoForm photo={photo} onFileChange={handleFileChange} />
 
       <div className="form-actions">

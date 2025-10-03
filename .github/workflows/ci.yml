@@ -24,6 +24,7 @@ jobs:
           MYSQL_DATABASE: woofwalks_test
         ports:
           - 3306:3306
+          #Vérif BDD prête
         options: >-
           --health-cmd="mysqladmin ping"
           --health-interval=10s
@@ -31,13 +32,15 @@ jobs:
           --health-retries=5
 
     steps:
+      #Récupere le code source
       - uses: actions/checkout@v4
-
+       #installe langage php sur la VM
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: 'pdo_mysql, mbstring'
+          # instale composer pr gestion des dependances
           tools: composer
       
       - name: Create .env file for CI
@@ -46,7 +49,7 @@ jobs:
           echo 'APP_ENV=test' >> .env
           
         working-directory: woofwalks_back
-
+        # télécharge dépendances
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist
         working-directory: woofwalks_back

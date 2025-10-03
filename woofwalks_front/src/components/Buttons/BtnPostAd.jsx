@@ -6,7 +6,8 @@ const BtnPostAd = ({
   formContext,
   //Par exemple champs spécifiques à walks
   entitySpecificFields,
-  onFormToggle
+  onFormToggle,
+  onEntityCreated,
 }) => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -33,6 +34,9 @@ const BtnPostAd = ({
             // Notifie le parent que le formulaire est fermé
             if (onFormToggle) onFormToggle(false);
           }}
+          //Passe la fonction qui permettra à WalksPage de faire le refresh (useEffect avec onEntitYcreated en [])
+          onEntityCreated={onEntityCreated}
+
         />
       ) : (
         <button

@@ -3,34 +3,44 @@ import { useEffect, useMemo, useState } from "react";
 import { filterAndSortByFutureDate } from "../../utils/orderAds";
 import WalkCard from "../Cards/WalkCard";
 
-const WalkList = () => {
+const WalkList = ({ refreshTrigger }) => {
     const [walks, setWalks] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [visibleCount, setVisibleCount] = useState(8);
 
-    useEffect(() => {
-        const fetchWalks = async () => {
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/walks`, {
-                    headers: { Accept: "application/json" },
-                    withCredentials: true,
-                });
 
-                if (Array.isArray(response.data)) {
-                    setWalks(response.data);
-                } else {
-                    console.error("API response is not an array:", response.data);
-                    setError("Les données reçues ne sont pas valides.");
-                }
-            } catch (error) {
-                setError("Impossible de charger les marches pour le moment.");
-            } finally {
-                setIsLoading(false);
+    const fetchWalks = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/walks`, {
+                headers: { Accept: "application/json" },
+                withCredentials: true,
+            });
+
+            if (Array.isArray(response.data)) {
+                setWalks(response.data);
+            } else {
+                console.error("API response is not an array:", response.data);
+                setError("Les données reçues ne sont pas valides.");
             }
-        };
+        } catch (error) {
+            setError("Impossible de charger les marches pour le moment.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    //Fetch les Walk au montage
+    useEffect(() => {
         fetchWalks();
     }, []);
+    //Surveille l'ajout d'une annonce 
+    //Cherche Les Walks au changement de refreshTrigger - ce qui change par l'appel à la fonction d'incrémentation quand on post un form d'ajout d'annonce
+    useEffect(() => {
+        if (refreshTrigger > 0) {
+            setIsLoading(true)
+            fetchWalks();
+        }
+    }, [refreshTrigger]);
 
     //Fonciton de filtrage padate
     const filteredSortedWalks = useMemo(() => {
