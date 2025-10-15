@@ -1,183 +1,35 @@
-import { useEffect, useState } from "react";
-import PasswordChangeForm from "../../components/Forms/PasswordChangeForm";
-import { useAuth } from "../../contexts/AuthContext";
-import { updateProfile } from "../../services/updateProfile";
+import { Link } from 'react-router-dom';
 
 const AccountPage = () => {
-  const { isAuthenticated, user, updateUser, logout } = useAuth();
-  const [message, setMessage] = useState("");
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    notificationsAccepted: false,
-    geolocationAccepted: false,
-  });
+  const myActivityPath = "/myactivity";
+  const settingsPath = "/settings";
+  const ordersPath = "/myorders";
 
-  //Quand user est dispo
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        username: user.username || "",
-        email: user.email || "",
-        notificationsAccepted: user.notificationsAccepted || 0,
-        geolocationAccepted: user.geolocationAccepted || 0
-      });
-    }
-  }, [user]);
+  const LinkItem = ({ to, children }) => (
+    <Link
+      to={to}
 
-  // Sauvegarde du profil
-  const handleSave = async (e) => {
-    e.preventDefault();
-    try {
-      const newProfile = await updateProfile(formData);
-      if (newProfile.emailChanged || newProfile.requiresLogout) {
-        setMessage("Profil modifié. Vous allez être déconnecté pour des raisons de sécurité.");
-        setTimeout(() => {
-          logout();
-        }, 2000);
-      } else {
-        // Mise à jour normale
-        updateUser(newProfile);
-        setMessage("Profil sauvegardé avec succès !");
-      }
-      setTimeout(() => setMessage(""), 3000);
-    } catch (error) {
-      console.error(error);
-    };
-  }
+      className="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3"
+    >
+      <h5 className="my-0 fs-5 fw-semibold">{children}</h5>
 
-  // Callback pour le succès du changement de mot de passe
-  const handlePasswordSuccess = () => {
-    setMessage("Mot de passe modifié avec succès !");
-    setTimeout(() => setMessage(""), 3000);
-  };
-
-  // Callback pour les erreurs du changement de mot de passe
-  const handlePasswordError = (error) => {
-    const errorMessage = error.response?.data?.error || "Erreur lors du changement de mot de passe";
-    setMessage(errorMessage);
-  };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="container mt-4">
-        <div className="alert alert-warning">
-          Vous devez être connecté pour accéder à cette page.
-        </div>
-      </div>
-    );
-  }
+      <i className="bi bi-chevron-right text-secondary"></i>
+    </Link>
+  );
 
   return (
-    <div className="container mt-4">
-      <div className="row">
-        <div className="col-12">
-          <h2 className="mb-4">Mon Compte</h2>
+    <div className="container py-5">
 
-          {message && (
-            <div className="alert alert-success alert-dismissible fade show">
-              {message}
-              <button
-                type="button"
-                className="btn-close"
-                onClick={() => setMessage("")}
-              ></button>
-            </div>
-          )}
+      <h1 className="display-5 border-bottom pb-3 mb-4">Mon Compte</h1>
 
-          <form onSubmit={handleSave}>
-            {/* Informations personnelles */}
-            <div className="card mb-4">
-              <div className="card-header">
-                <h5 className="mb-0">Informations personnelles</h5>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="name" className="form-label">
-                      Nom complet
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="name"
-                      value={formData.username}
-                      onChange={(e) =>
-                        setFormData({ ...formData, username: e.target.value })
-                      }
-                      placeholder="Votre nom complet"
-                    />
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="email" className="form-label">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="email"
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      placeholder="votre@email.com"
-                    />
-                  </div>
-                </div>
+      <div className="list-group list-group-flush">
 
-                <div className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="notificationsAccepted"
-                    checked={formData.notificationsAccepted}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        notificationsAccepted: e.target.checked,
-                      })
-                    }
-                  />
-                  <label className="form-check-label" htmlFor="notificationsAccepted">
-                    Accepter les notifications
-                  </label>
-                </div>
+        <LinkItem to={myActivityPath}>Mon Activité</LinkItem>
 
-                <div className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="geolocationAccepted"
-                    checked={formData.geolocationAccepted}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        geolocationAccepted: e.target.checked,
-                      })
-                    }
-                  />
-                  <label className="form-check-label" htmlFor="geolocationAccepted">
-                    Accepter la geolocalisation
-                  </label>
-                </div>
+        <LinkItem to={settingsPath}>Réglages</LinkItem>
 
-              </div>
-            </div>
+        <LinkItem to={ordersPath}>Mes Commandes</LinkItem>
 
-            <div className="text-center">
-              <button type="submit" className="btn btn-primary">
-                Sauvegarder
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-4">
-            <PasswordChangeForm
-              onSuccess={handlePasswordSuccess}
-              onError={handlePasswordError}
-            />
-          </div>
-        </div>
       </div>
     </div>
   );

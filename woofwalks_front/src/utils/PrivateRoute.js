@@ -7,7 +7,6 @@ const PrivateRoute = () => {
         return <div>Vérification de l'authentification...</div>; 
     }
 
-
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
