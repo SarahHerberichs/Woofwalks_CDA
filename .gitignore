@@ -2,19 +2,22 @@ woofwalks_back/.env
 woofwalks_back/.env.dev
 woofwalks_back/.env.test
 woofwalks_back/config/jwt/*.pem
-woofwalks_front/.env
-
-woofwalks_front/certs/
 woofwalks_back/public/test_smtp.php
+
+woofwalks_front/.env
+woofwalks_front/certs/
+
+
 woofwalks_init.sql
 
 .env.docker
 
 certs/
 
-backups/
+woofwalks_back/backups/
 
-backup_db.sh
+woofwalks_back/backup_db.sh
+woofwalks_back/woofwalks-init.sql
 
 logs/
 
